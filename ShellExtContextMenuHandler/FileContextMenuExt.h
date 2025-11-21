@@ -67,7 +67,6 @@ private:
     void OnVerbDisplayFileName(HWND hWnd);
 
     PWSTR m_pszMenuText;
-    HANDLE m_hMenuBmp;
     PCSTR m_pszVerb;
     PCWSTR m_pwszVerb;
     PCSTR m_pszVerbCanonicalName;

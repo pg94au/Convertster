@@ -1,34 +1,4 @@
-/****************************** Module Header ******************************\
-Module Name:  FileContextMenuExt.cpp
-Project:      CppShellExtContextMenuHandler
-Copyright (c) Microsoft Corporation.
-
-The code sample demonstrates creating a Shell context menu handler with C++. 
-
-A context menu handler is a shell extension handler that adds commands to an 
-existing context menu. Context menu handlers are associated with a particular 
-file class and are called any time a context menu is displayed for a member 
-of the class. While you can add items to a file class context menu with the 
-registry, the items will be the same for all members of the class. By 
-implementing and registering such a handler, you can dynamically add items to 
-an object's context menu, customized for the particular object.
-
-The example context menu handler adds the menu item "Display File Name (C++)"
-to the context menu when you right-click a .cpp file in the Windows Explorer. 
-Clicking the menu item brings up a message box that displays the full path 
-of the .cpp file.
-
-This source is subject to the Microsoft Public License.
-See http://www.microsoft.com/opensource/licenses.mspx#Ms-PL.
-All other rights reserved.
-
-THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, 
-EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED 
-WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
-\***************************************************************************/
-
 #include "FileContextMenuExt.h"
-#include "resource.h"
 #include <strsafe.h>
 #include <Shlwapi.h>
 #include "common.h"
@@ -51,22 +21,10 @@ FileContextMenuExt::FileContextMenuExt(void)
     m_pwszVerbHelpText(L_Verb_Help_Text)
 {
     InterlockedIncrement(&g_cDllRef);
-
-    // Load the bitmap for the menu item. 
-    // If you want the menu item bitmap to be transparent, the color depth of 
-    // the bitmap must not be greater than 8bpp.
-    m_hMenuBmp = LoadImage(g_hInst, MAKEINTRESOURCE(IDB_OK), 
-        IMAGE_BITMAP, 0, 0, LR_DEFAULTSIZE | LR_LOADTRANSPARENT);
 }
 
 FileContextMenuExt::~FileContextMenuExt(void)
 {
-    if (m_hMenuBmp)
-    {
-        DeleteObject(m_hMenuBmp);
-        m_hMenuBmp = NULL;
-    }
-
     InterlockedDecrement(&g_cDllRef);
 }
 
@@ -153,7 +111,7 @@ IFACEMETHODIMP FileContextMenuExt::Initialize(
 			{
 				wchar_t szSelectedFile[MAX_PATH] = { 0 };
 				// Get the path of the file.
-				if (0 != DragQueryFile(hDrop, i, szSelectedFile, ARRAYSIZE(szSelectedFile)))
+				if (0 != DragQueryFile(hDrop, static_cast<UINT>(i), szSelectedFile, ARRAYSIZE(szSelectedFile)))
 				{
 					m_vSelectedFiles.push_back(szSelectedFile);
 					hr = S_OK;
@@ -220,7 +178,7 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(
     mii.fType = MFT_STRING;
     mii.dwTypeData = m_pszMenuText;
     mii.fState = MFS_ENABLED;
-    mii.hbmpItem = static_cast<HBITMAP>(m_hMenuBmp);
+	mii.hbmpItem = nullptr;
     if (!InsertMenuItem(hMenu, indexMenu, TRUE, &mii))
     {
         return HRESULT_FROM_WIN32(GetLastError());
