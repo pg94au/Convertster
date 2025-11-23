@@ -4,7 +4,6 @@
 #include "common.h"
 #pragma comment(lib, "shlwapi.lib")
 
-
 extern HINSTANCE g_hInst;
 extern long g_cDllRef;
 
@@ -28,7 +27,6 @@ FileContextMenuExt::~FileContextMenuExt(void)
     InterlockedDecrement(&g_cDllRef);
 }
 
-
 void FileContextMenuExt::OnVerbDisplayFileName(HWND hWnd)
 {
 	for (size_t i = 0; i < m_vSelectedFiles.size() && i < 2; i++)
@@ -41,7 +39,6 @@ void FileContextMenuExt::OnVerbDisplayFileName(HWND hWnd)
 		}
 	}
 }
-
 
 #pragma region IUnknown
 
@@ -76,7 +73,6 @@ IFACEMETHODIMP_(ULONG) FileContextMenuExt::Release()
 }
 
 #pragma endregion
-
 
 #pragma region IShellExtInit
 
@@ -147,7 +143,6 @@ IFACEMETHODIMP FileContextMenuExt::Initialize(
 
 #pragma endregion
 
-
 #pragma region IContextMenu
 
 //
@@ -198,7 +193,6 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(
     // that was assigned, plus one (1).
     return MAKE_HRESULT(SEVERITY_SUCCESS, 0, USHORT(IDM_DISPLAY + 1));
 }
-
 
 //
 //   FUNCTION: FileContextMenuExt::InvokeCommand
@@ -293,7 +287,6 @@ IFACEMETHODIMP FileContextMenuExt::InvokeCommand(LPCMINVOKECOMMANDINFO pici)
 
     return S_OK;
 }
-
 
 //
 //   FUNCTION: CFileContextMenuExt::GetCommandString

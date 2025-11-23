@@ -1,38 +1,8 @@
-/****************************** Module Header ******************************\
-Module Name:  dllmain.cpp
-Project:      CppShellExtContextMenuHandler
-Copyright (c) Microsoft Corporation.
-
-The file implements DllMain, and the DllGetClassObject, DllCanUnloadNow, 
-DllRegisterServer, DllUnregisterServer functions that are necessary for a COM 
-DLL. 
-
-DllGetClassObject invokes the class factory defined in ClassFactory.h/cpp and 
-queries to the specific interface.
-
-DllCanUnloadNow checks if we can unload the component from the memory.
-
-DllRegisterServer registers the COM server and the context menu handler in 
-the registry by invoking the helper functions defined in Reg.h/cpp. The 
-context menu handler is associated with the .cpp file class.
-
-DllUnregisterServer unregisters the COM server and the context menu handler. 
-
-This source is subject to the Microsoft Public License.
-See http://www.microsoft.com/opensource/licenses.mspx#Ms-PL.
-All other rights reserved.
-
-THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, 
-EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED 
-WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
-\***************************************************************************/
-
 #include <windows.h>
 #include <Guiddef.h>
 #include "ClassFactory.h"           // For the class factory
 #include "Reg.h"
 #include "common.h"
-
 
 // {BFD98515-CD74-48A4-98E2-13D209E3EE4F}
 // When you write your own handler, you must create a new CLSID by using the 
@@ -40,10 +10,8 @@ WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 const CLSID CLSID_FileContextMenuExt = 
 { 0xBFD98515, 0xCD74, 0x48A4, { 0x98, 0xE2, 0x13, 0xD2, 0x09, 0xE3, 0xEE, 0x4F } };
 
-
 HINSTANCE   g_hInst     = NULL;
 long        g_cDllRef   = 0;
-
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
 {
@@ -62,7 +30,6 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
 	}
 	return TRUE;
 }
-
 
 //
 //   FUNCTION: DllGetClassObject
@@ -97,7 +64,6 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, void **ppv)
     return hr;
 }
 
-
 //
 //   FUNCTION: DllCanUnloadNow
 //
@@ -110,7 +76,6 @@ STDAPI DllCanUnloadNow(void)
 {
     return g_cDllRef > 0 ? S_FALSE : S_OK;
 }
-
 
 //
 //   FUNCTION: DllRegisterServer
@@ -144,7 +109,6 @@ STDAPI DllRegisterServer(void)
 
     return hr;
 }
-
 
 //
 //   FUNCTION: DllUnregisterServer
