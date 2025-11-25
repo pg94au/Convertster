@@ -5,6 +5,14 @@
 #include <string>
 #include <vector>
 
+// Command ID offsets used in QueryContextMenu/InvokeCommand
+enum
+{
+	IDM_DISPLAY = 0,
+	IDM_CONVERT_JPG = 1,
+	IDM_CONVERT_PNG = 2,
+};
+
 class FileContextMenuExt : public IShellExtInit, public IContextMenu
 {
 public:
@@ -35,6 +43,10 @@ private:
 
     // The method that handles the "display" verb.
     void OnVerbDisplayFileName(HWND hWnd);
+
+    // Handlers for conversion submenu
+    void OnConvertToJpg(HWND hWnd);
+    void OnConvertToPng(HWND hWnd);
 
     PWSTR m_pszMenuText;
     PCSTR m_pszVerb;
