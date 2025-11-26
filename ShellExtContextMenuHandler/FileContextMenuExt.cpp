@@ -1,5 +1,4 @@
 #include "FileContextMenuExt.h"
-#include "resource.h"
 #include <strsafe.h>
 #include <Shlwapi.h>
 #include "common.h"
@@ -10,7 +9,7 @@ extern HINSTANCE g_hInst;
 extern long g_cDllRef;
 
 
-FileContextMenuExt::FileContextMenuExt(void)
+FileContextMenuExt::FileContextMenuExt()
 	: m_cRef(1),
 	m_pszMenuText(L_Menu_Text),
 	m_pszVerb(Verb_Name),
@@ -23,7 +22,7 @@ FileContextMenuExt::FileContextMenuExt(void)
 	InterlockedIncrement(&g_cDllRef);
 }
 
-FileContextMenuExt::~FileContextMenuExt(void)
+FileContextMenuExt::~FileContextMenuExt()
 {
 	InterlockedDecrement(&g_cDllRef);
 }
@@ -34,8 +33,7 @@ void FileContextMenuExt::OnVerbDisplayFileName(HWND hWnd)
 	for (size_t i = 0; i < m_vSelectedFiles.size() && i < 2; i++)
 	{
 		wchar_t szMessage[300];
-		if (SUCCEEDED(StringCchPrintf(szMessage, ARRAYSIZE(szMessage),
-			L"The selected file is:\r\n\r\n%s", m_vSelectedFiles[i].c_str())))
+		if (SUCCEEDED(StringCchPrintf(szMessage, ARRAYSIZE(szMessage), L"The selected file is:\r\n\r\n%s", m_vSelectedFiles[i].c_str())))
 		{
 			MessageBox(hWnd, szMessage, L_Friendly_Menu_Name, MB_OK);
 		}
@@ -79,7 +77,7 @@ IFACEMETHODIMP FileContextMenuExt::QueryInterface(REFIID riid, void** ppv)
 	{
 	QITABENT(FileContextMenuExt, IContextMenu),
 	QITABENT(FileContextMenuExt, IShellExtInit),
-		{ 0 },
+		{ nullptr },
 	};
 	return QISearch(this, qit, riid, ppv);
 }
@@ -109,17 +107,16 @@ IFACEMETHODIMP_(ULONG) FileContextMenuExt::Release()
 #pragma region IShellExtInit
 
 // Initialize the context menu handler.
-IFACEMETHODIMP FileContextMenuExt::Initialize(
-	LPCITEMIDLIST pidlFolder, LPDATAOBJECT pDataObj, HKEY hKeyProgID)
+IFACEMETHODIMP FileContextMenuExt::Initialize(LPCITEMIDLIST pidlFolder, LPDATAOBJECT pDataObj, HKEY hKeyProgID)
 {
-	if (NULL == pDataObj)
+	if (nullptr == pDataObj)
 	{
 		return E_INVALIDARG;
 	}
 
 	HRESULT hr = E_FAIL;
 
-	FORMATETC fe = { CF_HDROP, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+	FORMATETC fe = { CF_HDROP, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
 	STGMEDIUM stm;
 
 	// The pDataObj pointer contains the objects being acted upon. In this 
@@ -129,19 +126,19 @@ IFACEMETHODIMP FileContextMenuExt::Initialize(
 	{
 		// Get an HDROP handle.
 		HDROP hDrop = static_cast<HDROP>(GlobalLock(stm.hGlobal));
-		if (hDrop != NULL)
+		if (hDrop != nullptr)
 		{
 			// Determine how many files are involved in this operation. This 
 			// code sample displays the custom context menu item when only 
 			// one file is selected. 
-			UINT nFiles = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
+			UINT nFiles = DragQueryFile(hDrop, 0xFFFFFFFF, nullptr, 0);
 			for (size_t i = 0; i < nFiles; i++)
 			{
 				wchar_t szSelectedFile[MAX_PATH] = { 0 };
 				// Get the path of the file.
 				if (0 != DragQueryFile(hDrop, static_cast<UINT>(i), szSelectedFile, ARRAYSIZE(szSelectedFile)))
 				{
-					m_vSelectedFiles.push_back(szSelectedFile);
+					m_vSelectedFiles.emplace_back(szSelectedFile);
 					hr = S_OK;
 					continue;
 				}
@@ -187,13 +184,12 @@ IFACEMETHODIMP FileContextMenuExt::Initialize(
 //            indexMenu parameter is set to the index to be used for the 
 //            first menu item that is to be added.
 //
-IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(
-	HMENU hMenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags)
+IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(HMENU hMenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags)
 {
 	// If uFlags include CMF_DEFAULTONLY then we should not do anything.
 	if (CMF_DEFAULTONLY & uFlags)
 	{
-		return MAKE_HRESULT(SEVERITY_SUCCESS, 0, USHORT(0));
+		return MAKE_HRESULT(SEVERITY_SUCCESS, 0, static_cast<USHORT>(0));
 	}
 
 	// Use either InsertMenu or InsertMenuItem to add menu items.
@@ -249,7 +245,7 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(
 	// Return an HRESULT value with the severity set to SEVERITY_SUCCESS. 
 	// Set the code value to the offset of the largest command identifier 
 	// that was assigned, plus one (1).
-	return MAKE_HRESULT(SEVERITY_SUCCESS, 0, USHORT(IDM_CONVERT_PNG + 1));
+	return MAKE_HRESULT(SEVERITY_SUCCESS, 0, static_cast<USHORT>(IDM_CONVERT_PNG + 1));
 }
 
 
@@ -309,10 +305,10 @@ IFACEMETHODIMP FileContextMenuExt::InvokeCommand(LPCMINVOKECOMMANDINFO pici)
 
 	// For the Unicode case, if the high-order word is not zero, the 
 	// command's verb string is in lpcmi->lpVerbW. 
-	else if (fUnicode && HIWORD(((CMINVOKECOMMANDINFOEX*)pici)->lpVerbW))
+	else if (fUnicode && HIWORD(reinterpret_cast<CMINVOKECOMMANDINFOEX*>(pici)->lpVerbW))
 	{
 		// Is the verb supported by this context menu extension?
-		if (StrCmpIW(((CMINVOKECOMMANDINFOEX*)pici)->lpVerbW, m_pwszVerb) == 0)
+		if (StrCmpIW(reinterpret_cast<CMINVOKECOMMANDINFOEX*>(pici)->lpVerbW, m_pwszVerb) == 0)
 		{
 			OnVerbDisplayFileName(pici->hwnd);
 		}
@@ -369,8 +365,7 @@ IFACEMETHODIMP FileContextMenuExt::InvokeCommand(LPCMINVOKECOMMANDINFO pici)
 //            uFlags, because only those have been used in Windows Explorer 
 //            since Windows 2000.
 //
-IFACEMETHODIMP FileContextMenuExt::GetCommandString(UINT_PTR idCommand,
-	UINT uFlags, UINT* pwReserved, LPSTR pszName, UINT cchMax)
+IFACEMETHODIMP FileContextMenuExt::GetCommandString(UINT_PTR idCommand,	UINT uFlags, UINT* pwReserved, LPSTR pszName, UINT cchMax)
 {
 	HRESULT hr = E_INVALIDARG;
 
@@ -381,16 +376,14 @@ IFACEMETHODIMP FileContextMenuExt::GetCommandString(UINT_PTR idCommand,
 		case GCS_HELPTEXTW:
 			// Only useful for pre-Vista versions of Windows that have a 
 			// Status bar.
-			hr = StringCchCopy(reinterpret_cast<PWSTR>(pszName), cchMax,
-				m_pwszVerbHelpText);
+			hr = StringCchCopy(reinterpret_cast<PWSTR>(pszName), cchMax, m_pwszVerbHelpText);
 			break;
 
 		case GCS_VERBW:
 			// GCS_VERBW is an optional feature that enables a caller to 
 			// discover the canonical name for the verb passed in through 
 			// idCommand.
-			hr = StringCchCopy(reinterpret_cast<PWSTR>(pszName), cchMax,
-				m_pwszVerbCanonicalName);
+			hr = StringCchCopy(reinterpret_cast<PWSTR>(pszName), cchMax, m_pwszVerbCanonicalName);
 			break;
 
 		default:

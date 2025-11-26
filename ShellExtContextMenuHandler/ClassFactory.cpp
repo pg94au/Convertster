@@ -26,7 +26,7 @@ IFACEMETHODIMP ClassFactory::QueryInterface(REFIID riid, void** ppv)
 	static const QITAB qit[] =
 	{
 		QITABENT(ClassFactory, IClassFactory),
-		{ 0 },
+		{ nullptr },
 	};
 	return QISearch(this, qit, riid, ppv);
 }
@@ -56,7 +56,7 @@ IFACEMETHODIMP ClassFactory::CreateInstance(IUnknown* pUnkOuter, REFIID riid, vo
 	HRESULT hr = CLASS_E_NOAGGREGATION;
 
 	// pUnkOuter is used for aggregation. We do not support it in the sample.
-	if (pUnkOuter == NULL)
+	if (pUnkOuter == nullptr)
 	{
 		hr = E_OUTOFMEMORY;
 

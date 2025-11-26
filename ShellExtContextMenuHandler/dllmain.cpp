@@ -6,10 +6,9 @@
 // {BFD98515-CD74-48A4-98E2-13D209E3EE4F}
 // When you write your own handler, you must create a new CLSID by using the 
 // "Create GUID" tool in the Tools menu, and specify the CLSID value here.
-const CLSID CLSID_FileContextMenuExt =
-{ 0xBFD98515, 0xCD74, 0x48A4, { 0x98, 0xE2, 0x13, 0xD2, 0x09, 0xE3, 0xEE, 0x4F } };
+const CLSID CLSID_FileContextMenuExt = { 0xBFD98515, 0xCD74, 0x48A4, { 0x98, 0xE2, 0x13, 0xD2, 0x09, 0xE3, 0xEE, 0x4F } };
 
-HINSTANCE   g_hInst = NULL;
+HINSTANCE   g_hInst = nullptr;
 long        g_cDllRef = 0;
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
@@ -93,17 +92,13 @@ STDAPI DllRegisterServer(void)
 	}
 
 	// Register the component.
-	hr = RegisterInprocServer(szModule, CLSID_FileContextMenuExt,
-		L_Friendly_Class_Name,
-		L"Apartment");
+	hr = RegisterInprocServer(szModule, CLSID_FileContextMenuExt, L_Friendly_Class_Name, L"Apartment");
 	if (SUCCEEDED(hr))
 	{
 		// Register the context menu handler. The context menu handler is 
 		// associated with the any file class.
 		// Control the visibility in QueryContextMenu
-		hr = RegisterShellExtContextMenuHandler(L"*",
-			CLSID_FileContextMenuExt,
-			L_Friendly_Menu_Name);
+		hr = RegisterShellExtContextMenuHandler(L"*", CLSID_FileContextMenuExt, L_Friendly_Menu_Name);
 	}
 
 	return hr;
@@ -130,8 +125,7 @@ STDAPI DllUnregisterServer(void)
 	if (SUCCEEDED(hr))
 	{
 		// Unregister the context menu handler.
-		hr = UnregisterShellExtContextMenuHandler(L"*",
-			CLSID_FileContextMenuExt);
+		hr = UnregisterShellExtContextMenuHandler(L"*", CLSID_FileContextMenuExt);
 	}
 
 	return hr;
