@@ -17,17 +17,17 @@ class FileContextMenuExt : public IShellExtInit, public IContextMenu
 {
 public:
     // IUnknown
-    IFACEMETHODIMP QueryInterface(REFIID riid, void **ppv);
-    IFACEMETHODIMP_(ULONG) AddRef();
-    IFACEMETHODIMP_(ULONG) Release();
+    IFACEMETHODIMP QueryInterface(REFIID riid, void **ppv) override;
+    IFACEMETHODIMP_(ULONG) AddRef() override;
+    IFACEMETHODIMP_(ULONG) Release() override;
 
     // IShellExtInit
-    IFACEMETHODIMP Initialize(LPCITEMIDLIST pidlFolder, LPDATAOBJECT pDataObj, HKEY hKeyProgID);
+    IFACEMETHODIMP Initialize(LPCITEMIDLIST pidlFolder, LPDATAOBJECT pDataObj, HKEY hKeyProgID) override;
 
     // IContextMenu
-    IFACEMETHODIMP QueryContextMenu(HMENU hMenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags);
-    IFACEMETHODIMP InvokeCommand(LPCMINVOKECOMMANDINFO pici);
-    IFACEMETHODIMP GetCommandString(UINT_PTR idCommand, UINT uFlags, UINT *pwReserved, LPSTR pszName, UINT cchMax);
+    IFACEMETHODIMP QueryContextMenu(HMENU hMenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags) override;
+    IFACEMETHODIMP InvokeCommand(LPCMINVOKECOMMANDINFO pici) override;
+    IFACEMETHODIMP GetCommandString(UINT_PTR idCommand, UINT uFlags, UINT *pwReserved, LPSTR pszName, UINT cchMax) override;
 	
     FileContextMenuExt(void);
 
@@ -51,8 +51,6 @@ private:
     PWSTR m_pszMenuText;
     PCSTR m_pszVerb;
     PCWSTR m_pwszVerb;
-    PCSTR m_pszVerbCanonicalName;
     PCWSTR m_pwszVerbCanonicalName;
-    PCSTR m_pszVerbHelpText;
     PCWSTR m_pwszVerbHelpText;
 };

@@ -11,12 +11,10 @@ extern long g_cDllRef;
 
 FileContextMenuExt::FileContextMenuExt()
 	: m_cRef(1),
-	m_pszMenuText(L_Menu_Text),
+	m_pszMenuText(const_cast<PWSTR>(L_Menu_Text)),
 	m_pszVerb(Verb_Name),
 	m_pwszVerb(L_Verb_Name),
-	m_pszVerbCanonicalName(Verb_Canonical_Name),
 	m_pwszVerbCanonicalName(L_Verb_Canonical_Name),
-	m_pszVerbHelpText(Verb_Help_Text),
 	m_pwszVerbHelpText(L_Verb_Help_Text)
 {
 	InterlockedIncrement(&g_cDllRef);
