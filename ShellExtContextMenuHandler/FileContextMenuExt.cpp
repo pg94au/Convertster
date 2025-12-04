@@ -313,16 +313,14 @@ IFACEMETHODIMP FileContextMenuExt::GetCommandString(UINT_PTR idCommand,
         case GCS_HELPTEXTW:
             // Only useful for pre-Vista versions of Windows that have a 
             // Status bar.
-            hr = StringCchCopy(reinterpret_cast<PWSTR>(pszName), cchMax, 
-                m_pwszVerbHelpText);
+            hr = StringCchCopy(reinterpret_cast<PWSTR>(pszName), cchMax, m_pwszVerbHelpText);
             break;
 
         case GCS_VERBW:
             // GCS_VERBW is an optional feature that enables a caller to 
             // discover the canonical name for the verb passed in through 
             // idCommand.
-            hr = StringCchCopy(reinterpret_cast<PWSTR>(pszName), cchMax, 
-                m_pwszVerbCanonicalName);
+            hr = StringCchCopy(reinterpret_cast<PWSTR>(pszName), cchMax, m_pwszVerbCanonicalName);
             break;
 
         default:
