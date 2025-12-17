@@ -8,9 +8,8 @@
 // Command ID offsets used in QueryContextMenu/InvokeCommand
 enum
 {
-	IDM_DISPLAY = 0,
-	IDM_CONVERT_JPG = 1,
-	IDM_CONVERT_PNG = 2,
+	IDM_CONVERT_JPG = 0,
+	IDM_CONVERT_PNG = 1,
 };
 
 class FileContextMenuExt : public IShellExtInit, public IContextMenu
@@ -40,9 +39,6 @@ private:
 
     // The name of the selected files.
 	std::vector<std::wstring> m_vSelectedFiles;
-
-    // The method that handles the "display" verb.
-    void OnVerbDisplayFileName(HWND hWnd);
 
     // Handlers for conversion submenu
     void OnConvertToJpg(HWND hWnd);

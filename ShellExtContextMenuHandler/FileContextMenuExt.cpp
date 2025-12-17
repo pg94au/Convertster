@@ -26,19 +26,6 @@ FileContextMenuExt::~FileContextMenuExt()
 }
 
 
-void FileContextMenuExt::OnVerbDisplayFileName(HWND hWnd)
-{
-	for (size_t i = 0; i < m_vSelectedFiles.size() && i < 2; i++)
-	{
-		wchar_t szMessage[300];
-		if (SUCCEEDED(StringCchPrintf(szMessage, ARRAYSIZE(szMessage), L"The selected file is:\r\n\r\n%s", m_vSelectedFiles[i].c_str())))
-		{
-			MessageBox(hWnd, szMessage, L_Friendly_Menu_Name, MB_OK);
-		}
-	}
-}
-
-
 void FileContextMenuExt::OnConvertToJpg(HWND hWnd)
 {
 	// For now just display the first selected file to demonstrate the action.
@@ -171,6 +158,7 @@ IFACEMETHODIMP FileContextMenuExt::Initialize(LPCITEMIDLIST pidlFolder, LPDATAOB
 #pragma endregion
 
 
+
 #pragma region IContextMenu
 
 //
@@ -196,8 +184,7 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(HMENU hMenu, UINT indexMenu,
 
 	// Parent menu item
 	MENUITEMINFOW mii = { sizeof(mii) };
-	mii.fMask = MIIM_SUBMENU | MIIM_STRING | MIIM_FTYPE | MIIM_ID | MIIM_STATE;
-	mii.wID = idCmdFirst + IDM_DISPLAY;
+	mii.fMask = MIIM_SUBMENU | MIIM_STRING | MIIM_FTYPE | MIIM_STATE;
 	mii.fType = MFT_STRING;
 	mii.dwTypeData = m_pszMenuText;
 	mii.fState = MFS_ENABLED;
@@ -225,16 +212,6 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(HMENU hMenu, UINT indexMenu,
 	mii.hSubMenu = hSubMenu;
 
 	if (!InsertMenuItem(hMenu, indexMenu, TRUE, &mii))
-	{
-		DestroyMenu(hSubMenu);
-		return HRESULT_FROM_WIN32(GetLastError());
-	}
-
-	// Add a separator.
-	MENUITEMINFOW sep = { sizeof(sep) };
-	sep.fMask = MIIM_TYPE;
-	sep.fType = MFT_SEPARATOR;
-	if (!InsertMenuItem(hMenu, indexMenu + 1, TRUE, &sep))
 	{
 		DestroyMenu(hSubMenu);
 		return HRESULT_FROM_WIN32(GetLastError());
@@ -272,78 +249,20 @@ IFACEMETHODIMP FileContextMenuExt::InvokeCommand(LPCMINVOKECOMMANDINFO pici)
 		}
 	}
 
-	// Determines whether the command is identified by its offset or verb.
-	// There are two ways to identify commands:
-	// 
-	   //   1) The command's verb string 
-	   //   2) The command's identifier offset
-	// 
-	// If the high-order word of lpcmi->lpVerb (for the ANSI case) or 
-	// lpcmi->lpVerbW (for the Unicode case) is nonzero, lpVerb or lpVerbW 
-	// holds a verb string. If the high-order word is zero, the command 
-	// offset is in the low-order word of lpcmi->lpVerb.
-
-	// For the ANSI case, if the high-order word is not zero, the command's 
-	// verb string is in lpcmi->lpVerb. 
-	if (!fUnicode && HIWORD(pici->lpVerb))
-	{
-		// Is the verb supported by this context menu extension?
-		if (StrCmpIA(pici->lpVerb, m_pszVerb) == 0)
-		{
-			OnVerbDisplayFileName(pici->hwnd);
-		}
-		else
-		{
-			// If the verb is not recognized by the context menu handler, it 
-			// must return E_FAIL to allow it to be passed on to the other 
-			// context menu handlers that might implement that verb.
-			return E_FAIL;
-		}
-	}
-
-	// For the Unicode case, if the high-order word is not zero, the 
-	// command's verb string is in lpcmi->lpVerbW. 
-	else if (fUnicode && HIWORD(reinterpret_cast<CMINVOKECOMMANDINFOEX*>(pici)->lpVerbW))
-	{
-		// Is the verb supported by this context menu extension?
-		if (StrCmpIW(reinterpret_cast<CMINVOKECOMMANDINFOEX*>(pici)->lpVerbW, m_pwszVerb) == 0)
-		{
-			OnVerbDisplayFileName(pici->hwnd);
-		}
-		else
-		{
-			// If the verb is not recognized by the context menu handler, it 
-			// must return E_FAIL to allow it to be passed on to the other 
-			// context menu handlers that might implement that verb.
-			return E_FAIL;
-		}
-	}
-
 	// If the command cannot be identified through the verb string, then 
 	// check the identifier offset.
+	// Only support the submenu command offsets now.
+	if (LOWORD(pici->lpVerb) == IDM_CONVERT_JPG)
+	{
+		OnConvertToJpg(pici->hwnd);
+	}
+	else if (LOWORD(pici->lpVerb) == IDM_CONVERT_PNG)
+	{
+		OnConvertToPng(pici->hwnd);
+	}
 	else
 	{
-		// Is the command identifier offset supported by this context menu 
-		// extension?
-		if (LOWORD(pici->lpVerb) == IDM_DISPLAY)
-		{
-			OnVerbDisplayFileName(pici->hwnd);
-		}
-		else if (LOWORD(pici->lpVerb) == IDM_CONVERT_JPG)
-		{
-			OnConvertToJpg(pici->hwnd);
-		}
-		else if (LOWORD(pici->lpVerb) == IDM_CONVERT_PNG)
-		{
-			OnConvertToPng(pici->hwnd);
-		}
-		else
-		{
-			// If the verb is not recognized by the context menu handler, it 
-			// must return E_FAIL to allow it to be passed on to the other 
-			// context menu handlers that might implement that verb.
-			return E_FAIL;
-		}
+		return E_FAIL;
 	}
 
 	return S_OK;
@@ -365,34 +284,8 @@ IFACEMETHODIMP FileContextMenuExt::InvokeCommand(LPCMINVOKECOMMANDINFO pici)
 //
 IFACEMETHODIMP FileContextMenuExt::GetCommandString(UINT_PTR idCommand,	UINT uFlags, UINT* pwReserved, LPSTR pszName, UINT cchMax)
 {
-	HRESULT hr = E_INVALIDARG;
-
-	if (idCommand == IDM_DISPLAY)
-	{
-		switch (uFlags)
-		{
-		case GCS_HELPTEXTW:
-			// Only useful for pre-Vista versions of Windows that have a 
-			// Status bar.
-			hr = StringCchCopy(reinterpret_cast<PWSTR>(pszName), cchMax, m_pwszVerbHelpText);
-			break;
-
-		case GCS_VERBW:
-			// GCS_VERBW is an optional feature that enables a caller to 
-			// discover the canonical name for the verb passed in through 
-			// idCommand.
-			hr = StringCchCopy(reinterpret_cast<PWSTR>(pszName), cchMax, m_pwszVerbCanonicalName);
-			break;
-
-		default:
-			hr = S_OK;
-		}
-	}
-
-	// If the command (idCommand) is not supported by this context menu 
-	// extension handler, return E_INVALIDARG.
-
-	return hr;
+	// No help or canonical verb exposed for a non-existent parent command.
+	return E_INVALIDARG;
 }
 
 #pragma endregion
