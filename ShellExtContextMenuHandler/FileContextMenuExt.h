@@ -25,7 +25,7 @@ public:
 
     // IContextMenu
     IFACEMETHODIMP QueryContextMenu(HMENU hMenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags) override;
-    IFACEMETHODIMP InvokeCommand(LPCMINVOKECOMMANDINFO pici) override;
+    IFACEMETHODIMP InvokeCommand(LPCMINVOKECOMMANDINFO pCommandInfo) override;
     IFACEMETHODIMP GetCommandString(UINT_PTR idCommand, UINT uFlags, UINT *pwReserved, LPSTR pszName, UINT cchMax) override;
 	
     FileContextMenuExt(void);

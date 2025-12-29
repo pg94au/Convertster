@@ -142,7 +142,7 @@ IFACEMETHODIMP FileContextMenuExt::Initialize(LPCITEMIDLIST pidlFolder, LPDATAOB
 		for (auto file = m_vSelectedFiles.cbegin(); file != m_vSelectedFiles.cend(); ++file)
 		{
 			const wchar_t* dot = wcsrchr(file->c_str(), L'.');
-			if (dot && 0 != _wcsicmp(dot, L_Associated_Type))
+			if (dot && 0 != _wcsicmp(dot, L_Associated_Type) && 0 != _wcsicmp(dot, L".tif"))
 			{
 				hr = E_INVALIDARG;
 				break;
@@ -231,34 +231,18 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(HMENU hMenu, UINT indexMenu,
 //            the handler to run the associated command. The lpcmi parameter 
 //            points to a structure that contains the needed information.
 //
-IFACEMETHODIMP FileContextMenuExt::InvokeCommand(LPCMINVOKECOMMANDINFO pici)
+IFACEMETHODIMP FileContextMenuExt::InvokeCommand(LPCMINVOKECOMMANDINFO pCommandInfo)
 {
-	BOOL fUnicode = FALSE;
-
-	// Determine which structure is being passed in, CMINVOKECOMMANDINFO or 
-	// CMINVOKECOMMANDINFOEX based on the cbSize member of lpcmi. Although 
-	// the lpcmi parameter is declared in Shlobj.h as a CMINVOKECOMMANDINFO 
-	// structure, in practice it often points to a CMINVOKECOMMANDINFOEX 
-	// structure. This struct is an extended version of CMINVOKECOMMANDINFO 
-	// and has additional members that allow Unicode strings to be passed.
-	if (pici->cbSize == sizeof(CMINVOKECOMMANDINFOEX))
-	{
-		if (pici->fMask & CMIC_MASK_UNICODE)
-		{
-			fUnicode = TRUE;
-		}
-	}
-
 	// If the command cannot be identified through the verb string, then 
 	// check the identifier offset.
 	// Only support the submenu command offsets now.
-	if (LOWORD(pici->lpVerb) == IDM_CONVERT_JPG)
+	if (LOWORD(pCommandInfo->lpVerb) == IDM_CONVERT_JPG)
 	{
-		OnConvertToJpg(pici->hwnd);
+		OnConvertToJpg(pCommandInfo->hwnd);
 	}
-	else if (LOWORD(pici->lpVerb) == IDM_CONVERT_PNG)
+	else if (LOWORD(pCommandInfo->lpVerb) == IDM_CONVERT_PNG)
 	{
-		OnConvertToPng(pici->hwnd);
+		OnConvertToPng(pCommandInfo->hwnd);
 	}
 	else
 	{
