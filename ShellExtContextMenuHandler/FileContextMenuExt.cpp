@@ -28,14 +28,10 @@ FileContextMenuExt::~FileContextMenuExt()
 
 void FileContextMenuExt::OnConvertToJpg(HWND hWnd)
 {
-	// For now just display the first selected file to demonstrate the action.
-	if (!m_vSelectedFiles.empty())
+	if (!RunConverterCommand(hWnd, L"JPG"))
 	{
-		wchar_t szMessage[300];
-		if (SUCCEEDED(StringCchPrintf(szMessage, ARRAYSIZE(szMessage), L"Convert to JPG:\r\n\r\n%s", m_vSelectedFiles[0].c_str())))
-		{
-			MessageBox(hWnd, szMessage, L_Friendly_Menu_Name, MB_OK);
-		}
+		// If the conversion command failed, show a message box.
+		MessageBox(hWnd, L"Failed to convert to JPG!", L_Friendly_Menu_Name, MB_OK | MB_ICONERROR);
 	}
 }
 
@@ -50,6 +46,59 @@ void FileContextMenuExt::OnConvertToPng(HWND hWnd)
 			MessageBox(hWnd, szMessage, L_Friendly_Menu_Name, MB_OK);
 		}
 	}
+}
+
+bool FileContextMenuExt::RunConverterCommand(HWND hWnd, PCWSTR format)
+{
+	// Build command-line arguments: first the format, then each filename quoted.
+	std::wstring args;
+	args += format;
+
+	for (const auto& f : m_vSelectedFiles)
+	{
+		args.push_back(L' ');
+		args.push_back(L'"');
+		args.append(f);
+		args.push_back(L'"');
+	}
+
+	// CreateProcess expects a mutable buffer for the command-line parameter.
+	std::vector<wchar_t> cmdLine;
+	cmdLine.reserve(args.size() + 1);
+	cmdLine.assign(args.begin(), args.end());
+	cmdLine.push_back(L'\0');
+
+	STARTUPINFOW si = {};
+	si.cb = sizeof(si);
+	PROCESS_INFORMATION pi = {};
+
+	// Pass the executable path as lpApplicationName and args as lpCommandLine.
+	BOOL created = CreateProcessW(
+		L"C:\\SHARED\\ImageConverter.exe", // lpApplicationName
+		cmdLine.data(),            // lpCommandLine (mutable)
+		nullptr,                   // lpProcessAttributes
+		nullptr,                   // lpThreadAttributes
+		FALSE,                     // bInheritHandles
+		0,                         // dwCreationFlags
+		nullptr,                   // lpEnvironment
+		nullptr,                   // lpCurrentDirectory
+		&si,                       // lpStartupInfo
+		&pi                        // lpProcessInformation
+	);
+
+	if (!created)
+	{
+		DWORD err = GetLastError();
+		wchar_t errMsg[256];
+		StringCchPrintfW(errMsg, ARRAYSIZE(errMsg), L"CreateProcess failed (0x%08X).", static_cast<unsigned>(err));
+		MessageBoxW(hWnd, errMsg, L_Friendly_Menu_Name, MB_OK | MB_ICONERROR);
+		return false;
+	}
+
+	// We don't need to wait here; close handles and continue.
+	CloseHandle(pi.hThread);
+	CloseHandle(pi.hProcess);
+	return true;;
 }
 
 
