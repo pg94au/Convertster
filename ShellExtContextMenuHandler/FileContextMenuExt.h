@@ -44,7 +44,7 @@ private:
     void OnConvertToJpg(HWND hWnd);
     void OnConvertToPng(HWND hWnd);
 
-	bool FileContextMenuExt::RunConverterCommand(HWND hWnd, PCWSTR format);
+	bool FileContextMenuExt::RunConverterCommand(HWND hWnd, PCWSTR targetFormat);
 
     PWSTR m_pszMenuText;
     PCSTR m_pszVerb;

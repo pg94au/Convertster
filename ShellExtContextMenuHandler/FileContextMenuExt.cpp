@@ -48,24 +48,40 @@ void FileContextMenuExt::OnConvertToPng(HWND hWnd)
 	}
 }
 
-bool FileContextMenuExt::RunConverterCommand(HWND hWnd, PCWSTR format)
+bool FileContextMenuExt::RunConverterCommand(HWND hWnd, PCWSTR targetFormat)
 {
-	// Build command-line arguments: first the format, then each filename quoted.
-	std::wstring args;
-	args += format;
+	// Build command-line arguments: program path first, then the format,
+	// then each filename quoted.
+	const wchar_t exePath[] = L"C:\\SHARED\\ImageConverter.exe";
+
+	// Verify executable exists.
+	if (!PathFileExistsW(exePath))
+	{
+		MessageBoxW(hWnd, L"ImageConverter.exe not found.", L_Friendly_Menu_Name, MB_OK | MB_ICONERROR);
+		return false;
+	}
+
+	std::wstring cmdLineStr;
+	// Program name (quoted) must be the first token for proper argv parsing.
+	cmdLineStr.append(L"\"");
+	cmdLineStr.append(exePath);
+	cmdLineStr.append(L"\" ");
+
+	// Add format as first real argument.
+	cmdLineStr.append(targetFormat);
 
 	for (const auto& f : m_vSelectedFiles)
 	{
-		args.push_back(L' ');
-		args.push_back(L'"');
-		args.append(f);
-		args.push_back(L'"');
+		cmdLineStr.push_back(L' ');
+		cmdLineStr.push_back(L'"');
+		cmdLineStr.append(f);
+		cmdLineStr.push_back(L'"');
 	}
 
 	// CreateProcess expects a mutable buffer for the command-line parameter.
 	std::vector<wchar_t> cmdLine;
-	cmdLine.reserve(args.size() + 1);
-	cmdLine.assign(args.begin(), args.end());
+	//cmdLine.reserve(args.size() + 1);
+	cmdLine.assign(cmdLineStr.begin(), cmdLineStr.end());
 	cmdLine.push_back(L'\0');
 
 	STARTUPINFOW si = {};
@@ -74,7 +90,7 @@ bool FileContextMenuExt::RunConverterCommand(HWND hWnd, PCWSTR format)
 
 	// Pass the executable path as lpApplicationName and args as lpCommandLine.
 	BOOL created = CreateProcessW(
-		L"C:\\SHARED\\ImageConverter.exe", // lpApplicationName
+		nullptr,                   // lpApplicationName
 		cmdLine.data(),            // lpCommandLine (mutable)
 		nullptr,                   // lpProcessAttributes
 		nullptr,                   // lpThreadAttributes

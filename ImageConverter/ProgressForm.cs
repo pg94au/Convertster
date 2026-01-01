@@ -4,9 +4,11 @@ namespace ImageConverter
     {
         private string[] _filenames;
 
-        public ProgressForm(string[] filenames)
+        public ProgressForm(string targetType, string[] filenames)
         {
             InitializeComponent();
+
+            convertingFilesLabel.Text = $"Converting files to {targetType}...";
 
             _filenames = filenames;
         }
