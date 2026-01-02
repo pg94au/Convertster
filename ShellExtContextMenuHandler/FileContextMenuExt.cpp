@@ -37,14 +37,10 @@ void FileContextMenuExt::OnConvertToJpg(HWND hWnd)
 
 void FileContextMenuExt::OnConvertToPng(HWND hWnd)
 {
-	// For now just display the first selected file to demonstrate the action.
-	if (!m_vSelectedFiles.empty())
+	if (!RunConverterCommand(hWnd, L"PNG"))
 	{
-		wchar_t szMessage[300];
-		if (SUCCEEDED(StringCchPrintf(szMessage, ARRAYSIZE(szMessage), L"Convert to PNG:\r\n\r\n%s", m_vSelectedFiles[0].c_str())))
-		{
-			MessageBox(hWnd, szMessage, L_Friendly_Menu_Name, MB_OK);
-		}
+		// If the conversion command failed, show a message box.
+		MessageBox(hWnd, L"Failed to convert to PNG!", L_Friendly_Menu_Name, MB_OK | MB_ICONERROR);
 	}
 }
 
