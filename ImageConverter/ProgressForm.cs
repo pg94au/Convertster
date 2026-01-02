@@ -1,35 +1,57 @@
-namespace ImageConverter
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Formats.Png;
+
+namespace ImageConverter;
+
+public partial class ProgressForm : Form
 {
-    public partial class ProgressForm : Form
+    private string _targetType;
+    private string[] _filenames;
+
+    public ProgressForm(string targetType, string[] filenames)
     {
-        private string[] _filenames;
+        InitializeComponent();
 
-        public ProgressForm(string targetType, string[] filenames)
+        convertingFilesLabel.Text = $"Converting files to {targetType}...";
+
+        _targetType = targetType;
+        _filenames = filenames;
+    }
+
+    protected override async void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+
+        // Start the conversion process here or in a separate method
+        foreach (var filename in _filenames)
         {
-            InitializeComponent();
+            // Update the label to show the current file being processed
+            currentFileNameLabel.Text = filename;
 
-            convertingFilesLabel.Text = $"Converting files to {targetType}...";
+            await Task.Yield();
 
-            _filenames = filenames;
+            await ConvertImageType(_targetType, filename);
         }
 
-        protected override async void OnLoad(EventArgs e)
+        currentFileNameLabel.Text = "Conversion complete!";
+    }
+
+    private async Task ConvertImageType(string targetType, string filename)
+    {
+        var image = await SixLabors.ImageSharp.Image.LoadAsync(filename);
+
+        switch (targetType)
         {
-            base.OnLoad(e);
-
-            // Start the conversion process here or in a separate method
-            foreach (var filename in _filenames)
-            {
-                // Update the label to show the current file being processed
-                currentFileNameLabel.Text = filename;
-
-                await Task.Yield();
-
-                // Simulate file conversion with a delay (replace with actual conversion logic)
-                await Task.Delay(TimeSpan.FromSeconds(2));
-            }
-
-            currentFileNameLabel.Text = "Conversion complete!";
+            case "JPG":
+                var jpgPath = Path.ChangeExtension(filename, ".jpg");
+                // TODO: Have some way to specify quality.
+                await image.SaveAsJpegAsync(jpgPath, new JpegEncoder { Quality = 75 });
+                break;
+            case "PNG":
+                var pngPath = Path.ChangeExtension(filename, ".png");
+                await image.SaveAsPngAsync(pngPath, new PngEncoder { CompressionLevel = PngCompressionLevel.BestCompression });
+                break;
         }
     }
 }
