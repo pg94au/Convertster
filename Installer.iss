@@ -24,7 +24,7 @@ DefaultDirName={autopf}\{#MyAppName}
 DisableDirPage=yes
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
-LicenseFile=C:\GitHub\pg94au\WindowsExplorerContextMenuTesting\LICENSE
+LicenseFile=LICENSE
 PrivilegesRequired=admin
 OutputBaseFilename=Blinkenlights-Image-Converter
 SolidCompression=yes
@@ -34,11 +34,11 @@ WizardStyle=modern dynamic
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-Source: "C:\GitHub\pg94au\WindowsExplorerContextMenuTesting\ShellExtContextMenuHandler\x64\Release\CppShellExtContextMenuHandler.dll"; DestDir: "{sys}"; Flags: regserver
-Source: "C:\GitHub\pg94au\WindowsExplorerContextMenuTesting\ImageConverter\bin\Release\net8.0-windows\ImageConverter.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\GitHub\pg94au\WindowsExplorerContextMenuTesting\ImageConverter\bin\Release\net8.0-windows\ImageConverter.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\GitHub\pg94au\WindowsExplorerContextMenuTesting\ImageConverter\bin\Release\net8.0-windows\ImageConverter.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\GitHub\pg94au\WindowsExplorerContextMenuTesting\ImageConverter\bin\Release\net8.0-windows\SixLabors.ImageSharp.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ShellExtContextMenuHandler\x64\Release\CppShellExtContextMenuHandler.dll"; DestDir: "{sys}"; Flags: regserver
+Source: "ImageConverter\bin\Release\net8.0-windows\ImageConverter.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ImageConverter\bin\Release\net8.0-windows\ImageConverter.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ImageConverter\bin\Release\net8.0-windows\ImageConverter.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ImageConverter\bin\Release\net8.0-windows\SixLabors.ImageSharp.dll"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
