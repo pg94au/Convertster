@@ -23,6 +23,9 @@ public partial class ProgressForm : Form
     {
         base.OnLoad(e);
 
+        conversionProgressBar.Minimum = 0;
+        conversionProgressBar.Maximum = _filenames.Length;
+
         // Start the conversion process here or in a separate method
         foreach (var filename in _filenames)
         {
@@ -32,6 +35,10 @@ public partial class ProgressForm : Form
             await Task.Yield();
 
             await ConvertImageType(_targetType, filename);
+
+            conversionProgressBar.Value += 1;
+
+            await Task.Yield();
         }
 
         currentFileNameLabel.Text = "Conversion complete!";

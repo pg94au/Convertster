@@ -30,37 +30,47 @@
         {
             convertingFilesLabel = new Label();
             currentFileNameLabel = new Label();
+            conversionProgressBar = new ProgressBar();
             SuspendLayout();
             // 
             // convertingFilesLabel
             // 
             convertingFilesLabel.AutoSize = true;
-            convertingFilesLabel.Location = new Point(29, 34);
+            convertingFilesLabel.Location = new Point(25, 26);
             convertingFilesLabel.Name = "convertingFilesLabel";
-            convertingFilesLabel.Size = new Size(131, 20);
+            convertingFilesLabel.Size = new Size(107, 15);
             convertingFilesLabel.TabIndex = 0;
             convertingFilesLabel.Text = "Converting file(s)...";
             // 
             // currentFileNameLabel
             // 
             currentFileNameLabel.AutoSize = true;
-            currentFileNameLabel.Location = new Point(29, 90);
+            currentFileNameLabel.Location = new Point(25, 105);
             currentFileNameLabel.Name = "currentFileNameLabel";
-            currentFileNameLabel.Size = new Size(131, 20);
+            currentFileNameLabel.Size = new Size(104, 15);
             currentFileNameLabel.TabIndex = 1;
             currentFileNameLabel.Text = "<some file name>";
             // 
+            // conversionProgressBar
+            // 
+            conversionProgressBar.Location = new Point(25, 64);
+            conversionProgressBar.Name = "conversionProgressBar";
+            conversionProgressBar.Size = new Size(498, 23);
+            conversionProgressBar.TabIndex = 2;
+            // 
             // ProgressForm
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(622, 273);
+            ClientSize = new Size(546, 211);
+            Controls.Add(conversionProgressBar);
             Controls.Add(currentFileNameLabel);
             Controls.Add(convertingFilesLabel);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            Margin = new Padding(3, 2, 3, 2);
             MaximizeBox = false;
-            MaximumSize = new Size(640, 320);
-            MinimumSize = new Size(640, 320);
+            MaximumSize = new Size(562, 250);
+            MinimumSize = new Size(562, 250);
             Name = "ProgressForm";
             Text = "Image Converter";
             ResumeLayout(false);
@@ -71,5 +81,6 @@
 
         private Label convertingFilesLabel;
         private Label currentFileNameLabel;
+        private ProgressBar conversionProgressBar;
     }
 }
