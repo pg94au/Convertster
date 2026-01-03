@@ -48,17 +48,66 @@ bool FileContextMenuExt::RunConverterCommand(HWND hWnd, PCWSTR targetFormat)
 {
 	// Build command-line arguments: program path first, then the format,
 	// then each filename quoted.
-	const wchar_t exePath[] = L"C:\\SHARED\\ImageConverter.exe";
+	//const wchar_t exePath[] = L"C:\\SHARED\\ImageConverter.exe";
+	//const wchar_t exePath[] = L"C:\\Program Files\\Blinkenlights Image Converter\\ImageConverter.exe";
+	std::wstring exePath;
+	HKEY hKey = nullptr;
+
+	LONG result = RegOpenKeyExW(
+		HKEY_LOCAL_MACHINE,
+		L"Software\\Blinkenlights Image Converter",
+		0,
+		KEY_READ,
+		&hKey);
+
+	if (result != ERROR_SUCCESS)
+	{
+		MessageBoxW(hWnd, L"Unable to open registry key for Blinkenlights Image Converter.", L_Friendly_Menu_Name, MB_OK | MB_ICONERROR);
+		return false;
+	}
+
+	DWORD type = 0;
+	DWORD size = 0;
+
+	if (RegQueryValueExW(
+		hKey,
+		L"ExecutablePath",
+		nullptr,
+		&type,
+		nullptr,
+		&size) != ERROR_SUCCESS || type != REG_SZ)
+	{
+		RegCloseKey(hKey);
+		return false;
+	}
+
+	exePath.resize(size / sizeof(wchar_t), L'\0');
+
+	if (RegQueryValueExW(
+		hKey,
+		L"ExecutablePath",
+		nullptr,
+		nullptr,
+		reinterpret_cast<LPBYTE>(&exePath[0]),
+		&size) != ERROR_SUCCESS)
+	{
+		RegCloseKey(hKey);
+		return false;
+	}
+
+	// Remove trailing null added by registry
+	exePath.resize(wcslen(exePath.c_str()));
+
+	RegCloseKey(hKey);
 
 	// Verify executable exists.
-	if (!PathFileExistsW(exePath))
+	if (!PathFileExistsW(exePath.c_str()))
 	{
 		MessageBoxW(hWnd, L"ImageConverter.exe not found.", L_Friendly_Menu_Name, MB_OK | MB_ICONERROR);
 		return false;
 	}
 
 	std::wstring cmdLineStr;
-	// Program name (quoted) must be the first token for proper argv parsing.
 	cmdLineStr.append(L"\"");
 	cmdLineStr.append(exePath);
 	cmdLineStr.append(L"\" ");
@@ -110,7 +159,7 @@ bool FileContextMenuExt::RunConverterCommand(HWND hWnd, PCWSTR targetFormat)
 	// We don't need to wait here; close handles and continue.
 	CloseHandle(pi.hThread);
 	CloseHandle(pi.hProcess);
-	return true;;
+	return true;
 }
 
 

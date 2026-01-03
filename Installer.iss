@@ -41,6 +41,9 @@ Source: "C:\GitHub\pg94au\WindowsExplorerContextMenuTesting\ImageConverter\bin\R
 Source: "C:\GitHub\pg94au\WindowsExplorerContextMenuTesting\ImageConverter\bin\Release\net8.0-windows\SixLabors.ImageSharp.dll"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
+[Registry]
+Root: HKLM; Subkey: "Software\Blinkenlights Image Converter"; ValueType: string; ValueName: "ExecutablePath"; ValueData: "{app}\ImageConverter.exe"; Flags: uninsdeletekey
+
 [Run]
 Filename: "taskkill"; Parameters: "/f /im explorer.exe"; Flags: runhidden
 Filename: "{win}\explorer.exe"; Flags: nowait
