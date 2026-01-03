@@ -44,6 +44,24 @@ Source: "ImageConverter\bin\Release\net8.0-windows\SixLabors.ImageSharp.dll"; De
 [Registry]
 Root: HKLM; Subkey: "Software\Blinkenlights Image Converter"; ValueType: string; ValueName: "ExecutablePath"; ValueData: "{app}\ImageConverter.exe"; Flags: uninsdeletekey
 
+[Code]
+function InitializeSetup(): Boolean;
+var
+  ResultCode: Integer;
+begin
+  ResultCode := MsgBox(
+    'This installer will restart Windows Explorer to activate the context menu extension.'#13#10#13#10 +
+    'Any open File Explorer windows will be closed.'#13#10#13#10 +
+    'Do you want to continue?',
+    mbConfirmation,
+    MB_YESNO or MB_DEFBUTTON2);
+
+  if ResultCode = IDYES then
+    Result := True
+  else
+    Result := False;
+end;
+
 [Run]
 Filename: "taskkill"; Parameters: "/f /im explorer.exe"; Flags: runhidden
 Filename: "{win}\explorer.exe"; Flags: nowait
