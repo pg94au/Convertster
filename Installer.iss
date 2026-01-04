@@ -42,7 +42,7 @@ Source: "ImageConverter\bin\Release\net8.0-windows\ImageConverter.exe"; DestDir:
 Source: "ImageConverter\bin\Release\net8.0-windows\ImageConverter.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "ImageConverter\bin\Release\net8.0-windows\SixLabors.ImageSharp.dll"; DestDir: "{app}"; Flags: ignoreversion
 ; Required to install the VC++ runtime that is neeeded by the explorer extension.
-Source: "Prerequisites\VC_redist.x64.exe"; DestDir: "{tmp}"; Flags: dontcopy
+Source: "Installer\Prerequisites\VC_redist.x64.exe"; DestDir: "{tmp}"; Flags: dontcopy
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
