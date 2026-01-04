@@ -1,0 +1,118 @@
+name: Build Windows projects and create Inno Setup installer
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  build-and-package:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.1.2
+
+      - name: Restore NuGet packages
+        run: |
+          dotnet restore
+
+      - name: Build any solution (MSBuild if .sln exists)
+        shell: powershell
+        run: |
+          $sln = Get-ChildItem -Path . -Filter *.sln -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($null -ne $sln) {
+            Write-Host "Found solution: $($sln.FullName). Building with MSBuild..."
+            msbuild $sln.FullName /p:Configuration=Release /p:Platform=x64
+          } else {
+            Write-Host "No .sln found; skipping MSBuild step."
+          }
+
+      - name: Build/publish ImageConverter (.NET)
+        run: |
+          dotnet publish ImageConverter/ImageConverter.csproj -c Release -f net8.0-windows -o ImageConverter/bin/Release/net8.0-windows
+
+      - name: Prepare Inno prerequisites folder
+        run: |
+          New-Item -ItemType Directory -Force -Path Installer\Prerequisites | Out-Null
+
+      - name: Download Visual C++ Redistributable (x64)
+        shell: powershell
+        run: |
+          $out = 'Installer\Prerequisites\VC_redist.x64.exe'
+          Write-Host "Downloading VC++ redistributable to $out"
+          Invoke-WebRequest -Uri 'https://aka.ms/vs/17/release/vc_redist.x64.exe' -OutFile $out
+          if (-Not (Test-Path $out)) { Write-Error "Failed to download $out" }
+
+      - name: Install Inno Setup (Chocolatey)
+        shell: powershell
+        run: |
+          choco install innosetup -y --no-progress
+
+      - name: Locate ISCC.exe
+        shell: powershell
+        run: |
+          $iscc = Get-Command iscc -ErrorAction SilentlyContinue
+          if ($null -eq $iscc) {
+            $isccPath = '"C:\Program Files (x86)\Inno Setup 6\ISCC.exe"'
+            Write-Host "ISCC not in PATH; will try $isccPath"
+          } else {
+            $isccPath = $iscc.Path
+            Write-Host "Found ISCC at $isccPath"
+          }
+          Write-Output $isccPath > iscc-path.txt
+
+      - name: Build Inno Setup installer
+        shell: powershell
+        run: |
+          $isccPath = Get-Content iscc-path.txt
+          if (-not (Test-Path $isccPath) -and ($isccPath -notlike '*\ISCC.exe*')) {
+            # try default location
+            $default = 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
+            if (Test-Path $default) { $isccPath = $default } else { Write-Error 'ISCC.exe not found'; exit 1 }
+          }
+
+          Write-Host "Using ISCC: $isccPath"
+
+          # Run ISCC against the Installer.iss in the repository root
+          & $isccPath -Q "Installer.iss"
+
+      - name: Collect installer output
+        shell: powershell
+        run: |
+          # Common output locations
+          $candidates = Get-ChildItem -Path . -Include "*.exe" -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.Name -like '*Blinkenlights*' -or $_.DirectoryName -match '\\Output$' }
+          if ($candidates.Count -eq 0) {
+            Write-Warning 'No installer EXE found automatically. Listing repository root and Output folders for debugging:'
+            Get-ChildItem -Path . -Recurse -Depth 2 -Filter '*.exe' | Select-Object FullName
+          } else {
+            $candidates | ForEach-Object { Write-Host "Found installer: $($_.FullName)" }
+          }
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer
+          path: |
+            **/Output/*.exe
+            **/*Blinkenlights*.exe
+            Installer/Output/*.exe
+
+      - name: Upload build logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: |
+            **/*.log
+            **/msbuild*.log
