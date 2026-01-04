@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.1.11312.151
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppShellExtContextMenuHandler", "CppShellExtContextMenuHandler.vcxproj", "{3D1EDCCE-C4D7-4E77-9E1C-1A689D188A9A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageConverter", "..\ImageConverter\ImageConverter.csproj", "{48F89CDC-BD30-4B57-85F4-95110C2E9B41}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2F449D74-65A5-4F63-AAFB-0CF757014F91}"
 	ProjectSection(SolutionItems) = preProject
-		..\Installer.iss = ..\Installer.iss
-		..\LICENSE = ..\LICENSE
-		..\README.md = ..\README.md
-		..\.github\workflows\windows-build-and-installer.yml = ..\.github\workflows\windows-build-and-installer.yml
+		.\Installer.iss = .\Installer.iss
+		.\LICENSE = .\LICENSE
+		.\README.md = .\README.md
+		.\.github\workflows\windows-build-and-installer.yml = .\.github\workflows\windows-build-and-installer.yml
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppShellExtContextMenuHandler", "ShellExtContextMenuHandler\CppShellExtContextMenuHandler.vcxproj", "{3D1EDCCE-C4D7-4E77-9E1C-1A689D188A9A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageConverter", "ImageConverter\ImageConverter.csproj", "{6BDAD7D0-D862-541F-857C-65695F820265}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,18 +37,18 @@ Global
 		{3D1EDCCE-C4D7-4E77-9E1C-1A689D188A9A}.Release|x64.Build.0 = Release|x64
 		{3D1EDCCE-C4D7-4E77-9E1C-1A689D188A9A}.Release|x86.ActiveCfg = Release|Win32
 		{3D1EDCCE-C4D7-4E77-9E1C-1A689D188A9A}.Release|x86.Build.0 = Release|Win32
-		{48F89CDC-BD30-4B57-85F4-95110C2E9B41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{48F89CDC-BD30-4B57-85F4-95110C2E9B41}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{48F89CDC-BD30-4B57-85F4-95110C2E9B41}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{48F89CDC-BD30-4B57-85F4-95110C2E9B41}.Debug|x64.Build.0 = Debug|Any CPU
-		{48F89CDC-BD30-4B57-85F4-95110C2E9B41}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{48F89CDC-BD30-4B57-85F4-95110C2E9B41}.Debug|x86.Build.0 = Debug|Any CPU
-		{48F89CDC-BD30-4B57-85F4-95110C2E9B41}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{48F89CDC-BD30-4B57-85F4-95110C2E9B41}.Release|Any CPU.Build.0 = Release|Any CPU
-		{48F89CDC-BD30-4B57-85F4-95110C2E9B41}.Release|x64.ActiveCfg = Release|Any CPU
-		{48F89CDC-BD30-4B57-85F4-95110C2E9B41}.Release|x64.Build.0 = Release|Any CPU
-		{48F89CDC-BD30-4B57-85F4-95110C2E9B41}.Release|x86.ActiveCfg = Release|Any CPU
-		{48F89CDC-BD30-4B57-85F4-95110C2E9B41}.Release|x86.Build.0 = Release|Any CPU
+		{6BDAD7D0-D862-541F-857C-65695F820265}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BDAD7D0-D862-541F-857C-65695F820265}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BDAD7D0-D862-541F-857C-65695F820265}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6BDAD7D0-D862-541F-857C-65695F820265}.Debug|x64.Build.0 = Debug|Any CPU
+		{6BDAD7D0-D862-541F-857C-65695F820265}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6BDAD7D0-D862-541F-857C-65695F820265}.Debug|x86.Build.0 = Debug|Any CPU
+		{6BDAD7D0-D862-541F-857C-65695F820265}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BDAD7D0-D862-541F-857C-65695F820265}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BDAD7D0-D862-541F-857C-65695F820265}.Release|x64.ActiveCfg = Release|Any CPU
+		{6BDAD7D0-D862-541F-857C-65695F820265}.Release|x64.Build.0 = Release|Any CPU
+		{6BDAD7D0-D862-541F-857C-65695F820265}.Release|x86.ActiveCfg = Release|Any CPU
+		{6BDAD7D0-D862-541F-857C-65695F820265}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
