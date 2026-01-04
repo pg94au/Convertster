@@ -34,11 +34,15 @@ WizardStyle=modern dynamic
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
+; The DLL for the explorer extension.
 Source: "ShellExtContextMenuHandler\x64\Release\CppShellExtContextMenuHandler.dll"; DestDir: "{sys}"; Flags: regserver
+; The image converter application.
 Source: "ImageConverter\bin\Release\net8.0-windows\ImageConverter.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "ImageConverter\bin\Release\net8.0-windows\ImageConverter.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "ImageConverter\bin\Release\net8.0-windows\ImageConverter.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "ImageConverter\bin\Release\net8.0-windows\SixLabors.ImageSharp.dll"; DestDir: "{app}"; Flags: ignoreversion
+; Required to install the VC++ runtime that is neeeded by the explorer extension.
+Source: "Prerequisites\VC_redist.x64.exe"; DestDir: "{tmp}"; Flags: dontcopy
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
@@ -60,6 +64,59 @@ begin
     Result := True
   else
     Result := False;
+end;
+
+function IsVCRuntimeInstalled: Boolean;
+var
+  Major: Cardinal;
+begin
+  Result :=
+    RegQueryDWordValue(
+      HKLM,
+      'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64',
+      'Installed',
+      Major) and (Major = 1);
+end;
+
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+var
+  ResultCode: Integer;
+  Path: string;
+begin
+  if not IsVCRuntimeInstalled then
+  begin
+    ExtractTemporaryFile('VC_redist.x64.exe');
+    Path := ExpandConstant('{tmp}\VC_redist.x64.exe');
+    Log('Checking for VC++ runtime at: ' + Path);
+
+    if not FileExists(Path) then
+    begin
+      Log('ERROR: VC_redist.x64.exe does not exist');
+      Result := 'Internal installer error: VC++ runtime missing.';
+      Exit;
+    end;
+  
+    if not Exec(
+      ExpandConstant('{tmp}\VC_redist.x64.exe'),
+      '/install /quiet /norestart',
+      '',
+      SW_SHOW,
+      ewWaitUntilTerminated,
+      ResultCode)
+    then
+    begin
+      Result := 'Failed to install required Microsoft Visual C++ runtime.';
+      Exit;
+    end;
+
+    if ResultCode <> 0 then
+    begin
+      Result := 'Microsoft Visual C++ runtime installation failed.';
+      Exit;
+    end;
+  end;
+
+  Result := '';
 end;
 
 [Run]
