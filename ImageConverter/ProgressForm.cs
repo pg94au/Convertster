@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
@@ -16,7 +17,9 @@ public partial class ProgressForm : Form
         convertingFilesLabel.Text = $"Converting files to {targetType}...";
 
         _targetType = targetType;
+        Trace.WriteLine($"Target type is {_targetType}");
         _filenames = filenames;
+        Trace.WriteLine($"Filenames to convert: {string.Join(", ", _filenames)}");
     }
 
     protected override async void OnLoad(EventArgs e)
@@ -25,8 +28,10 @@ public partial class ProgressForm : Form
 
         conversionProgressBar.Minimum = 0;
         conversionProgressBar.Maximum = _filenames.Length;
+        Trace.WriteLine($"Progress bar maximum = {conversionProgressBar.Maximum}");
 
         // Start the conversion process here or in a separate method
+        var anySuccess = false;
         foreach (var filename in _filenames)
         {
             // Update the label to show the current file being processed
@@ -34,14 +39,32 @@ public partial class ProgressForm : Form
 
             await Task.Yield();
 
-            await ConvertImageType(_targetType, filename);
+            try
+            {
+                await ConvertImageType(_targetType, filename);
+                Trace.WriteLine($"Successfully converted {filename}");
+                anySuccess = true;
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"Error converting {filename}: {ex.Message}");
+                conversionProgressBar.SetState(ProgressBarExtensions.ProgressBarState.Paused);
+            }
 
             conversionProgressBar.Value += 1;
+            //conversionProgressBar.Refresh();
+            await Task.Delay(1);
 
             await Task.Yield();
         }
 
+        if (!anySuccess)
+        {
+            conversionProgressBar.SetState(ProgressBarExtensions.ProgressBarState.Error);
+        }
+
         currentFileNameLabel.Text = "Conversion complete!";
+        Trace.WriteLine($"Progress bar value = {conversionProgressBar.Value}");
     }
 
     private async Task ConvertImageType(string targetType, string filename)
@@ -57,7 +80,8 @@ public partial class ProgressForm : Form
                 break;
             case "PNG":
                 var pngPath = Path.ChangeExtension(filename, ".png");
-                await image.SaveAsPngAsync(pngPath, new PngEncoder { CompressionLevel = PngCompressionLevel.BestCompression });
+                await image.SaveAsPngAsync(pngPath,
+                    new PngEncoder { CompressionLevel = PngCompressionLevel.BestCompression });
                 break;
         }
     }
