@@ -55,33 +55,10 @@ jobs:
           Invoke-WebRequest -Uri 'https://aka.ms/vs/17/release/vc_redist.x64.exe' -OutFile $out
           if (-Not (Test-Path $out)) { Write-Error "Failed to download $out" }
 
-      - name: Locate ISCC.exe
-        shell: powershell
-        run: |
-          $iscc = Get-Command iscc -ErrorAction SilentlyContinue
-          if ($null -eq $iscc) {
-            $isccPath = '"C:\Program Files (x86)\Inno Setup 6\ISCC.exe"'
-            Write-Host "ISCC not in PATH; will try $isccPath"
-          } else {
-            $isccPath = $iscc.Path
-            Write-Host "Found ISCC at $isccPath"
-          }
-          Write-Output $isccPath > iscc-path.txt
-
       - name: Build Inno Setup installer
         shell: powershell
         run: |
-          $isccPath = Get-Content iscc-path.txt
-          if (-not (Test-Path $isccPath) -and ($isccPath -notlike '*\ISCC.exe*')) {
-            # try default location
-            $default = 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
-            if (Test-Path $default) { $isccPath = $default } else { Write-Error 'ISCC.exe not found'; exit 1 }
-          }
-
-          Write-Host "Using ISCC: $isccPath"
-
           # Run ISCC against the Installer.iss in the repository root
-          #& $isccPath -Q "Installer.iss"
           & ISCC.exe -Q "Installer.iss"
 
       - name: Upload installer artifact
@@ -90,9 +67,6 @@ jobs:
           name: installer
           path: |
             Output/Blinkenlights-Image-Converter.exe
-            # **/Output/*.exe
-            # **/*Blinkenlights*.exe
-            # Installer/Output/*.exe
 
       - name: Upload build logs
         if: failure()
