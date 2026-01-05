@@ -43,13 +43,10 @@ jobs:
         run: |
           dotnet publish ImageConverter/ImageConverter.csproj -c Release -f net8.0-windows -o ImageConverter/bin/Release/net8.0-windows
 
-      - name: Prepare Inno prerequisites folder
-        run: |
-          New-Item -ItemType Directory -Force -Path Installer\Prerequisites | Out-Null
-
-      - name: Download Visual C++ Redistributable (x64)
+      - name: Download installation prerequisites
         shell: powershell
         run: |
+          New-Item -ItemType Directory -Force -Path Installer\Prerequisites | Out-Null
           $out = 'Installer\Prerequisites\VC_redist.x64.exe'
           Write-Host "Downloading VC++ redistributable to $out"
           Invoke-WebRequest -Uri 'https://aka.ms/vs/17/release/vc_redist.x64.exe' -OutFile $out
@@ -58,7 +55,6 @@ jobs:
       - name: Build Inno Setup installer
         shell: powershell
         run: |
-          # Run ISCC against the Installer.iss in the repository root
           & ISCC.exe -Q "Installer.iss"
 
       - name: Upload installer artifact
