@@ -83,26 +83,27 @@ jobs:
           # Run ISCC against the Installer.iss in the repository root
           & $isccPath -Q "Installer.iss"
 
-      - name: Collect installer output
-        shell: powershell
-        run: |
-          # Common output locations
-          $candidates = Get-ChildItem -Path . -Include "*.exe" -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.Name -like '*Blinkenlights*' -or $_.DirectoryName -match '\\Output$' }
-          if ($candidates.Count -eq 0) {
-            Write-Warning 'No installer EXE found automatically. Listing repository root and Output folders for debugging:'
-            Get-ChildItem -Path . -Recurse -Depth 2 -Filter '*.exe' | Select-Object FullName
-          } else {
-            $candidates | ForEach-Object { Write-Host "Found installer: $($_.FullName)" }
-          }
+      # - name: Collect installer output
+      #   shell: powershell
+      #   run: |
+      #     # Common output locations
+      #     $candidates = Get-ChildItem -Path . -Include "*.exe" -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.Name -like '*Blinkenlights*' -or $_.DirectoryName -match '\\Output$' }
+      #     if ($candidates.Count -eq 0) {
+      #       Write-Warning 'No installer EXE found automatically. Listing repository root and Output folders for debugging:'
+      #       Get-ChildItem -Path . -Recurse -Depth 2 -Filter '*.exe' | Select-Object FullName
+      #     } else {
+      #       $candidates | ForEach-Object { Write-Host "Found installer: $($_.FullName)" }
+      #     }
 
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
           name: installer
           path: |
-            **/Output/*.exe
-            **/*Blinkenlights*.exe
-            Installer/Output/*.exe
+            Output/Blinkenlights-Image-Converter.exe
+            # **/Output/*.exe
+            # **/*Blinkenlights*.exe
+            # Installer/Output/*.exe
 
       - name: Upload build logs
         if: failure()
