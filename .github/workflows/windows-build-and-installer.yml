@@ -29,7 +29,7 @@ jobs:
           dotnet restore
 
       - name: Restore NuGet packages
-        run: nuget restore WindowsExplorerContextMenuTesting.sln
+        run: nuget restore BlinkenlightsImageConverter.sln
 
       - name: Build any solution (MSBuild if .sln exists)
         shell: powershell
