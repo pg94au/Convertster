@@ -5,15 +5,17 @@ VisualStudioVersion = 18.1.11312.151
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2F449D74-65A5-4F63-AAFB-0CF757014F91}"
 	ProjectSection(SolutionItems) = preProject
-		.\Installer.iss = .\Installer.iss
-		.\LICENSE = .\LICENSE
-		.\README.md = .\README.md
-		.\.github\workflows\windows-build-and-installer.yml = .\.github\workflows\windows-build-and-installer.yml
+		Installer.iss = Installer.iss
+		LICENSE = LICENSE
+		README.md = README.md
+		.github\workflows\windows-build-and-installer.yml = .github\workflows\windows-build-and-installer.yml
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppShellExtContextMenuHandler", "ShellExtContextMenuHandler\CppShellExtContextMenuHandler.vcxproj", "{3D1EDCCE-C4D7-4E77-9E1C-1A689D188A9A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageConverter", "ImageConverter\ImageConverter.csproj", "{6BDAD7D0-D862-541F-857C-65695F820265}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageConverterNet", "ImageConverterNet\ImageConverterNet.csproj", "{2CCF7FAD-3174-406F-875C-57C23F290A9F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +51,18 @@ Global
 		{6BDAD7D0-D862-541F-857C-65695F820265}.Release|x64.Build.0 = Release|Any CPU
 		{6BDAD7D0-D862-541F-857C-65695F820265}.Release|x86.ActiveCfg = Release|Any CPU
 		{6BDAD7D0-D862-541F-857C-65695F820265}.Release|x86.Build.0 = Release|Any CPU
+		{2CCF7FAD-3174-406F-875C-57C23F290A9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CCF7FAD-3174-406F-875C-57C23F290A9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CCF7FAD-3174-406F-875C-57C23F290A9F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2CCF7FAD-3174-406F-875C-57C23F290A9F}.Debug|x64.Build.0 = Debug|Any CPU
+		{2CCF7FAD-3174-406F-875C-57C23F290A9F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2CCF7FAD-3174-406F-875C-57C23F290A9F}.Debug|x86.Build.0 = Debug|Any CPU
+		{2CCF7FAD-3174-406F-875C-57C23F290A9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CCF7FAD-3174-406F-875C-57C23F290A9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CCF7FAD-3174-406F-875C-57C23F290A9F}.Release|x64.ActiveCfg = Release|Any CPU
+		{2CCF7FAD-3174-406F-875C-57C23F290A9F}.Release|x64.Build.0 = Release|Any CPU
+		{2CCF7FAD-3174-406F-875C-57C23F290A9F}.Release|x86.ActiveCfg = Release|Any CPU
+		{2CCF7FAD-3174-406F-875C-57C23F290A9F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
