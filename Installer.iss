@@ -37,16 +37,24 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 ; The DLL for the explorer extension.
 Source: "ShellExtContextMenuHandler\x64\Release\CppShellExtContextMenuHandler.dll"; DestDir: "{sys}"; Flags: regserver
 ; The image converter application.
-Source: "ImageConverter\bin\Release\net8.0-windows\ImageConverter.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "ImageConverter\bin\Release\net8.0-windows\ImageConverter.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "ImageConverter\bin\Release\net8.0-windows\ImageConverter.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "ImageConverter\bin\Release\net8.0-windows\SixLabors.ImageSharp.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ImageConverterNet\bin\Release\ImageConverterNet.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ImageConverterNet\bin\Release\ImageConverterNet.exe.config"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ImageConverterNet\bin\Release\NetVips.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ImageConverterNet\bin\Release\NetVips.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ImageConverterNet\bin\Release\System.Buffers.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ImageConverterNet\bin\Release\System.Buffers.xml"; DestDir: "{app}"; Flags: ignoreversion
+
+;Source: "ImageConverter\bin\Release\net8.0-windows\ImageConverter.dll"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "ImageConverter\bin\Release\net8.0-windows\ImageConverter.exe"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "ImageConverter\bin\Release\net8.0-windows\ImageConverter.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "ImageConverter\bin\Release\net8.0-windows\SixLabors.ImageSharp.dll"; DestDir: "{app}"; Flags: ignoreversion
+
 ; Required to install the VC++ runtime that is neeeded by the explorer extension.
 Source: "Installer\Prerequisites\VC_redist.x64.exe"; DestDir: "{tmp}"; Flags: dontcopy
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
-Root: HKLM; Subkey: "Software\Blinkenlights Image Converter"; ValueType: string; ValueName: "ExecutablePath"; ValueData: "{app}\ImageConverter.exe"; Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\Blinkenlights Image Converter"; ValueType: string; ValueName: "ExecutablePath"; ValueData: "{app}\ImageConverterNet.exe"; Flags: uninsdeletekey
 
 [Code]
 function InitializeSetup(): Boolean;
