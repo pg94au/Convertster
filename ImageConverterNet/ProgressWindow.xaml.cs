@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
+using Color = SixLabors.ImageSharp.Color;
 
 namespace ImageConverterNet
 {
@@ -32,6 +34,7 @@ namespace ImageConverterNet
 
             ConversionProgressBar.Minimum = 0;
             ConversionProgressBar.Maximum = Math.Max(0, _filenames.Length);
+            ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Green);
 
             var anySuccess = false;
             foreach (var filename in _filenames)
@@ -47,6 +50,7 @@ namespace ImageConverterNet
                 }
                 catch (Exception ex)
                 {
+                    ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Yellow);
                     Trace.WriteLine($"Error converting {filename}: {ex.Message}");
                 }
 
@@ -58,6 +62,7 @@ namespace ImageConverterNet
             if (!anySuccess)
             {
                 CurrentFileNameText.Text = "No conversions succeeded.";
+                ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Red);
             }
             else
             {
