@@ -1,28 +1,19 @@
-﻿using System;
-using System.Diagnostics;
+using System;
 using System.Linq;
-using System.Windows.Forms;
+using System.Windows;
 
 namespace ImageConverterNet
 {
     internal static class Program
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
         [STAThread]
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            var debugOutputFile = Environment.GetEnvironmentVariable("BLINKENLIGHTS_IMAGE_CONVERTER_DEBUG_OUTPUT");
-            if (debugOutputFile != null)
-            {
-                Trace.Listeners.Add(new TextWriterTraceListener(debugOutputFile));
-                Trace.AutoFlush = true;
-            }
-
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ProgressForm(args[0], args.Skip(1).ToArray()));
+            // Create and run the WPF application with a ProgressWindow.
+            // We avoid relying on generated App.xaml entry point by providing our own Main.
+            var window = new ProgressWindow(args[0], args.Skip(1).ToArray());
+            var app = new Application();
+            app.Run(window);
         }
     }
 }
