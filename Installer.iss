@@ -37,12 +37,15 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 ; The DLL for the explorer extension.
 Source: "ShellExtContextMenuHandler\x64\Release\CppShellExtContextMenuHandler.dll"; DestDir: "{sys}"; Flags: regserver
 ; The image converter application.
-Source: "ImageConverterNet\bin\Release\ImageConverterNet.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "ImageConverterNet\bin\Release\ImageConverterNet.exe.config"; DestDir: "{app}"; Flags: ignoreversion
-Source: "ImageConverterNet\bin\Release\NetVips.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "ImageConverterNet\bin\Release\NetVips.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "ImageConverterNet\bin\Release\System.Buffers.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "ImageConverterNet\bin\Release\System.Buffers.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ImageConverterNet\bin\x64\Release\ImageConverterNet.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ImageConverterNet\bin\x64\Release\ImageConverterNet.exe.config"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ImageConverterNet\bin\x64\Release\NetVips.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ImageConverterNet\bin\x64\Release\NetVips.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ImageConverterNet\bin\x64\Release\System.Buffers.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ImageConverterNet\bin\x64\Release\System.Buffers.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ImageConverterNet\bin\x64\Release\libglib-2.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ImageConverterNet\bin\x64\Release\libgobject-2.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ImageConverterNet\bin\x64\Release\libvips-42.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ;Source: "ImageConverter\bin\Release\net8.0-windows\ImageConverter.dll"; DestDir: "{app}"; Flags: ignoreversion
 ;Source: "ImageConverter\bin\Release\net8.0-windows\ImageConverter.exe"; DestDir: "{app}"; Flags: ignoreversion
