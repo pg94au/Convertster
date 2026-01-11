@@ -4,6 +4,7 @@ using SixLabors.ImageSharp.Formats.Png;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -35,8 +36,8 @@ namespace ImageConverterNet
             ConversionProgressBar.Maximum = Math.Max(0, _filenames.Length);
             ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Green);
 
-            var anySuccess = false;
-            var anyFailure = false;
+            var successes = 0;
+            var failures = 0;
             foreach (var filename in _filenames)
             {
                 CurrentFileNameText.Text = filename;
@@ -46,13 +47,13 @@ namespace ImageConverterNet
                 {
                     await ConvertImageType(_targetType, filename);
                     Trace.WriteLine($"Successfully converted {filename}");
-                    anySuccess = true;
+                    successes++;
                 }
                 catch (Exception ex)
                 {
                     ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Gold);
                     Trace.WriteLine($"Error converting {filename}: {ex.Message}");
-                    anyFailure = true;
+                    failures++;
                 }
 
                 ConversionProgressBar.Value = Math.Min(ConversionProgressBar.Maximum, ConversionProgressBar.Value + 1);
@@ -60,18 +61,18 @@ namespace ImageConverterNet
                 await Task.Yield();
             }
 
-            if (!anySuccess)
+            if (successes == 0)
             {
-                CurrentFileNameText.Text = "No conversions succeeded.";
+                CurrentFileNameText.Text = $"Failure converting all {(_filenames.Any() ? "file" : $"{failures} files")}.";
                 ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Red);
             }
-            else if (anyFailure)
+            else if (failures > 0)
             {
-                CurrentFileNameText.Text = "Conversion complete with some errors.";
+                CurrentFileNameText.Text = $"Converted {successes} file{(_filenames.Any() ? "s" : "")} ({failures} failed).";
             }
             else
             {
-                CurrentFileNameText.Text = "Conversion complete!";
+                CurrentFileNameText.Text = $"Successfully converted all {_filenames.Length} file{(_filenames.Any() ? "s" : "")}.";
             }
         }
 
