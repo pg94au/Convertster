@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -36,35 +37,83 @@ namespace ImageConverterNet
             ConversionProgressBar.Maximum = Math.Max(0, _filenames.Length);
             ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Green);
 
-            var successes = 0;
-            var failures = 0;
-            foreach (var filename in _filenames)
+            var progress = new Progress<(string file, int done, System.Windows.Media.Color foregroundColor)>(tuple =>
             {
-                CurrentFileNameText.Text = filename;
-                await Task.Yield();
+                ConversionProgressBar.Value = tuple.done;
+                ConversionProgressBar.Foreground = new SolidColorBrush(tuple.foregroundColor);
+                CurrentFileNameText.Text = Path.GetFileName(tuple.file);
+            });
 
+            long successes = 0;
+            long failures = 0;
+
+            using var semaphore = new SemaphoreSlim(Environment.ProcessorCount - 1);
+            var tasks = _filenames.Select(async filename =>
+            {
+                await semaphore.WaitAsync();
                 try
                 {
                     await ConvertImageType(_targetType, filename);
-                    Trace.WriteLine($"Successfully converted {filename}");
-                    successes++;
+                    Interlocked.Increment(ref successes);
                 }
                 catch (Exception ex)
                 {
-                    ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Gold);
+                    Interlocked.Increment(ref failures);
                     Trace.WriteLine($"Error converting {filename}: {ex.Message}");
-                    failures++;
                 }
+                finally
+                {
+                    long successesSoFar = Interlocked.Read(ref successes);
+                    long failuresSoFar = Interlocked.Read(ref failures);
+                    var done = (int)(successesSoFar + failuresSoFar);
+                    System.Windows.Media.Color currentColor = Colors.Green;
+                    if (failuresSoFar == 0)
+                    {
+                        currentColor = Colors.Green;
+                    }
+                    else if (successesSoFar + failuresSoFar < _filenames.Length)
+                    {
+                        currentColor = Colors.Gold;
+                    }
+                    else
+                    {
+                        currentColor = successesSoFar > 0 ? Colors.Gold : Colors.Red;
+                    }
+                    ((IProgress<(string, int, System.Windows.Media.Color)>)progress).Report((filename, done, currentColor));
+                    semaphore.Release();
+                }
+            });
 
-                ConversionProgressBar.Value = Math.Min(ConversionProgressBar.Maximum, ConversionProgressBar.Value + 1);
-                await Task.Delay(1);
-                await Task.Yield();
-            }
+            await Task.WhenAll(tasks);
+
+
+            //foreach (var filename in _filenames)
+            //{
+            //    CurrentFileNameText.Text = filename;
+            //    await Task.Yield();
+
+            //    try
+            //    {
+            //        await ConvertImageType(_targetType, filename);
+            //        Trace.WriteLine($"Successfully converted {filename}");
+            //        successes++;
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Gold);
+            //        Trace.WriteLine($"Error converting {filename}: {ex.Message}");
+            //        failures++;
+            //    }
+
+            //    ConversionProgressBar.Value = Math.Min(ConversionProgressBar.Maximum, ConversionProgressBar.Value + 1);
+            //    await Task.Delay(1);
+            //    await Task.Yield();
+            //}
 
             if (successes == 0)
             {
-                CurrentFileNameText.Text = $"Failure converting all {(_filenames.Any() ? "file" : $"{failures} files")}.";
-                ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Red);
+                CurrentFileNameText.Text = $"Failed to convert {(_filenames.Any() ? "file" : $"{failures} files")}.";
+                //ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Red);
             }
             else if (failures > 0)
             {
@@ -72,7 +121,7 @@ namespace ImageConverterNet
             }
             else
             {
-                CurrentFileNameText.Text = $"Successfully converted all {_filenames.Length} file{(_filenames.Any() ? "s" : "")}.";
+                CurrentFileNameText.Text = $"Successfully converted {_filenames.Length} file{(_filenames.Any() ? "s" : "")}.";
             }
         }
 
