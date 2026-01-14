@@ -253,7 +253,7 @@ IFACEMETHODIMP FileContextMenuExt::Initialize(LPCITEMIDLIST pidlFolder, LPDATAOB
 		{
 			const wchar_t* dot = wcsrchr(file->c_str(), L'.');
 			// Allowed extensions (case-insensitive).
-			const wchar_t* allowedExts[] = { L".bmp", L".tif", L".tiff" };
+			const wchar_t* allowedExts[] = { L".bmp", L".png", L".tif", L".tiff" };
 
 			if (dot)
 			{
@@ -322,17 +322,33 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(HMENU hMenu, UINT indexMenu,
 		return HRESULT_FROM_WIN32(GetLastError());
 	}
 
-	// Add "To JPG" and "To PNG" to sub menu
+	// Determine if any selected file already has a .png extension (case-insensitive).
+	bool anyHasPng = false;
+	for (const auto& f : m_vSelectedFiles)
+	{
+		const wchar_t* dot = wcsrchr(f.c_str(), L'.');
+		if (dot && 0 == _wcsicmp(dot, L".png"))
+		{
+			anyHasPng = true;
+			break;
+		}
+	}
+
+	// Add "To JPG" to sub menu (always available for supported input types)
 	if (!AppendMenuW(hSubMenu, MF_STRING, idCmdFirst + IDM_CONVERT_JPG, L"To JPG"))
 	{
 		DestroyMenu(hSubMenu);
 		return HRESULT_FROM_WIN32(GetLastError());
 	}
 
-	if (!AppendMenuW(hSubMenu, MF_STRING, idCmdFirst + IDM_CONVERT_PNG, L"To PNG"))
+	// Add "To PNG" only if none of the selected files are already PNGs
+	if (!anyHasPng)
 	{
-		DestroyMenu(hSubMenu);
-		return HRESULT_FROM_WIN32(GetLastError());
+		if (!AppendMenuW(hSubMenu, MF_STRING, idCmdFirst + IDM_CONVERT_PNG, L"To PNG"))
+		{
+			DestroyMenu(hSubMenu);
+			return HRESULT_FROM_WIN32(GetLastError());
+		}
 	}
 
 	mii.hSubMenu = hSubMenu;
@@ -346,7 +362,13 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(HMENU hMenu, UINT indexMenu,
 	// Return an HRESULT value with the severity set to SEVERITY_SUCCESS. 
 	// Set the code value to the offset of the largest command identifier 
 	// that was assigned, plus one (1).
-	return MAKE_HRESULT(SEVERITY_SUCCESS, 0, static_cast<USHORT>(IDM_CONVERT_PNG + 1));
+	USHORT largestId = static_cast<USHORT>(IDM_CONVERT_JPG);
+	if (anyHasPng)
+	{
+		largestId = static_cast<USHORT>(IDM_CONVERT_PNG);
+	}
+
+	return MAKE_HRESULT(SEVERITY_SUCCESS, 0, static_cast<USHORT>(largestId + 1));
 }
 
 
