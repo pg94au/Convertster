@@ -14,5 +14,3 @@
 #define L_Friendly_Menu_Name L"ImageConverter.FileContextMenuExt"
 
 #define L_Friendly_Class_Name L"ImageConverter.FileContextMenuExt Class"
-
-#define L_Associated_Type L".bmp"

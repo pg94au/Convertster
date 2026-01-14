@@ -252,10 +252,26 @@ IFACEMETHODIMP FileContextMenuExt::Initialize(LPCITEMIDLIST pidlFolder, LPDATAOB
 		for (auto file = m_vSelectedFiles.cbegin(); file != m_vSelectedFiles.cend(); ++file)
 		{
 			const wchar_t* dot = wcsrchr(file->c_str(), L'.');
-			if (dot && 0 != _wcsicmp(dot, L_Associated_Type) && 0 != _wcsicmp(dot, L".tif"))
+			// Allowed extensions (case-insensitive).
+			const wchar_t* allowedExts[] = { L".bmp", L".tif", L".tiff" };
+
+			if (dot)
 			{
-				hr = E_INVALIDARG;
-				break;
+				bool matched = false;
+				for (const wchar_t* ext : allowedExts)
+				{
+					if (0 == _wcsicmp(dot, ext))
+					{
+						matched = true;
+						break;
+					}
+				}
+
+				if (!matched)
+				{
+					hr = E_INVALIDARG;
+					break;
+				}
 			}
 		}
 	}
