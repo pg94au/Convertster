@@ -24,11 +24,6 @@ jobs:
         uses: microsoft/setup-msbuild@v1.1.2
 
       - name: Restore NuGet packages
-        run: |
-          cd ImageConverter
-          dotnet restore
-
-      - name: Restore NuGet packages
         run: nuget restore BlinkenlightsImageConverter.sln
 
       - name: Build any solution (MSBuild if .sln exists)
