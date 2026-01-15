@@ -37,11 +37,6 @@ jobs:
             Write-Host "No .sln found; skipping MSBuild step."
           }
 
-      - name: Build/publish ImageConverter (.NET)
-        run: |
-          dotnet publish ImageConverter/ImageConverter.csproj -c Release -f net8.0-windows -o ImageConverter/bin/Release/net8.0-windows
-          #dotnet publish ImageConverter/ImageConverter.csproj -c Release -f net8.0-windows -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishReadyToRun=false -p:DebugType=None -p:DebugSymbols=false
-
       - name: Download installation prerequisites
         shell: powershell
         run: |
