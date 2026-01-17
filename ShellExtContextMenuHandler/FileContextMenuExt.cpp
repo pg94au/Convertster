@@ -334,22 +334,24 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(HMENU hMenu, UINT indexMenu,
 		}
 	}
 
-	// Add "To JPG" to sub menu (always available for supported input types)
-	if (!AppendMenuW(hSubMenu, MF_STRING, idCmdFirst + IDM_CONVERT_JPG, L"To JPG"))
-	{
-		DestroyMenu(hSubMenu);
-		return HRESULT_FROM_WIN32(GetLastError());
-	}
+    // Add "To JPG" to sub menu (always available for supported input types)
+    if (!AppendMenuW(hSubMenu, MF_STRING, idCmdFirst + IDM_CONVERT_JPG, L"To JPG"))
+    {
+        DestroyMenu(hSubMenu);
+        return HRESULT_FROM_WIN32(GetLastError());
+    }
 
-	// Add "To PNG" only if none of the selected files are already PNGs
-	if (!anyHasPng)
-	{
-		if (!AppendMenuW(hSubMenu, MF_STRING, idCmdFirst + IDM_CONVERT_PNG, L"To PNG"))
-		{
-			DestroyMenu(hSubMenu);
-			return HRESULT_FROM_WIN32(GetLastError());
-		}
-	}
+    // Add "To PNG" only if none of the selected files are already PNGs
+    bool pngAdded = false;
+    if (!anyHasPng)
+    {
+        if (!AppendMenuW(hSubMenu, MF_STRING, idCmdFirst + IDM_CONVERT_PNG, L"To PNG"))
+        {
+            DestroyMenu(hSubMenu);
+            return HRESULT_FROM_WIN32(GetLastError());
+        }
+        pngAdded = true;
+    }
 
 	mii.hSubMenu = hSubMenu;
 
@@ -362,11 +364,11 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(HMENU hMenu, UINT indexMenu,
 	// Return an HRESULT value with the severity set to SEVERITY_SUCCESS. 
 	// Set the code value to the offset of the largest command identifier 
 	// that was assigned, plus one (1).
-	USHORT largestId = static_cast<USHORT>(IDM_CONVERT_JPG);
-	if (anyHasPng)
-	{
-		largestId = static_cast<USHORT>(IDM_CONVERT_PNG);
-	}
+    USHORT largestId = static_cast<USHORT>(IDM_CONVERT_JPG);
+    if (pngAdded)
+    {
+        largestId = static_cast<USHORT>(IDM_CONVERT_PNG);
+    }
 
 	return MAKE_HRESULT(SEVERITY_SUCCESS, 0, static_cast<USHORT>(largestId + 1));
 }
