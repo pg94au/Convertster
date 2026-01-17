@@ -187,7 +187,7 @@ namespace ImageConverterNet
                     var pngPath = Path.ChangeExtension(filename, ".png");
                     await image.SaveAsPngAsync(
                         pngPath,
-                        new PngEncoder { CompressionLevel = PngCompressionLevel.BestCompression },
+                        new PngEncoder { CompressionLevel = PngCompressionLevel.DefaultCompression },
                         token).ConfigureAwait(false);
                     break;
             }
