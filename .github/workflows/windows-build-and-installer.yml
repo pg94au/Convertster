@@ -24,7 +24,7 @@ jobs:
         uses: microsoft/setup-msbuild@v1.1.2
 
       - name: Restore NuGet packages
-        run: nuget restore BlinkenlightsImageConverter.sln
+        run: nuget restore Convertster.sln
 
       - name: Build any solution (MSBuild if .sln exists)
         shell: powershell
@@ -56,7 +56,7 @@ jobs:
         with:
           name: installer
           path: |
-            Output/Blinkenlights-Image-Converter.exe
+            Installer/Output/Convertster-1.0-Setup.exe
 
       - name: Upload build logs
         if: failure()

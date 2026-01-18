@@ -12,7 +12,7 @@ namespace ImageConverterNet
         [STAThread]
         private static void Main(string[] args)
         {
-            var traceFilename = Environment.GetEnvironmentVariable("BLINKENLIGHTS_IMAGE_CONVERTER_DEBUG_OUTPUT");
+            var traceFilename = Environment.GetEnvironmentVariable("CONVERTSTER_DEBUG_OUTPUT");
             if (!string.IsNullOrWhiteSpace(traceFilename))
             {
                 var fileListener = new TextWriterTraceListener(traceFilename, "FileListener");

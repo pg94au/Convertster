@@ -48,21 +48,19 @@ bool FileContextMenuExt::RunConverterCommand(HWND hWnd, PCWSTR targetFormat)
 {
 	// Build command-line arguments: program path first, then the format,
 	// then each filename quoted.
-	//const wchar_t exePath[] = L"C:\\SHARED\\ImageConverter.exe";
-	//const wchar_t exePath[] = L"C:\\Program Files\\Blinkenlights Image Converter\\ImageConverter.exe";
 	std::wstring exePath;
 	HKEY hKey = nullptr;
 
 	LONG result = RegOpenKeyExW(
 		HKEY_LOCAL_MACHINE,
-		L"Software\\Blinkenlights Image Converter",
+		L"Software\\Convertster",
 		0,
 		KEY_READ,
 		&hKey);
 
 	if (result != ERROR_SUCCESS)
 	{
-		MessageBoxW(hWnd, L"Unable to open registry key for Blinkenlights Image Converter.", L_Friendly_Menu_Name, MB_OK | MB_ICONERROR);
+		MessageBoxW(hWnd, L"Unable to open registry key for Convertster.", L_Friendly_Menu_Name, MB_OK | MB_ICONERROR);
 		return false;
 	}
 

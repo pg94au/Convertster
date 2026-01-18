@@ -2,10 +2,10 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 ; Non-commercial use only
 
-#define MyAppName "Blinkenlights Image Converter"
+#define MyAppName "Convertster"
 #define MyAppVersion "1.0"
 #define MyAppPublisher "Paul Grebenc"
-#define MyAppURL "https://github.com/pg94au"
+#define MyAppURL "https://github.com/pg94au/Convertster"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -26,9 +26,9 @@ DefaultDirName={autopf}\{#MyAppName}
 DisableDirPage=yes
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
-LicenseFile=LICENSE
+LicenseFile=..\LICENSE
 PrivilegesRequired=admin
-OutputBaseFilename=Blinkenlights-Image-Converter
+OutputBaseFilename=Convertster-1.0-Setup
 SolidCompression=yes
 WizardStyle=modern dynamic
 
@@ -37,18 +37,18 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
 ; The DLL for the explorer extension.
-Source: "ShellExtContextMenuHandler\x64\Release\CppShellExtContextMenuHandler.dll"; DestDir: "{sys}"; Flags: regserver
+Source: "..\ShellExtContextMenuHandler\x64\Release\CppShellExtContextMenuHandler.dll"; DestDir: "{sys}"; Flags: regserver
 ; The image converter application.
-Source: "ImageConverterNet\bin\Release\ImageConverterNet.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "ImageConverterNet\bin\Release\ImageConverterNet.exe.config"; DestDir: "{app}"; Flags: ignoreversion
-Source: "ImageConverterNet\bin\Release\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\ImageConverter\bin\Release\ImageConverter.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\ImageConverter\bin\Release\ImageConverter.exe.config"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\ImageConverter\bin\Release\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Required to install the VC++ runtime that is neeeded by the explorer extension.
-Source: "Installer\Prerequisites\VC_redist.x64.exe"; DestDir: "{tmp}"; Flags: dontcopy
+Source: "Prerequisites\VC_redist.x64.exe"; DestDir: "{tmp}"; Flags: dontcopy
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
-Root: HKLM; Subkey: "Software\Blinkenlights Image Converter"; ValueType: string; ValueName: "ExecutablePath"; ValueData: "{app}\ImageConverterNet.exe"; Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\Convertster"; ValueType: string; ValueName: "ExecutablePath"; ValueData: "{app}\ImageConverter.exe"; Flags: uninsdeletekey
 
 [Code]
 function InitializeSetup(): Boolean;

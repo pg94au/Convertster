@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2CCF7FAD-3174-406F-875C-57C23F290A9F}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>ImageConverterNet</RootNamespace>
-    <AssemblyName>ImageConverterNet</AssemblyName>
+    <RootNamespace>ImageConverter</RootNamespace>
+    <AssemblyName>ImageConverter</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
