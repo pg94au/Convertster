@@ -49,6 +49,7 @@ jobs:
       - name: Build Inno Setup installer
         shell: powershell
         run: |
+          cd Installer
           & ISCC.exe -Q "Installer.iss"
 
       - name: Upload installer artifact
