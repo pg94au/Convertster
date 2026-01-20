@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace ImageConverterNet
+namespace ImageConverter
 {
     internal static class Program
     {
