@@ -17,6 +17,7 @@ namespace ImageConverter
         private readonly string _targetType;
         private readonly string[] _filenames;
         private CancellationTokenSource _cts = new CancellationTokenSource();
+        private volatile bool _finalized = false;
 
         public ProgressWindow(string targetType, string[] filenames)
         {
@@ -42,6 +43,12 @@ namespace ImageConverter
 
             var progress = new Progress<(string file, int done, System.Windows.Media.Color foregroundColor)>(tuple =>
             {
+                // Ignore any progress reports once we've finalized the UI state.
+                if (_finalized)
+                {
+                    return;
+                }
+
                 ConversionProgressBar.Value = tuple.done;
                 ConversionProgressBar.Foreground = new SolidColorBrush(tuple.foregroundColor);
                 CurrentFileNameText.Text = Path.GetFileName(tuple.file);
@@ -131,12 +138,15 @@ namespace ImageConverter
                 // Log unexpected exceptions; final UI update will reflect state.
                 Trace.WriteLine($"Caught exception waiting for tasks: {ex.Message}");
             }
+            _finalized = true;
 
-            // Update final UI state on the dispatcher thread
+            // Update final UI state on the dispatcher asynchronously. Mark the
+            // UI as finalized before posting so any further progress reports are
+            // ignored.
             Trace.WriteLine("Updating final UI state.");
             await Dispatcher.InvokeAsync(() =>
             {
-                Trace.WriteLine("Dispatcher lambda executing...");
+                Trace.WriteLine("Dispatcher lambda executing (async)...");
                 if (token.IsCancellationRequested)
                 {
                     Trace.WriteLine("Setting text to show operation cancelled.");
