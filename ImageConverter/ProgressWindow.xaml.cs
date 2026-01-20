@@ -43,13 +43,14 @@ namespace ImageConverter
 
             var progress = new Progress<(string file, int done, System.Windows.Media.Color foregroundColor)>(tuple =>
             {
-                // Ignore any progress reports once we've finalized the UI state.
+                ConversionProgressBar.Value = tuple.done;
+
+                // Ignore updating additional progress once we've finalized the UI state.
                 if (_finalized)
                 {
                     return;
                 }
 
-                ConversionProgressBar.Value = tuple.done;
                 ConversionProgressBar.Foreground = new SolidColorBrush(tuple.foregroundColor);
                 CurrentFileNameText.Text = Path.GetFileName(tuple.file);
             });
