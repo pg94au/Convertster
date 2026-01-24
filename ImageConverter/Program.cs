@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,12 +27,53 @@ namespace ImageConverter
 
             // Create and run the WPF application with a ProgressWindow.
             // We avoid relying on generated App.xaml entry point by providing our own Main.
-            var window = new ProgressWindow(args[0], args.Skip(1).ToArray());
+            var targetType = args[0].ToLower();
+            var filenames = args.Skip(1).ToArray();
+
+            filenames = FilterAnySkippedFiles(targetType, filenames);
+            Trace.WriteLine($"Converting {string.Join(", ", filenames)}");
+
+            var window = new ProgressWindow(targetType, filenames);
             var app = new Application();
             app.DispatcherUnhandledException += AppOnDispatcherUnhandledException;
             app.Run(window);
 
             Trace.Flush();
+        }
+
+        private static string[] FilterAnySkippedFiles(string targetType, string[] filenames)
+        {
+            var includedFiles = new List<string>();
+            foreach (var filename in filenames)
+            {
+                var targetFilename = Path.ChangeExtension(filename, targetType.ToLower());
+                // Prompt the user about existing target files.
+                if (File.Exists(targetFilename))
+                {
+                    var message = $"Overwrite existing file {targetFilename}?";
+                    var result = MessageBox.Show(message, "Confirm overwrite", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+                    switch (result)
+                    {
+                        case MessageBoxResult.Yes:
+                            includedFiles.Add(filename);
+                            break;
+                        case MessageBoxResult.No:
+                            // Skip this file.
+                            break;
+                        case MessageBoxResult.Cancel:
+                        default:
+                            // Cancel the entire operation.
+                            Environment.Exit(0);
+                            break;
+                    }
+                }
+                else
+                {
+                    includedFiles.Add(filename);
+                }
+            }
+
+            return includedFiles.ToArray();
         }
 
         private static void AppOnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

@@ -168,7 +168,7 @@ namespace ImageConverter
                 }
                 else
                 {
-                    Trace.WriteLine($"Setting text to show sucessful conversion of all {_filenames.Length} file(s).");
+                    Trace.WriteLine($"Setting text to show successful conversion of all {_filenames.Length} file(s).");
                     CurrentFileNameText.Text = $"Successfully converted {_filenames.Length} file(s).";
                     ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Green);
                 }
@@ -185,21 +185,32 @@ namespace ImageConverter
         {
             var image = await Image.LoadAsync(filename, token).ConfigureAwait(false);
 
-            switch (targetType)
+            switch (targetType.ToLower())
             {
-                case "JPG":
+                case "jpg":
                     var jpgPath = Path.ChangeExtension(filename, ".jpg");
+                    Trace.WriteLine($"Saving {jpgPath}");
                     await image.SaveAsJpegAsync(
                         jpgPath,
                         new JpegEncoder { Quality = 75 },
                         token).ConfigureAwait(false);
                     break;
-                case "PNG":
+                case "png":
                     var pngPath = Path.ChangeExtension(filename, ".png");
+                    Trace.WriteLine($"Saving {pngPath}");
                     await image.SaveAsPngAsync(
                         pngPath,
                         new PngEncoder { CompressionLevel = PngCompressionLevel.DefaultCompression },
                         token).ConfigureAwait(false);
+                    break;
+                default:
+                    Trace.WriteLine($"Request to convert to unsupported target format {targetType}.");
+                    MessageBox.Show(
+                        $"Unsupported target format {targetType}.",
+                        "Conversion Failure",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Exclamation
+                        );
                     break;
             }
         }
