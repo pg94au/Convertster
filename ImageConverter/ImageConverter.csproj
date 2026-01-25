@@ -77,6 +77,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="OverwriteDialog.xaml.cs">
+      <DependentUpon>OverwriteDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="ProgressWindow.xaml.cs">
       <DependentUpon>ProgressWindow.xaml</DependentUpon>
@@ -107,6 +110,9 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="OverwriteDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ProgressWindow.xaml">
