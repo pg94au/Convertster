@@ -11,14 +11,6 @@ namespace ImageConverter
 {
     internal static class Program
     {
-        private enum OverwriteDialogResult
-        {
-            Yes,
-            YesToAll,
-            No,
-            Cancel
-        }
-
         [STAThread]
         private static void Main(string[] args)
         {
@@ -43,6 +35,7 @@ namespace ImageConverter
             var targetType = args[0].ToLower();
             var filenames = args.Skip(1).ToArray();
 
+            Trace.WriteLine($"Considering conversion of {string.Join(", ", filenames)}");
             filenames = FilterAnySkippedFiles(targetType, filenames);
             Trace.WriteLine($"Converting {string.Join(", ", filenames)}");
 
@@ -73,64 +66,16 @@ namespace ImageConverter
                     continue;
                 }
 
-                // Build a simple WPF dialog window programmatically to avoid
-                // issues with external XAML files.
-                var dlg = new Window
-                {
-                    Title = "Confirm overwrite",
-                    Width = 520,
-                    Height = 180,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                    ResizeMode = ResizeMode.NoResize
-                };
-
-                // Assign an owner window if one exists and is not the dialog
+                // Use the existing OverwriteDialog (XAML) to prompt the user.
+                var overwriteDialog = new OverwriteDialog(targetFilename);
                 var ownerWindow = Application.Current?.Windows.OfType<Window>().FirstOrDefault();
-                if (ownerWindow != null && !ReferenceEquals(ownerWindow, dlg))
+                if (ownerWindow != null && !ReferenceEquals(ownerWindow, overwriteDialog))
                 {
-                    dlg.Owner = ownerWindow;
+                    overwriteDialog.Owner = ownerWindow;
                 }
 
-                var grid = new System.Windows.Controls.Grid { Margin = new Thickness(12) };
-                grid.RowDefinitions.Add(new System.Windows.Controls.RowDefinition { Height = System.Windows.GridLength.Auto });
-                grid.RowDefinitions.Add(new System.Windows.Controls.RowDefinition { Height = new System.Windows.GridLength(1, System.Windows.GridUnitType.Star) });
-                grid.RowDefinitions.Add(new System.Windows.Controls.RowDefinition { Height = System.Windows.GridLength.Auto });
-
-                var instr = new System.Windows.Controls.TextBlock { Text = "File already exists", FontWeight = FontWeights.Bold, FontSize = 14 };
-                System.Windows.Controls.Grid.SetRow(instr, 0);
-                grid.Children.Add(instr);
-
-                var detail = new System.Windows.Controls.TextBlock { Text = targetFilename, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0,8,0,8) };
-                System.Windows.Controls.Grid.SetRow(detail, 1);
-                grid.Children.Add(detail);
-
-                var panel = new System.Windows.Controls.StackPanel { Orientation = System.Windows.Controls.Orientation.Horizontal, HorizontalAlignment = System.Windows.HorizontalAlignment.Right };
-
-                var yesBtn = new System.Windows.Controls.Button { Content = "Yes", Width = 96, Margin = new Thickness(4,0,4,0) };
-                var yesAllBtn = new System.Windows.Controls.Button { Content = "Yes to All", Width = 120, Margin = new Thickness(4,0,4,0) };
-                var noBtn = new System.Windows.Controls.Button { Content = "No", Width = 96, Margin = new Thickness(4,0,4,0) };
-                var cancelBtn = new System.Windows.Controls.Button { Content = "Cancel", Width = 96, Margin = new Thickness(4,0,4,0) };
-
-                panel.Children.Add(yesBtn);
-                panel.Children.Add(yesAllBtn);
-                panel.Children.Add(noBtn);
-                panel.Children.Add(cancelBtn);
-                System.Windows.Controls.Grid.SetRow(panel, 2);
-                grid.Children.Add(panel);
-
-                OverwriteDialogResult? choice = null;
-
-                yesBtn.Click += (_, __) => { choice = OverwriteDialogResult.Yes; dlg.DialogResult = true; dlg.Close(); };
-                yesAllBtn.Click += (_, __) => { choice = OverwriteDialogResult.YesToAll; dlg.DialogResult = true; dlg.Close(); };
-                noBtn.Click += (_, __) => { choice = OverwriteDialogResult.No; dlg.DialogResult = false; dlg.Close(); };
-                cancelBtn.Click += (_, __) => { choice = OverwriteDialogResult.Cancel; dlg.DialogResult = false; dlg.Close(); };
-
-                dlg.Content = grid;
-
-                // ShowDialog will block until the dialog is closed.
-                dlg.ShowDialog();
-
-                var finalChoice = choice ?? OverwriteDialogResult.Cancel;
+                overwriteDialog.ShowDialog();
+                var finalChoice = overwriteDialog.GetResult();
 
                 switch (finalChoice)
                 {
