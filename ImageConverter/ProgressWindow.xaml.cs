@@ -221,6 +221,8 @@ namespace ImageConverter
             if (string.Equals(CancelButton.Content as string, "Close", StringComparison.OrdinalIgnoreCase))
             {
                 Close();
+                // Need to explicitly shut down the app because of how we configured it.
+                Application.Current?.Shutdown();
                 return;
             }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -11,6 +12,12 @@ namespace ImageConverter
 {
     internal static class Program
     {
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
         [STAThread]
         private static void Main(string[] args)
         {
@@ -27,7 +34,11 @@ namespace ImageConverter
 
             // Create the WPF Application early so we can show WPF dialogs
             // before running the main window.
-            var app = new Application();
+            var app = new Application
+            {
+                // Need this so that the app doesn't auto-shutdown when the first dialog closes.
+                ShutdownMode = ShutdownMode.OnExplicitShutdown
+            };
             app.DispatcherUnhandledException += AppOnDispatcherUnhandledException;
 
             // Create and run the WPF application with a ProgressWindow.
@@ -40,6 +51,12 @@ namespace ImageConverter
             Trace.WriteLine($"Converting {string.Join(", ", filenames)}");
 
             var window = new ProgressWindow(targetType, filenames);
+            var explorerHwnd = GetExplorerForegroundWindow();
+            if (explorerHwnd != IntPtr.Zero)
+            {
+                // Set native owner to the explorer window that likely launched us
+                new System.Windows.Interop.WindowInteropHelper(window).Owner = explorerHwnd;
+            }
             app.Run(window);
 
             Trace.Flush();
@@ -68,10 +85,13 @@ namespace ImageConverter
 
                 // Use the existing OverwriteDialog (XAML) to prompt the user.
                 var overwriteDialog = new OverwriteDialog(targetFilename);
-                var ownerWindow = Application.Current?.Windows.OfType<Window>().FirstOrDefault();
-                if (ownerWindow != null && !ReferenceEquals(ownerWindow, overwriteDialog))
+
+                // Replace existing owner-selection code with this before overwriteDialog.ShowDialog()
+                var explorerHwnd = GetExplorerForegroundWindow();
+                if (explorerHwnd != IntPtr.Zero)
                 {
-                    overwriteDialog.Owner = ownerWindow;
+                    // Set native owner to the explorer window that likely launched us
+                    new System.Windows.Interop.WindowInteropHelper(overwriteDialog).Owner = explorerHwnd;
                 }
 
                 overwriteDialog.ShowDialog();
@@ -99,6 +119,28 @@ namespace ImageConverter
             return includedFiles.ToArray();
         }
 
+        private static IntPtr GetExplorerForegroundWindow()
+        {
+            var hwnd = GetForegroundWindow();
+            if (hwnd == IntPtr.Zero) return IntPtr.Zero;
+
+            GetWindowThreadProcessId(hwnd, out uint pid);
+            try
+            {
+                var proc = Process.GetProcessById((int)pid);
+                if (string.Equals(proc.ProcessName, "explorer", StringComparison.OrdinalIgnoreCase))
+                {
+                    return hwnd;
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+
+            return IntPtr.Zero;
+        }
+
         private static void AppOnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             Trace.WriteLine($"DispatcherUnhandledException: {e.Exception}");
@@ -119,3 +161,4 @@ namespace ImageConverter
         }
     }
 }
+ 
