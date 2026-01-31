@@ -55,7 +55,7 @@ IFACEMETHODIMP ClassFactory::CreateInstance(IUnknown* pUnkOuter, REFIID riid, vo
 {
 	HRESULT hr = CLASS_E_NOAGGREGATION;
 
-	// pUnkOuter is used for aggregation. We do not support it in the sample.
+	// pUnkOuter is used for aggregation. We do not support it.
 	if (pUnkOuter == nullptr)
 	{
 		hr = E_OUTOFMEMORY;

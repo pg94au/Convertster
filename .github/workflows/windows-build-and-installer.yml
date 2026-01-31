@@ -2,9 +2,9 @@ name: Build Windows projects and create Inno Setup installer
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "*" ]
   pull_request:
-    branches: [ main ]
+    branches: [ "*" ]
   workflow_dispatch: {}
 
 jobs:
@@ -14,11 +14,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Setup .NET 8 SDK
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0.x'
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1

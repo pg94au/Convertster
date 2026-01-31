@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -11,6 +12,12 @@ namespace ImageConverter
 {
     internal static class Program
     {
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
         [STAThread]
         private static void Main(string[] args)
         {
@@ -25,17 +32,31 @@ namespace ImageConverter
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
+            // Create the WPF Application early so we can show WPF dialogs
+            // before running the main window.
+            var app = new Application
+            {
+                // Need this so that the app doesn't auto-shutdown when the first dialog closes.
+                ShutdownMode = ShutdownMode.OnExplicitShutdown
+            };
+            app.DispatcherUnhandledException += AppOnDispatcherUnhandledException;
+
             // Create and run the WPF application with a ProgressWindow.
             // We avoid relying on generated App.xaml entry point by providing our own Main.
             var targetType = args[0].ToLower();
             var filenames = args.Skip(1).ToArray();
 
+            Trace.WriteLine($"Considering conversion of {string.Join(", ", filenames)}");
             filenames = FilterAnySkippedFiles(targetType, filenames);
             Trace.WriteLine($"Converting {string.Join(", ", filenames)}");
 
             var window = new ProgressWindow(targetType, filenames);
-            var app = new Application();
-            app.DispatcherUnhandledException += AppOnDispatcherUnhandledException;
+            var explorerHwnd = GetExplorerForegroundWindow();
+            if (explorerHwnd != IntPtr.Zero)
+            {
+                // Set native owner to the explorer window that likely launched us
+                new System.Windows.Interop.WindowInteropHelper(window).Owner = explorerHwnd;
+            }
             app.Run(window);
 
             Trace.Flush();
@@ -44,36 +65,80 @@ namespace ImageConverter
         private static string[] FilterAnySkippedFiles(string targetType, string[] filenames)
         {
             var includedFiles = new List<string>();
-            foreach (var filename in filenames)
+            bool applyYesToAll = false;
+            for (int i = 0; i < filenames.Length; i++)
             {
+                var filename = filenames[i];
                 var targetFilename = Path.ChangeExtension(filename, targetType.ToLower());
-                // Prompt the user about existing target files.
-                if (File.Exists(targetFilename))
-                {
-                    var message = $"Overwrite existing file {targetFilename}?";
-                    var result = MessageBox.Show(message, "Confirm overwrite", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
-                    switch (result)
-                    {
-                        case MessageBoxResult.Yes:
-                            includedFiles.Add(filename);
-                            break;
-                        case MessageBoxResult.No:
-                            // Skip this file.
-                            break;
-                        case MessageBoxResult.Cancel:
-                        default:
-                            // Cancel the entire operation.
-                            Environment.Exit(0);
-                            break;
-                    }
-                }
-                else
+
+                if (!File.Exists(targetFilename))
                 {
                     includedFiles.Add(filename);
+                    continue;
+                }
+
+                if (applyYesToAll)
+                {
+                    includedFiles.Add(filename);
+                    continue;
+                }
+
+                // Use the existing OverwriteDialog (XAML) to prompt the user.
+                var overwriteDialog = new OverwriteDialog(targetFilename);
+
+                // Replace existing owner-selection code with this before overwriteDialog.ShowDialog()
+                var explorerHwnd = GetExplorerForegroundWindow();
+                if (explorerHwnd != IntPtr.Zero)
+                {
+                    // Set native owner to the explorer window that likely launched us
+                    new System.Windows.Interop.WindowInteropHelper(overwriteDialog).Owner = explorerHwnd;
+                }
+
+                overwriteDialog.ShowDialog();
+                var finalChoice = overwriteDialog.GetResult();
+
+                switch (finalChoice)
+                {
+                    case OverwriteDialogResult.Yes:
+                        includedFiles.Add(filename);
+                        break;
+                    case OverwriteDialogResult.YesToAll:
+                        includedFiles.Add(filename);
+                        applyYesToAll = true;
+                        break;
+                    case OverwriteDialogResult.No:
+                        // skip
+                        break;
+                    case OverwriteDialogResult.Cancel:
+                    default:
+                        Environment.Exit(0);
+                        break;
                 }
             }
 
             return includedFiles.ToArray();
+        }
+
+        private static IntPtr GetExplorerForegroundWindow()
+        {
+            var hwnd = GetForegroundWindow();
+            if (hwnd == IntPtr.Zero) return IntPtr.Zero;
+
+            GetWindowThreadProcessId(hwnd, out uint pid);
+            try
+            {
+                var proc = Process.GetProcessById((int)pid);
+                if (string.Equals(proc.ProcessName, "explorer", StringComparison.OrdinalIgnoreCase))
+                {
+                    return hwnd;
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+
+            return IntPtr.Zero;
         }
 
         private static void AppOnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
@@ -96,3 +161,4 @@ namespace ImageConverter
         }
     }
 }
+ 
