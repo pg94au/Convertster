@@ -3,7 +3,7 @@
 ; Non-commercial use only
 
 #define MyAppName "Convertster"
-#define MyAppVersion "1.0"
+#define MyAppVersion "1.1"
 #define MyAppPublisher "Paul Grebenc"
 #define MyAppURL "https://github.com/pg94au/Convertster"
 
@@ -28,7 +28,7 @@ DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 LicenseFile=..\LICENSE
 PrivilegesRequired=admin
-OutputBaseFilename=Convertster-1.0-Setup
+OutputBaseFilename={#MyAppName}-{#MyAppVersion}-Setup
 SolidCompression=yes
 WizardStyle=modern dynamic
 
