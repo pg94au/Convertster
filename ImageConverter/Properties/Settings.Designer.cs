@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ImageConverterNet.Properties
+namespace ImageConverter.Properties
 {
 
 
