@@ -40,6 +40,9 @@ private:
     // The name of the selected files.
 	std::vector<std::wstring> m_vSelectedFiles;
 
+    // Resource instance to use for localized strings (defaults to module instance)
+    HMODULE m_hResourceInstance;
+
     // Handlers for conversion submenu
     void OnConvertToJpg(HWND hWnd);
     void OnConvertToPng(HWND hWnd);
