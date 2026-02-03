@@ -46,7 +46,7 @@
     
     mimetype: application/x-microsoft.net.object.binary.base64
     value   : The object must be serialized with 
-            : System.Serialization.Formatters.Binary.BinaryFormatter
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
     
     mimetype: application/x-microsoft.net.object.soap.base64
@@ -60,6 +60,7 @@
             : and then encoded with base64 encoding.
     -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
@@ -68,9 +69,10 @@
               <xsd:sequence>
                 <xsd:element name="value" type="xsd:string" minOccurs="0" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="name" use="required" type="xsd:string" />
               <xsd:attribute name="type" type="xsd:string" />
               <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
@@ -85,9 +87,10 @@
                 <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
                 <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
               <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
               <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
@@ -115,48 +118,48 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>Annuler</value>
   </data>
   <data name="CancellationRequested" xml:space="preserve">
-    <value>Cancellation requested... ({0} processed)</value>
+    <value>Annulation demand&#233;e... ({0} trait&#233;s)</value>
   </data>
   <data name="Close" xml:space="preserve">
-    <value>Close</value>
+    <value>Fermer</value>
   </data>
   <data name="ConvertedWithFailures" xml:space="preserve">
-    <value>Converted {0} file(s) ({1} failed).</value>
+    <value>Converti {0} fichier(s) ({1} ont &#233;chou&#233;).</value>
   </data>
   <data name="ConversionCancelled" xml:space="preserve">
-    <value>Conversion cancelled.</value>
+    <value>Conversion annul&#233;e.</value>
   </data>
   <data name="ConversionFailureTitle" xml:space="preserve">
-    <value>Conversion Failure</value>
+    <value>&#201;chec de la conversion</value>
   </data>
   <data name="ConvertingFiles" xml:space="preserve">
-    <value>Converting files to {0}...</value>
+    <value>Conversion des fichiers en {0}...</value>
   </data>
   <data name="FailedToConvertAll" xml:space="preserve">
-    <value>Failed to convert {0} file(s).</value>
+    <value>&#201;chec de la conversion de {0} fichier(s).</value>
   </data>
   <data name="No" xml:space="preserve">
-    <value>No</value>
+    <value>Non</value>
   </data>
   <data name="OverwriteInstruction" xml:space="preserve">
-    <value>Overwrite existing target file?</value>
+    <value>Remplacer le fichier cible existant ?</value>
   </data>
   <data name="OverwriteTitle" xml:space="preserve">
-    <value>Confirm overwrite</value>
+    <value>Confirmer l'&#233;crasement</value>
   </data>
   <data name="SuccessfullyConvertedAll" xml:space="preserve">
-    <value>Successfully converted {0} file(s).</value>
+    <value>Conversion r&#233;ussie de {0} fichier(s).</value>
   </data>
   <data name="UnsupportedTargetFormat" xml:space="preserve">
-    <value>Unsupported target format {0}.</value>
+    <value>Format cible non pris en charge {0}.</value>
   </data>
   <data name="Yes" xml:space="preserve">
-    <value>Yes</value>
+    <value>Oui</value>
   </data>
   <data name="YesToAll" xml:space="preserve">
-    <value>Yes to All</value>
+    <value>Oui pour tous</value>
   </data>
 </root>

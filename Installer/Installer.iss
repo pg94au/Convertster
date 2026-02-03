@@ -20,8 +20,8 @@ MinVersion=10.0
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-ArchitecturesAllowed=x64
-ArchitecturesInstallIn64BitMode=x64
+ArchitecturesAllowed=x64os
+ArchitecturesInstallIn64BitMode=x64os
 DefaultDirName={autopf}\{#MyAppName}
 DisableDirPage=yes
 DefaultGroupName={#MyAppName}
@@ -42,6 +42,8 @@ Source: "..\ShellExtContextMenuHandler\x64\Release\CppShellExtContextMenuHandler
 Source: "..\ImageConverter\bin\Release\ImageConverter.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\ImageConverter\bin\Release\ImageConverter.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\ImageConverter\bin\Release\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+; Satellite resource assemblies for localization (fr, es, and any future cultures)
+Source: "..\ImageConverter\bin\Release\*.resources.dll"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ; Required to install the VC++ runtime that is neeeded by the explorer extension.
 Source: "Prerequisites\VC_redist.x64.exe"; DestDir: "{tmp}"; Flags: dontcopy

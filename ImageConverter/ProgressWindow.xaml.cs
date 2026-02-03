@@ -24,7 +24,8 @@ namespace ImageConverter
             InitializeComponent();
 
             _targetType = targetType ?? string.Empty;
-            ConvertingFilesText.Text = $"Converting files to {_targetType}...";
+            ConvertingFilesText.Text = string.Format(Properties.Resources.ConvertingFiles, _targetType);
+            CancelButton.Content = Properties.Resources.Cancel;
             Trace.WriteLine($"Target type is {_targetType}");
 
             _filenames = filenames ?? Array.Empty<string>();
@@ -151,31 +152,31 @@ namespace ImageConverter
                 if (token.IsCancellationRequested)
                 {
                     Trace.WriteLine("Setting text to show operation cancelled.");
-                    CurrentFileNameText.Text = "Conversion cancelled.";
+                    CurrentFileNameText.Text = Properties.Resources.ConversionCancelled;
                     ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Gray);
                 }
                 else if (successes == 0 && failures > 0)
                 {
                     Trace.WriteLine($"Setting text to show failure to convert all {failures} file(s).");
-                    CurrentFileNameText.Text = $"Failed to convert {failures} file(s).";
+                    CurrentFileNameText.Text = string.Format(Properties.Resources.FailedToConvertAll, failures);
                     ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Red);
                 }
                 else if (failures > 0)
                 {
                     Trace.WriteLine($"Setting text to show conversion of {successes} file(s) and failure to convert {failures} file(s).");
-                    CurrentFileNameText.Text = $"Converted {successes} file(s) ({failures} failed).";
+                    CurrentFileNameText.Text = string.Format(Properties.Resources.ConvertedWithFailures, successes, failures);
                     ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Gold);
                 }
                 else
                 {
                     Trace.WriteLine($"Setting text to show successful conversion of all {_filenames.Length} file(s).");
-                    CurrentFileNameText.Text = $"Successfully converted {_filenames.Length} file(s).";
+                    CurrentFileNameText.Text = string.Format(Properties.Resources.SuccessfullyConvertedAll, _filenames.Length);
                     ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Green);
                 }
 
                 // Switch the Cancel button to a Close button after operations complete/cancel
                 Trace.WriteLine("Switching Cancel button to Close.");
-                CancelButton.Content = "Close";
+                CancelButton.Content = Properties.Resources.Close;
                 CancelButton.IsEnabled = true;
             }).Task.ConfigureAwait(false);
             Trace.WriteLine("Final UI update completed.");
@@ -206,8 +207,8 @@ namespace ImageConverter
                 default:
                     Trace.WriteLine($"Request to convert to unsupported target format {targetType}.");
                     MessageBox.Show(
-                        $"Unsupported target format {targetType}.",
-                        "Conversion Failure",
+                        string.Format(Properties.Resources.UnsupportedTargetFormat, targetType),
+                        Properties.Resources.ConversionFailureTitle,
                         MessageBoxButton.OK,
                         MessageBoxImage.Exclamation
                         );
@@ -218,7 +219,7 @@ namespace ImageConverter
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             // If button already says Close, close the window.
-            if (string.Equals(CancelButton.Content as string, "Close", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(CancelButton.Content as string, Properties.Resources.Close, StringComparison.OrdinalIgnoreCase))
             {
                 Close();
                 // Need to explicitly shut down the app because of how we configured it.
@@ -228,14 +229,14 @@ namespace ImageConverter
 
             // Immediate UI feedback so user sees cancellation right away
             CancelButton.IsEnabled = false;
-            CurrentFileNameText.Text = $"Cancellation requested... ({(int)ConversionProgressBar.Value} processed)";
+            CurrentFileNameText.Text = string.Format(Properties.Resources.CancellationRequested, (int)ConversionProgressBar.Value);
             ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Gray);
 
             // Request cancellation. Tasks will observe token and exit.
             _cts.Cancel();
 
             // Enable the button and change it to a Close button so the user can dismiss the dialog.
-            CancelButton.Content = "Close";
+            CancelButton.Content = Properties.Resources.Close;
             CancelButton.IsEnabled = true;
         }
     }
