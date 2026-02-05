@@ -43,13 +43,13 @@ RestartWarning=This installer will restart Windows Explorer to activate the cont
     Any open File Explorer windows will be closed.%n%n \
     Do you want to continue?
 ; French
-fr.RestartWarning=Ce programme d'installation va redémarrer l'Explorateur Windows pour activer l'extension du menu contextuel.%n%n \
-    Toutes les fenêtres de l'Explorateur de fichiers ouvertes seront fermées.%n%n \
+fr.RestartWarning=Ce programme d'installation va redÃ©marrer l'Explorateur Windows pour activer l'extension du menu contextuel.%n%n \
+    Toutes les fenÃªtres de l'Explorateur de fichiers ouvertes seront fermÃ©es.%n%n \
     Voulez-vous continuer?
 ; Spanish
-es.RestartWarning=Este instalador reiniciará el Explorador de Windows para activar la extensión del menú contextual.%n%n \
-    Todas las ventanas abiertas del Explorador de archivos se cerrarán.%n%n \
-    ¿Desea continuar?
+es.RestartWarning=Este instalador reiniciarÃ¡ el Explorador de Windows para activar la extensiÃ³n del menÃº contextual.%n%n \
+    Todas las ventanas abiertas del Explorador de archivos se cerrarÃ¡n.%n%n \
+    Â¿Desea continuar?
 
 ; VC++ Runtime Error Messages
 VCRuntimeMissingError=Internal installer error: VC++ runtime missing.
@@ -57,12 +57,12 @@ VCRuntimeInstallFailedError=Failed to install required Microsoft Visual C++ runt
 VCRuntimeInstallationError=Microsoft Visual C++ runtime installation failed.
 
 fr.VCRuntimeMissingError=Erreur interne de l'installateur : runtime VC++ manquant.
-fr.VCRuntimeInstallFailedError=Échec de l'installation du runtime Microsoft Visual C++ requis.
-fr.VCRuntimeInstallationError=L'installation du runtime Microsoft Visual C++ a échoué.
+fr.VCRuntimeInstallFailedError=Ã‰chec de l'installation du runtime Microsoft Visual C++ requis.
+fr.VCRuntimeInstallationError=L'installation du runtime Microsoft Visual C++ a Ã©chouÃ©.
 
 es.VCRuntimeMissingError=Error interno del instalador: falta el runtime de VC++.
 es.VCRuntimeInstallFailedError=Error al instalar el runtime de Microsoft Visual C++ requerido.
-es.VCRuntimeInstallationError=La instalación del runtime de Microsoft Visual C++ falló.
+es.VCRuntimeInstallationError=La instalaciÃ³n del runtime de Microsoft Visual C++ fallÃ³.
 
 [Files]
 ; The DLL for the explorer extension.
@@ -74,7 +74,7 @@ Source: "..\ImageConverter\bin\Release\*.dll"; DestDir: "{app}"; Flags: ignoreve
 ; Satellite resource assemblies for localization (fr, es, and any future cultures)
 Source: "..\ImageConverter\bin\Release\*.resources.dll"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
-; Required to install the VC++ runtime that is neeeded by the explorer extension.
+; Required to install the VC++ runtime that is needed by the explorer extension.
 Source: "Prerequisites\VC_redist.x64.exe"; DestDir: "{tmp}"; Flags: dontcopy
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
