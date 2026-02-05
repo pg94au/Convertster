@@ -51,6 +51,19 @@ es.RestartWarning=Este instalador reiniciará el Explorador de Windows para activ
     Todas las ventanas abiertas del Explorador de archivos se cerrarán.%n%n \
     ¿Desea continuar?
 
+; VC++ Runtime Error Messages
+VCRuntimeMissingError=Internal installer error: VC++ runtime missing.
+VCRuntimeInstallFailedError=Failed to install required Microsoft Visual C++ runtime.
+VCRuntimeInstallationError=Microsoft Visual C++ runtime installation failed.
+
+fr.VCRuntimeMissingError=Erreur interne de l'installateur : runtime VC++ manquant.
+fr.VCRuntimeInstallFailedError=Échec de l'installation du runtime Microsoft Visual C++ requis.
+fr.VCRuntimeInstallationError=L'installation du runtime Microsoft Visual C++ a échoué.
+
+es.VCRuntimeMissingError=Error interno del instalador: falta el runtime de VC++.
+es.VCRuntimeInstallFailedError=Error al instalar el runtime de Microsoft Visual C++ requerido.
+es.VCRuntimeInstallationError=La instalación del runtime de Microsoft Visual C++ falló.
+
 [Files]
 ; The DLL for the explorer extension.
 Source: "..\ShellExtContextMenuHandler\x64\Release\CppShellExtContextMenuHandler.dll"; DestDir: "{sys}"; Flags: regserver
@@ -110,7 +123,7 @@ begin
     if not FileExists(Path) then
     begin
       Log('ERROR: VC_redist.x64.exe does not exist');
-      Result := 'Internal installer error: VC++ runtime missing.';
+      Result := CustomMessage('VCRuntimeMissingError');
       Exit;
     end;
   
@@ -123,13 +136,13 @@ begin
       ResultCode)
     then
     begin
-      Result := 'Failed to install required Microsoft Visual C++ runtime.';
+      Result := CustomMessage('VCRuntimeInstallFailedError');
       Exit;
     end;
 
     if ResultCode <> 0 then
     begin
-      Result := 'Microsoft Visual C++ runtime installation failed.';
+      Result := CustomMessage('VCRuntimeInstallationError');
       Exit;
     end;
   end;
