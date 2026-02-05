@@ -12,6 +12,10 @@ enum
 	IDM_CONVERT_PNG = 1,
 };
 
+// Buffer size constants for menu text
+constexpr size_t MAX_MENU_TEXT_LENGTH = 256;
+constexpr size_t MAX_SUBMENU_TEXT_LENGTH = 128;
+
 class FileContextMenuExt : public IShellExtInit, public IContextMenu
 {
 public:
@@ -56,7 +60,7 @@ private:
     PCWSTR m_pwszVerbHelpText;
 
     // Buffers for localized menu text (must persist for menu lifetime)
-    wchar_t m_menuTextBuf[256];
-    wchar_t m_toJpgBuf[128];
-    wchar_t m_toPngBuf[128];
+    wchar_t m_menuTextBuf[MAX_MENU_TEXT_LENGTH];
+    wchar_t m_toJpgBuf[MAX_SUBMENU_TEXT_LENGTH];
+    wchar_t m_toPngBuf[MAX_SUBMENU_TEXT_LENGTH];
 };
