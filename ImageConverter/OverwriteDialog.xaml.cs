@@ -16,12 +16,6 @@ namespace ImageConverter
         {
             InitializeComponent();
             DetailText.Text = filename;
-            Title = Properties.Resources.OverwriteTitle;
-            InstructionText.Text = Properties.Resources.OverwriteInstruction;
-            YesButton.Content = Properties.Resources.Yes;
-            YesAllButton.Content = Properties.Resources.YesToAll;
-            NoButton.Content = Properties.Resources.No;
-            CancelButton.Content = Properties.Resources.Cancel;
         }
 
         private void YesButton_Click(object sender, RoutedEventArgs e)
