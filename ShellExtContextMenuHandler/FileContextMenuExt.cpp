@@ -318,14 +318,7 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(HMENU hMenu, UINT indexMenu,
 	mii.fType = MFT_STRING;
 	// Load the localized parent menu text from resources into member variable.
 	int menuLen = LoadStringW(m_hResourceInstance, IDS_MENU_TEXT, m_menuTextBuf, ARRAYSIZE(m_menuTextBuf));
-	if (menuLen > 0)
-	{
-		mii.dwTypeData = m_menuTextBuf;
-	}
-	else
-	{
-		mii.dwTypeData = m_pszMenuText; // fallback
-	}
+	mii.dwTypeData = (menuLen > 0) ? m_menuTextBuf : m_pszMenuText;
 	mii.fState = MFS_ENABLED;
 
 	// Create a popup submenu
