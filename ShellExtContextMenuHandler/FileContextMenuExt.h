@@ -54,4 +54,9 @@ private:
     PCWSTR m_pwszVerb;
     PCWSTR m_pwszVerbCanonicalName;
     PCWSTR m_pwszVerbHelpText;
+
+    // Buffers for localized menu text (must persist for menu lifetime)
+    wchar_t m_menuTextBuf[256];
+    wchar_t m_toJpgBuf[128];
+    wchar_t m_toPngBuf[128];
 };
