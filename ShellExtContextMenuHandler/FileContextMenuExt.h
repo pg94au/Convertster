@@ -43,6 +43,11 @@ private:
     // Resource instance to use for localized strings (defaults to module instance)
     HMODULE m_hResourceInstance;
 
+    // Buffers for localized menu strings (must persist beyond QueryContextMenu)
+    wchar_t m_menuTextBuf[256];
+    wchar_t m_toJpgTextBuf[128];
+    wchar_t m_toPngTextBuf[128];
+
     // Handlers for conversion submenu
     void OnConvertToJpg(HWND hWnd);
     void OnConvertToPng(HWND hWnd);

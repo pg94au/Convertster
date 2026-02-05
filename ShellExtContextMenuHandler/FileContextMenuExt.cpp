@@ -316,12 +316,11 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(HMENU hMenu, UINT indexMenu,
 	MENUITEMINFOW mii = { sizeof(mii) };
 	mii.fMask = MIIM_SUBMENU | MIIM_STRING | MIIM_FTYPE | MIIM_STATE;
 	mii.fType = MFT_STRING;
-	// Load the localized parent menu text from resources.
-	wchar_t menuBuf[256];
-	int menuLen = LoadStringW(m_hResourceInstance, IDS_MENU_TEXT, menuBuf, ARRAYSIZE(menuBuf));
+	// Load the localized parent menu text from resources into member variable.
+	int menuLen = LoadStringW(m_hResourceInstance, IDS_MENU_TEXT, m_menuTextBuf, ARRAYSIZE(m_menuTextBuf));
 	if (menuLen > 0)
 	{
-		mii.dwTypeData = menuBuf;
+		mii.dwTypeData = m_menuTextBuf;
 	}
 	else
 	{
@@ -349,14 +348,12 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(HMENU hMenu, UINT indexMenu,
 	}
 
     // Add "To JPG" to sub menu (always available for supported input types)
-    // Load localized submenu strings
-    wchar_t toJpgBuf[128];
-    wchar_t toPngBuf[128];
-    int toJpgLen = LoadStringW(m_hResourceInstance, IDS_TO_JPG, toJpgBuf, ARRAYSIZE(toJpgBuf));
-    int toPngLen = LoadStringW(m_hResourceInstance, IDS_TO_PNG, toPngBuf, ARRAYSIZE(toPngBuf));
+    // Load localized submenu strings into member variables
+    int toJpgLen = LoadStringW(m_hResourceInstance, IDS_TO_JPG, m_toJpgTextBuf, ARRAYSIZE(m_toJpgTextBuf));
+    int toPngLen = LoadStringW(m_hResourceInstance, IDS_TO_PNG, m_toPngTextBuf, ARRAYSIZE(m_toPngTextBuf));
 
-    const wchar_t* toJpgText = (toJpgLen > 0) ? toJpgBuf : L_To_JPG;
-    const wchar_t* toPngText = (toPngLen > 0) ? toPngBuf : L_To_PNG;
+    const wchar_t* toJpgText = (toJpgLen > 0) ? m_toJpgTextBuf : L_To_JPG;
+    const wchar_t* toPngText = (toPngLen > 0) ? m_toPngTextBuf : L_To_PNG;
 
     if (!AppendMenuW(hSubMenu, MF_STRING, idCmdFirst + IDM_CONVERT_JPG, toJpgText))
     {
