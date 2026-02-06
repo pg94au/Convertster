@@ -145,7 +145,7 @@
     <value>Non</value>
   </data>
   <data name="OverwriteInstruction" xml:space="preserve">
-    <value>Remplacer le fichier cible existant ?</value>
+    <value>Remplacer le fichier cible existant?</value>
   </data>
   <data name="OverwriteTitle" xml:space="preserve">
     <value>Confirmer l'&#233;crasement</value>
