@@ -1,6 +1,6 @@
 using System.Windows;
 
-namespace ImageConverterNet
+namespace ImageConverter
 {
     public partial class App : Application
     {

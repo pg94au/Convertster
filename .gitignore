@@ -419,3 +419,5 @@ FodyWeavers.xsd
 
 **/VC_redist*.exe
 
+# CodeQL temporary files
+_codeql_detected_source_root

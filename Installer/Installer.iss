@@ -13,7 +13,6 @@
 AppId={{CE398A7C-BF22-4277-A35B-08130D4AE6BE}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-;AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 ; Require at least Windows 10
 MinVersion=10.0
@@ -31,9 +30,39 @@ PrivilegesRequired=admin
 OutputBaseFilename={#MyAppName}-{#MyAppVersion}-Setup
 SolidCompression=yes
 WizardStyle=modern dynamic
+ShowLanguageDialog=auto
 
 [Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"
+Name: "en"; MessagesFile: "compiler:Default.isl"
+Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
+Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl"
+
+[CustomMessages]
+; English (default)
+RestartWarning=This installer will restart Windows Explorer to activate the context menu extension.%n%n \
+    Any open File Explorer windows will be closed.%n%n \
+    Do you want to continue?
+; French
+fr.RestartWarning=Ce programme d'installation va redémarrer l'Explorateur Windows pour activer l'extension du menu contextuel.%n%n \
+    Toutes les fenêtres de l'Explorateur de fichiers ouvertes seront fermées.%n%n \
+    Voulez-vous continuer?
+; Spanish
+es.RestartWarning=Este instalador reiniciará el Explorador de Windows para activar la extensión del menú contextual.%n%n \
+    Todas las ventanas abiertas del Explorador de archivos se cerrarán.%n%n \
+    ¿Desea continuar?
+
+; VC++ Runtime Error Messages
+VCRuntimeMissingError=Internal installer error: VC++ runtime missing.
+VCRuntimeInstallFailedError=Failed to install required Microsoft Visual C++ runtime.
+VCRuntimeInstallationError=Microsoft Visual C++ runtime installation failed.
+
+fr.VCRuntimeMissingError=Erreur interne de l'installateur : runtime VC++ manquant.
+fr.VCRuntimeInstallFailedError=Échec de l'installation du runtime Microsoft Visual C++ requis.
+fr.VCRuntimeInstallationError=L'installation du runtime Microsoft Visual C++ a échoué.
+
+es.VCRuntimeMissingError=Error interno del instalador: falta el runtime de VC++.
+es.VCRuntimeInstallFailedError=Error al instalar el runtime de Microsoft Visual C++ requerido.
+es.VCRuntimeInstallationError=La instalación del runtime de Microsoft Visual C++ falló.
 
 [Files]
 ; The DLL for the explorer extension.
@@ -42,8 +71,10 @@ Source: "..\ShellExtContextMenuHandler\x64\Release\CppShellExtContextMenuHandler
 Source: "..\ImageConverter\bin\Release\ImageConverter.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\ImageConverter\bin\Release\ImageConverter.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\ImageConverter\bin\Release\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+; Satellite resource assemblies for localization (fr, es, and any future cultures)
+Source: "..\ImageConverter\bin\Release\*.resources.dll"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
-; Required to install the VC++ runtime that is neeeded by the explorer extension.
+; Required to install the VC++ runtime that is needed by the explorer extension.
 Source: "Prerequisites\VC_redist.x64.exe"; DestDir: "{tmp}"; Flags: dontcopy
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
@@ -56,9 +87,7 @@ var
   ResultCode: Integer;
 begin
   ResultCode := MsgBox(
-    'This installer will restart Windows Explorer to activate the context menu extension.'#13#10#13#10 +
-    'Any open File Explorer windows will be closed.'#13#10#13#10 +
-    'Do you want to continue?',
+    CustomMessage('RestartWarning'),
     mbConfirmation,
     MB_YESNO or MB_DEFBUTTON2);
 
@@ -94,7 +123,7 @@ begin
     if not FileExists(Path) then
     begin
       Log('ERROR: VC_redist.x64.exe does not exist');
-      Result := 'Internal installer error: VC++ runtime missing.';
+      Result := CustomMessage('VCRuntimeMissingError');
       Exit;
     end;
   
@@ -107,13 +136,13 @@ begin
       ResultCode)
     then
     begin
-      Result := 'Failed to install required Microsoft Visual C++ runtime.';
+      Result := CustomMessage('VCRuntimeInstallFailedError');
       Exit;
     end;
 
     if ResultCode <> 0 then
     begin
-      Result := 'Microsoft Visual C++ runtime installation failed.';
+      Result := CustomMessage('VCRuntimeInstallationError');
       Exit;
     end;
   end;

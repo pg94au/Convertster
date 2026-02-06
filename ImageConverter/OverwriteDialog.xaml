@@ -2,7 +2,8 @@
 <Window x:Class="ImageConverter.OverwriteDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Confirm overwrite" Height="150" Width="480" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+        xmlns:properties="clr-namespace:ImageConverter.Properties"
+        Title="{x:Static properties:Resources.OverwriteTitle}" Height="150" Width="480" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
     <Grid Margin="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -10,15 +11,15 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TextBlock x:Name="InstructionText" FontWeight="Bold" FontSize="14" Text="Overwrite existing target file?" />
+        <TextBlock x:Name="InstructionText" FontWeight="Bold" FontSize="14" Text="{x:Static properties:Resources.OverwriteInstruction}" />
 
         <TextBlock x:Name="DetailText" Grid.Row="1" Margin="0,8,0,8" TextWrapping="Wrap" />
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" >
-            <Button x:Name="YesButton" Width="96" Margin="4,0" Click="YesButton_Click">Yes</Button>
-            <Button x:Name="YesAllButton" Width="120" Margin="4,0" Click="YesAllButton_Click">Yes to All</Button>
-            <Button x:Name="NoButton" Width="96" Margin="4,0" Click="NoButton_Click">No</Button>
-            <Button x:Name="CancelButton" Width="96" Margin="4,0" Click="CancelButton_Click">Cancel</Button>
+            <Button x:Name="YesButton" Width="96" Margin="4,0" Click="YesButton_Click" Content="{x:Static properties:Resources.Yes}" />
+            <Button x:Name="YesAllButton" Width="120" Margin="4,0" Click="YesAllButton_Click" Content="{x:Static properties:Resources.YesToAll}" />
+            <Button x:Name="NoButton" Width="96" Margin="4,0" Click="NoButton_Click" Content="{x:Static properties:Resources.No}" />
+            <Button x:Name="CancelButton" Width="96" Margin="4,0" Click="CancelButton_Click" Content="{x:Static properties:Resources.Cancel}" />
         </StackPanel>
     </Grid>
 </Window>

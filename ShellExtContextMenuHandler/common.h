@@ -2,6 +2,11 @@
 
 #define L_Menu_Text L"&Convert Image Type"
 
+// Localized menu and submenu labels
+// English (default)
+#define L_To_JPG L"To JPG"
+#define L_To_PNG L"To PNG"
+
 #define Verb_Name "imageconverter"
 #define L_Verb_Name L"imageconverter"
 

@@ -2,6 +2,7 @@
 #include <strsafe.h>
 #include <Shlwapi.h>
 #include "common.h"
+#include "resource.h"
 #pragma comment(lib, "shlwapi.lib")
 
 
@@ -10,14 +11,19 @@ extern long g_cDllRef;
 
 
 FileContextMenuExt::FileContextMenuExt()
-	: m_cRef(1),
-	m_pszMenuText(const_cast<PWSTR>(L_Menu_Text)),
-	m_pszVerb(Verb_Name),
-	m_pwszVerb(L_Verb_Name),
-	m_pwszVerbCanonicalName(L_Verb_Canonical_Name),
-	m_pwszVerbHelpText(L_Verb_Help_Text)
+    : m_cRef(1),
+    m_pszMenuText(const_cast<PWSTR>(L_Menu_Text)),
+    m_pszVerb(Verb_Name),
+    m_pwszVerb(L_Verb_Name),
+    m_pwszVerbCanonicalName(L_Verb_Canonical_Name),
+    m_pwszVerbHelpText(L_Verb_Help_Text),
+    m_hResourceInstance(nullptr)
 {
-	InterlockedIncrement(&g_cDllRef);
+    InterlockedIncrement(&g_cDllRef);
+
+    // Default to the DLL's own resources. If the system provides language-specific resources
+    // embedded in the module, LoadString will pick the appropriate language automatically.
+    m_hResourceInstance = g_hInst;
 }
 
 FileContextMenuExt::~FileContextMenuExt()
@@ -310,7 +316,9 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(HMENU hMenu, UINT indexMenu,
 	MENUITEMINFOW mii = { sizeof(mii) };
 	mii.fMask = MIIM_SUBMENU | MIIM_STRING | MIIM_FTYPE | MIIM_STATE;
 	mii.fType = MFT_STRING;
-	mii.dwTypeData = m_pszMenuText;
+	// Load the localized parent menu text from resources into member variable.
+	int menuLen = LoadStringW(m_hResourceInstance, IDS_MENU_TEXT, m_menuTextBuf, ARRAYSIZE(m_menuTextBuf));
+	mii.dwTypeData = (menuLen > 0) ? m_menuTextBuf : m_pszMenuText;
 	mii.fState = MFS_ENABLED;
 
 	// Create a popup submenu
@@ -333,7 +341,14 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(HMENU hMenu, UINT indexMenu,
 	}
 
     // Add "To JPG" to sub menu (always available for supported input types)
-    if (!AppendMenuW(hSubMenu, MF_STRING, idCmdFirst + IDM_CONVERT_JPG, L"To JPG"))
+    // Load localized submenu strings into member variables
+    int toJpgLen = LoadStringW(m_hResourceInstance, IDS_TO_JPG, m_toJpgTextBuf, ARRAYSIZE(m_toJpgTextBuf));
+    int toPngLen = LoadStringW(m_hResourceInstance, IDS_TO_PNG, m_toPngTextBuf, ARRAYSIZE(m_toPngTextBuf));
+
+    const wchar_t* toJpgText = (toJpgLen > 0) ? m_toJpgTextBuf : L_To_JPG;
+    const wchar_t* toPngText = (toPngLen > 0) ? m_toPngTextBuf : L_To_PNG;
+
+    if (!AppendMenuW(hSubMenu, MF_STRING, idCmdFirst + IDM_CONVERT_JPG, toJpgText))
     {
         DestroyMenu(hSubMenu);
         return HRESULT_FROM_WIN32(GetLastError());
@@ -343,7 +358,7 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(HMENU hMenu, UINT indexMenu,
     bool pngAdded = false;
     if (!anyHasPng)
     {
-        if (!AppendMenuW(hSubMenu, MF_STRING, idCmdFirst + IDM_CONVERT_PNG, L"To PNG"))
+        if (!AppendMenuW(hSubMenu, MF_STRING, idCmdFirst + IDM_CONVERT_PNG, toPngText))
         {
             DestroyMenu(hSubMenu);
             return HRESULT_FROM_WIN32(GetLastError());
