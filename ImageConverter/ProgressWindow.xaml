@@ -1,7 +1,7 @@
 <Window x:Class="ImageConverter.ProgressWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Convertster 1.1" Width="480"
+        Title="Convertster 1.2" Width="480"
         SizeToContent="Height"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner">
