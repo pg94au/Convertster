@@ -30,8 +30,7 @@ PrivilegesRequired=admin
 OutputBaseFilename={#MyAppName}-{#MyAppVersion}-Setup
 SolidCompression=yes
 WizardStyle=modern dynamic
-//ShowLanguageDialog=auto
-ShowLanguageDialog=true
+ShowLanguageDialog=auto
 CloseApplicationsFilter=explorer.exe
 
 [Languages]
