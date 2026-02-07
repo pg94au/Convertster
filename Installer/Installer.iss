@@ -31,6 +31,7 @@ OutputBaseFilename={#MyAppName}-{#MyAppVersion}-Setup
 SolidCompression=yes
 WizardStyle=modern dynamic
 ShowLanguageDialog=auto
+CloseApplicationsFilter=explorer.exe
 
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"
@@ -149,10 +150,6 @@ begin
 
   Result := '';
 end;
-
-[Run]
-Filename: "taskkill"; Parameters: "/f /im explorer.exe"; Flags: runhidden
-Filename: "{win}\explorer.exe"; Flags: nowait
 
 [UninstallRun]
 Filename: "taskkill"; Parameters: "/f /im explorer.exe"; Flags: runhidden
