@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="CancellationRequested" xml:space="preserve">
+    <value>Abbruch angefordert... ({0} verarbeitet)</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Schlie&#223;en</value>
+  </data>
+  <data name="ConvertedWithFailures" xml:space="preserve">
+    <value>{0} Datei(en) konvertiert ({1} fehlgeschlagen).</value>
+  </data>
+  <data name="ConversionCancelled" xml:space="preserve">
+    <value>Konvertierung abgebrochen.</value>
+  </data>
+  <data name="ConversionFailureTitle" xml:space="preserve">
+    <value>Konvertierungsfehler</value>
+  </data>
+  <data name="ConvertingFiles" xml:space="preserve">
+    <value>Konvertiere Dateien zu {0}...</value>
+  </data>
+  <data name="FailedToConvertAll" xml:space="preserve">
+    <value>Fehler beim Konvertieren von {0} Datei(en).</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Nein</value>
+  </data>
+  <data name="OverwriteInstruction" xml:space="preserve">
+    <value>Vorhandene Zieldatei &#252;berschreiben?</value>
+  </data>
+  <data name="OverwriteTitle" xml:space="preserve">
+    <value>&#220;berschreiben best&#228;tigen</value>
+  </data>
+  <data name="SuccessfullyConvertedAll" xml:space="preserve">
+    <value>{0} Datei(en) erfolgreich konvertiert.</value>
+  </data>
+  <data name="UnsupportedTargetFormat" xml:space="preserve">
+    <value>Nicht unterst&#252;tztes Zielformat {0}.</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="YesToAll" xml:space="preserve">
+    <value>Ja f&#252;r alle</value>
+  </data>
+</root>

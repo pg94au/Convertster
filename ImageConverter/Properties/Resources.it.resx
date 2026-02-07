@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Cancel" xml:space="preserve">
+    <value>Annulla</value>
+  </data>
+  <data name="CancellationRequested" xml:space="preserve">
+    <value>Annullamento richiesto... ({0} elaborati)</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Chiudi</value>
+  </data>
+  <data name="ConvertedWithFailures" xml:space="preserve">
+    <value>Convertiti {0} file ({1} non riusciti).</value>
+  </data>
+  <data name="ConversionCancelled" xml:space="preserve">
+    <value>Conversione annullata.</value>
+  </data>
+  <data name="ConversionFailureTitle" xml:space="preserve">
+    <value>Errore di conversione</value>
+  </data>
+  <data name="ConvertingFiles" xml:space="preserve">
+    <value>Conversione dei file in {0}...</value>
+  </data>
+  <data name="FailedToConvertAll" xml:space="preserve">
+    <value>Impossibile convertire {0} file.</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="OverwriteInstruction" xml:space="preserve">
+    <value>Sovrascrivere il file di destinazione esistente?</value>
+  </data>
+  <data name="OverwriteTitle" xml:space="preserve">
+    <value>Conferma sovrascrittura</value>
+  </data>
+  <data name="SuccessfullyConvertedAll" xml:space="preserve">
+    <value>Convertiti con successo {0} file.</value>
+  </data>
+  <data name="UnsupportedTargetFormat" xml:space="preserve">
+    <value>Formato di destinazione non supportato {0}.</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>S&#236;</value>
+  </data>
+  <data name="YesToAll" xml:space="preserve">
+    <value>S&#236; a tutti</value>
+  </data>
+</root>
