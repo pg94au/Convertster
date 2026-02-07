@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Cancel" xml:space="preserve">
+    <value>&#21462;&#28040;</value>
+  </data>
+  <data name="CancellationRequested" xml:space="preserve">
+    <value>&#24050;&#35831;&#27714;&#21462;&#28040;... (&#24050;&#22788;&#29702; {0})</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>&#20851;&#38381;</value>
+  </data>
+  <data name="ConvertedWithFailures" xml:space="preserve">
+    <value>&#24050;&#36716;&#25442; {0} &#20010;&#25991;&#20214; (&#22833;&#36133; {1} &#20010;)&#12290;</value>
+  </data>
+  <data name="ConversionCancelled" xml:space="preserve">
+    <value>&#36716;&#25442;&#24050;&#21462;&#28040;&#12290;</value>
+  </data>
+  <data name="ConversionFailureTitle" xml:space="preserve">
+    <value>&#36716;&#25442;&#22833;&#36133;</value>
+  </data>
+  <data name="ConvertingFiles" xml:space="preserve">
+    <value>&#27491;&#22312;&#23558;&#25991;&#20214;&#36716;&#25442;&#20026; {0}...</value>
+  </data>
+  <data name="FailedToConvertAll" xml:space="preserve">
+    <value>&#26080;&#27861;&#36716;&#25442; {0} &#20010;&#25991;&#20214;&#12290;</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>&#21542;</value>
+  </data>
+  <data name="OverwriteInstruction" xml:space="preserve">
+    <value>&#35206;&#30422;&#29616;&#26377;&#30446;&#26631;&#25991;&#20214;&#65311;</value>
+  </data>
+  <data name="OverwriteTitle" xml:space="preserve">
+    <value>&#30830;&#35748;&#35206;&#30422;</value>
+  </data>
+  <data name="SuccessfullyConvertedAll" xml:space="preserve">
+    <value>&#25104;&#21151;&#36716;&#25442; {0} &#20010;&#25991;&#20214;&#12290;</value>
+  </data>
+  <data name="UnsupportedTargetFormat" xml:space="preserve">
+    <value>&#19981;&#25903;&#25345;&#30340;&#30446;&#26631;&#26684;&#24335; {0}&#12290;</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>&#26159;</value>
+  </data>
+  <data name="YesToAll" xml:space="preserve">
+    <value>&#20840;&#37096;&#26159;</value>
+  </data>
+</root>
