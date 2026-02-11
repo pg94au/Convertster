@@ -32,6 +32,24 @@ jobs:
             Write-Host "No .sln found; skipping MSBuild step."
           }
 
+      - name: Run tests
+        shell: powershell
+        run: |
+          $testDll = "ImageConverter.Tests\bin\Release\ImageConverter.Tests.dll"
+          if (Test-Path $testDll) {
+            Write-Host "Running tests from $testDll"
+            vstest.console.exe $testDll /Logger:trx
+          } else {
+            Write-Host "Test assembly not found at $testDll, skipping tests"
+          }
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/*.trx
+
       - name: Download installation prerequisites
         shell: powershell
         run: |
