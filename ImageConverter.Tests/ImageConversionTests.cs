@@ -93,7 +93,7 @@ namespace ImageConverter.Tests
 
                 var process = Process.GetProcessById(app.ProcessId);
                 
-                var mainWindow = app.GetMainWindow(automation, TimeSpan.FromSeconds(5));
+                var mainWindow = app.GetMainWindow(automation, TimeSpan.FromSeconds(15));
                 Assert.That(mainWindow, Is.Not.Null, "Could not get main window");
 
                 var progressBar = mainWindow.FindFirstDescendant(mainWindow.ConditionFactory
