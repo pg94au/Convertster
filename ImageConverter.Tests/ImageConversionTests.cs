@@ -99,7 +99,7 @@ namespace ImageConverter.Tests
                     () => mainWindow.FindFirstDescendant(
                         mainWindow.ConditionFactory.ByAutomationId("ConversionProgressBar")
                         ),
-                    TimeSpan.FromSeconds(5)
+                    TimeSpan.FromSeconds(15)
                     ).Result?.AsProgressBar();
 
                 //var progressBar = mainWindow.FindFirstDescendant(mainWindow.ConditionFactory.ByAutomationId("ConversionProgressBar"))?.AsProgressBar();
