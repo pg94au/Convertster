@@ -1,6 +1,6 @@
 ﻿using FlaUI.Core;
 using FlaUI.Core.AutomationElements;
-using FlaUI.Core.Definitions;
+using FlaUI.Core.Tools;
 using FlaUI.UIA3;
 using NUnit.Framework;
 using System;
@@ -9,7 +9,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace ImageConverter.Tests
 {
@@ -57,7 +56,7 @@ namespace ImageConverter.Tests
         }
 
         [Test]
-        public void Foo()
+        public void CanConvertSingleBmpToJpg()
         {
             // Arrange: Create a test BMP file
             string testBmpPath = Path.Combine(TestFilesDirectory, "test_image.bmp");
@@ -87,7 +86,7 @@ namespace ImageConverter.Tests
             {
                 // Act: Launch ImageConverter using FlaUI
                 var psi = new ProcessStartInfo(ImageConverterExePath, $"JPG \"{testBmpPath}\"");
-                app = FlaUI.Core.Application.Launch(psi);
+                app = Application.Launch(psi);
                 automation = new UIA3Automation();
                 Assert.That(app, Is.Not.Null, "Failed to launch ImageConverter");
 
@@ -96,8 +95,14 @@ namespace ImageConverter.Tests
                 var mainWindow = app.GetMainWindow(automation, TimeSpan.FromSeconds(15));
                 Assert.That(mainWindow, Is.Not.Null, "Could not get main window");
 
-                var progressBar = mainWindow.FindFirstDescendant(mainWindow.ConditionFactory
-                    .ByAutomationId("ConversionProgressBar"))?.AsProgressBar();
+                var progressBar = Retry.WhileNull(
+                    () => mainWindow.FindFirstDescendant(
+                        mainWindow.ConditionFactory.ByAutomationId("ConversionProgressBar")
+                        ),
+                    TimeSpan.FromSeconds(5)
+                    ).Result?.AsProgressBar();
+
+                //var progressBar = mainWindow.FindFirstDescendant(mainWindow.ConditionFactory.ByAutomationId("ConversionProgressBar"))?.AsProgressBar();
 
                 Assert.That(progressBar, Is.Not.Null, "Progress bar not found");
 
