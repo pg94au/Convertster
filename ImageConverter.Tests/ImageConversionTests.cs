@@ -56,12 +56,14 @@ namespace ImageConverter.Tests
         }
 
         [Test]
-        [TestCase("JPG")]
-        [TestCase("PNG")]
-        public void CanConvertSingleBmp(string targetFormat)
+        [TestCase("BMP", "JPG")]
+        [TestCase("BMP", "PNG")]
+        [TestCase("TIF", "JPG")]
+        [TestCase("TIF", "PNG")]
+        public void CanConvertSingleImage(string sourceFormat, string targetFormat)
         {
             // Arrange: Create a test BMP file
-            string testBmpPath = Path.Combine(_testFilesDirectory, "test_image.bmp");
+            string testBmpPath = Path.Combine(_testFilesDirectory, $"test_image.{sourceFormat.ToLower()}");
             string expectedTargetPath = Path.ChangeExtension(testBmpPath, "." + targetFormat.ToLower());
 
             // Create a simple 100x100 red bitmap
@@ -72,10 +74,24 @@ namespace ImageConverter.Tests
                     graphics.Clear(System.Drawing.Color.Red);
                 }
 
-                bitmap.Save(testBmpPath, ImageFormat.Bmp);
+                ImageFormat imageFormat = null;
+                switch (sourceFormat)
+                {
+                    case "BMP":
+                        imageFormat = ImageFormat.Bmp;
+                        break;
+                    case "TIF":
+                        imageFormat = ImageFormat.Tiff;
+                        break;
+                    default:
+                        Assert.Fail($"Need to add support for {sourceFormat} in this test.");
+                        break;
+                }
+
+                bitmap.Save(testBmpPath, imageFormat);
             }
 
-            Assert.That(File.Exists(testBmpPath), Is.True, "Test BMP file was not created");
+            Assert.That(File.Exists(testBmpPath), Is.True, $"Test {sourceFormat} file was not created");
 
             if (File.Exists(expectedTargetPath))
             {
