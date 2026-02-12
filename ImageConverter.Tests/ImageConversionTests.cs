@@ -56,11 +56,13 @@ namespace ImageConverter.Tests
         }
 
         [Test]
-        public void CanConvertSingleBmpToJpg()
+        [TestCase("JPG")]
+        [TestCase("PNG")]
+        public void CanConvertSingleBmp(string targetFormat)
         {
             // Arrange: Create a test BMP file
             string testBmpPath = Path.Combine(_testFilesDirectory, "test_image.bmp");
-            string expectedJpgPath = Path.ChangeExtension(testBmpPath, ".jpg");
+            string expectedTargetPath = Path.ChangeExtension(testBmpPath, "." + targetFormat.ToLower());
 
             // Create a simple 100x100 red bitmap
             using (var bitmap = new Bitmap(100, 100))
@@ -75,16 +77,16 @@ namespace ImageConverter.Tests
 
             Assert.That(File.Exists(testBmpPath), Is.True, "Test BMP file was not created");
 
-            if (File.Exists(expectedJpgPath))
+            if (File.Exists(expectedTargetPath))
             {
-                File.Delete(expectedJpgPath);
+                File.Delete(expectedTargetPath);
             }
 
             Application app = null;
             UIA3Automation automation = null;
             try
             {
-                var psi = new ProcessStartInfo(_imageConverterExePath, $"JPG \"{testBmpPath}\"");
+                var psi = new ProcessStartInfo(_imageConverterExePath, $"{targetFormat} \"{testBmpPath}\"");
                 app = Application.Launch(psi);
                 automation = new UIA3Automation();
                 Assert.That(app, Is.Not.Null, "Failed to launch ImageConverter");
@@ -124,9 +126,9 @@ namespace ImageConverter.Tests
 
                 process.WaitForExit(1000);
 
-                using var jpgImage = Image.FromFile(expectedJpgPath);
-                Assert.That(jpgImage.Width, Is.EqualTo(100));
-                Assert.That(jpgImage.Height, Is.EqualTo(100));
+                using var targetImage = Image.FromFile(expectedTargetPath);
+                Assert.That(targetImage.Width, Is.EqualTo(100));
+                Assert.That(targetImage.Height, Is.EqualTo(100));
             }
             finally
             {
