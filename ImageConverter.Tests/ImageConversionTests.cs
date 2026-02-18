@@ -62,16 +62,16 @@ namespace ImageConverter.Tests
         [TestCase("TIF", "PNG")]
         public void CanConvertSingleImage(string sourceFormat, string targetFormat)
         {
-            var testBmpPath = CreateImageFile(sourceFormat);
+            var testSourcePath = CreateImageFile(sourceFormat);
 
-            var expectedTargetPath = Path.ChangeExtension(testBmpPath, "." + targetFormat.ToLower());
+            var expectedTargetPath = Path.ChangeExtension(testSourcePath, "." + targetFormat.ToLower());
             File.Delete(expectedTargetPath);
 
             Application app = null;
             UIA3Automation automation = null;
             try
             {
-                var psi = new ProcessStartInfo(_imageConverterExePath, $"{targetFormat} \"{testBmpPath}\"");
+                var psi = new ProcessStartInfo(_imageConverterExePath, $"{targetFormat} \"{testSourcePath}\"");
                 app = Application.Launch(psi);
                 Assert.That(app, Is.Not.Null, "Failed to launch ImageConverter");
                 automation = new UIA3Automation();
