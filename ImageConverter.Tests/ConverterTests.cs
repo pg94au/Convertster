@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
@@ -21,30 +20,18 @@ namespace ImageConverter.Tests
     [TestFixture]
     public class ConverterTests
     {
-        private static string _testFilesDirectory;
+        private TestSupport _testSupport;
 
         [SetUp]
-        public static void SetUp()
+        public void SetUp()
         {
-            // Create temp directory for test files
-            _testFilesDirectory = Path.Combine(Path.GetTempPath(), "ImageConverterTests_" + Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(_testFilesDirectory);
+            _testSupport = new TestSupport();
         }
 
         [TearDown]
-        public static void TearDown()
+        public void TearDown()
         {
-            if (Directory.Exists(_testFilesDirectory))
-            {
-                try
-                {
-                    Directory.Delete(_testFilesDirectory, true);
-                }
-                catch
-                {
-                    // Ignore cleanup errors
-                }
-            }
+            _testSupport.Dispose();
         }
 
 
@@ -55,7 +42,7 @@ namespace ImageConverter.Tests
         [TestCase("TIF", "PNG")]
         public async Task Conversion_CreatesTargetFilesAndGeneratesEvents(string sourceFormat, string targetFormat)
         {
-            var testSourcePath = CreateImageFile(sourceFormat);
+            var testSourcePath = _testSupport.CreateImageFile(sourceFormat);
             var expectedTargetPath = Path.ChangeExtension(testSourcePath, "." + targetFormat.ToLower());
 
             var conversionResults = new List<ConversionResult>();
@@ -70,13 +57,13 @@ namespace ImageConverter.Tests
             Assert.That(conversionResult.Filename, Is.EqualTo(testSourcePath));
             Assert.That(conversionResult.Result, Is.EqualTo(FileResult.Succeeded));
 
-            AssertThatFileContainsValidImage(expectedTargetPath);
+            _testSupport.AssertThatFileContainsValidImage(expectedTargetPath);
         }
 
         [Test]
         public async Task Conversion_FailsIfSourceDoesNotExist()
         {
-            var testSourcePath = Path.Combine(_testFilesDirectory, $"{Guid.NewGuid().ToString()}.bmp");
+            var testSourcePath = Path.Combine(_testSupport.TestFilesDirectory, $"{Guid.NewGuid().ToString()}.bmp");
             var expectedTargetPath = Path.ChangeExtension(testSourcePath, ".jpg");
 
             var conversionResults = new List<ConversionResult>();
@@ -97,7 +84,7 @@ namespace ImageConverter.Tests
         [Test]
         public async Task Conversion_FailsIfSourceIsCorrupt()
         {
-            var testSourcePath = CreateBadFile(ImageFormat.Bmp);
+            var testSourcePath = _testSupport.CreateBadFile(ImageFormat.Bmp);
 
             var expectedTargetPath = Path.ChangeExtension(testSourcePath, ".jpg");
             File.Delete(expectedTargetPath);
@@ -120,8 +107,8 @@ namespace ImageConverter.Tests
         [Test]
         public async Task Conversion_HandlesMultipleFiles()
         {
-            var testSourcePath1 = CreateBmpFile();
-            var testSourcePath2 = CreateTiffFile();
+            var testSourcePath1 = _testSupport.CreateBmpFile();
+            var testSourcePath2 = _testSupport.CreateTiffFile();
             var expectedTargetPath1 = Path.ChangeExtension(testSourcePath1, ".jpg");
             var expectedTargetPath2 = Path.ChangeExtension(testSourcePath2, ".jpg");
 
@@ -142,15 +129,15 @@ namespace ImageConverter.Tests
                 Has.One.Matches<ConversionResult>(cr => cr.Filename == testSourcePath2 && cr.Result == FileResult.Succeeded)
             );
 
-            AssertThatFileContainsValidImage(expectedTargetPath1);
-            AssertThatFileContainsValidImage(expectedTargetPath2);
+            _testSupport.AssertThatFileContainsValidImage(expectedTargetPath1);
+            _testSupport.AssertThatFileContainsValidImage(expectedTargetPath2);
         }
 
         [Test]
         public async Task Conversion_HandlesPartialSuccess()
         {
-            var testSourcePath1 = CreateBmpFile();
-            var testSourcePath2 = CreateBadFile(ImageFormat.Bmp);
+            var testSourcePath1 = _testSupport.CreateBmpFile();
+            var testSourcePath2 = _testSupport.CreateBadFile(ImageFormat.Bmp);
 
             var expectedTargetPath1 = Path.ChangeExtension(testSourcePath1, ".jpg");
             var expectedTargetPath2 = Path.ChangeExtension(testSourcePath2, ".jpg");
@@ -173,61 +160,8 @@ namespace ImageConverter.Tests
                 Has.One.Matches<ConversionResult>(cr => cr.Filename == testSourcePath2 && cr.Result == FileResult.Failed)
             );
 
-            AssertThatFileContainsValidImage(expectedTargetPath1);
+            _testSupport.AssertThatFileContainsValidImage(expectedTargetPath1);
             Assert.That(File.Exists(expectedTargetPath2), Is.False);
-        }
-
-        public void AssertThatFileContainsValidImage(string filename)
-        {
-            Assert.That(File.Exists(filename));
-            using var targetImage1 = Image.FromFile(filename);
-            Assert.That(targetImage1.Width, Is.EqualTo(100));
-            Assert.That(targetImage1.Height, Is.EqualTo(100));
-        }
-
-        //TODO: Share these methods with other tests.
-        private string CreateImageFile(ImageFormat imageFormat, bool deleteExistingTargetFiles = true)
-        {
-            var extension = imageFormat.Equals(ImageFormat.Bmp) ? "bmp" : "tiff";
-            var testFilePath = Path.Combine(_testFilesDirectory, $"{Guid.NewGuid().ToString()}.{extension}");
-
-            // Create a simple 100x100 red bitmap
-            using var bitmap = new Bitmap(100, 100);
-            using var graphics = Graphics.FromImage(bitmap);
-            graphics.Clear(System.Drawing.Color.Red);
-
-            bitmap.Save(testFilePath, imageFormat);
-
-            if (deleteExistingTargetFiles)
-            {
-                File.Delete(Path.ChangeExtension(testFilePath, "jpg"));
-                File.Delete(Path.ChangeExtension(testFilePath, "png"));
-            }
-
-            return testFilePath;
-        }
-
-        private string CreateBmpFile(bool deleteExistingTargetFiles = true) => CreateImageFile(ImageFormat.Bmp, deleteExistingTargetFiles);
-        private string CreateTiffFile(bool deleteExistingTargetFiles = true) => CreateImageFile(ImageFormat.Tiff, deleteExistingTargetFiles);
-        private string CreateImageFile(string type, bool deleteExistingTargetFiles = true) =>
-            type.ToUpper() == "BMP"
-                ? CreateBmpFile(deleteExistingTargetFiles)
-                : CreateTiffFile(deleteExistingTargetFiles);
-
-        private string CreateBadFile(ImageFormat imageFormat, bool deleteExistingTargetFiles = true)
-        {
-            var extension = imageFormat.Equals(ImageFormat.Bmp) ? "bmp" : "tiff";
-            var testFilePath = Path.Combine(_testFilesDirectory, $"{Guid.NewGuid().ToString()}.{extension}");
-
-            File.WriteAllText(testFilePath, "NO GOOD");
-
-            if (deleteExistingTargetFiles)
-            {
-                File.Delete(Path.ChangeExtension(testFilePath, "jpg"));
-                File.Delete(Path.ChangeExtension(testFilePath, "png"));
-            }
-
-            return testFilePath;
         }
     }
 }
