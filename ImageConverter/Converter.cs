@@ -96,7 +96,7 @@ public class Converter
         }
     }
 
-    private async Task ConvertImageType(string targetType, string filename, CancellationToken token)
+    protected virtual async Task ConvertImageType(string targetType, string filename, CancellationToken token)
     {
         var image = await Image.LoadAsync(filename, token).ConfigureAwait(false);
 

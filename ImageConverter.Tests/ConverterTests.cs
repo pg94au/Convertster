@@ -163,5 +163,43 @@ namespace ImageConverter.Tests
             _testSupport.AssertThatFileContainsValidImage(expectedTargetPath1);
             Assert.That(File.Exists(expectedTargetPath2), Is.False);
         }
+
+        [Test]
+        public async Task Conversion_SkipsWhenCancelled()
+        {
+            var testSourcePath = _testSupport.CreateBmpFile();
+            var expectedTargetPath = Path.ChangeExtension(testSourcePath, ".jpg");
+
+            var conversionResults = new List<ConversionResult>();
+
+            var converter = new CancelableConverter();
+
+            converter.OnFileConverted += (sender, conversionResult) => conversionResults.Add(conversionResult);
+
+            var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(250));
+
+            await converter.ConvertAsync("JPG", new[] { testSourcePath }, cts.Token);
+
+            Assert.That(conversionResults.Count, Is.EqualTo(1));
+            var conversionResult = conversionResults[0];
+            Assert.That(conversionResult.Filename, Is.EqualTo(testSourcePath));
+            Assert.That(conversionResult.Result, Is.EqualTo(FileResult.Skipped));
+
+            Assert.That(File.Exists(expectedTargetPath), Is.False);
+        }
+    }
+
+    /// <summary>
+    /// A substitute for the Converter that wait long enough for the operation to be cancelled.
+    /// (It doesn't do anything otherwise.)
+    /// </summary>
+    public class CancelableConverter : Converter
+    {
+        protected override async Task ConvertImageType(string targetType, string filename, CancellationToken cancellationToken)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(3), cancellationToken);
+
+            Assert.Fail("The conversion operation should have been canceled.");
+        }
     }
 }
