@@ -189,16 +189,16 @@ namespace ImageConverter.Tests
         private string CreateImageFile(ImageFormat imageFormat)
         {
             var extension = imageFormat.Equals(ImageFormat.Bmp) ? "bmp" : "tiff";
-            var testBmpPath = Path.Combine(_testFilesDirectory, $"{Guid.NewGuid().ToString()}.{extension}");
+            var testFilePath = Path.Combine(_testFilesDirectory, $"{Guid.NewGuid().ToString()}.{extension}");
 
             // Create a simple 100x100 red bitmap
             using var bitmap = new Bitmap(100, 100);
             using var graphics = Graphics.FromImage(bitmap);
             graphics.Clear(System.Drawing.Color.Red);
 
-            bitmap.Save(testBmpPath, imageFormat);
+            bitmap.Save(testFilePath, imageFormat);
 
-            return testBmpPath;
+            return testFilePath;
         }
 
         private string CreateBmpFile() => CreateImageFile(ImageFormat.Bmp);
