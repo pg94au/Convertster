@@ -97,8 +97,7 @@ namespace ImageConverter.Tests
         [Test]
         public async Task Conversion_FailsIfSourceIsCorrupt()
         {
-            var testSourcePath = Path.Combine(_testFilesDirectory, $"{Guid.NewGuid().ToString()}.bmp");
-            File.WriteAllText(testSourcePath, "NO GOOD");
+            var testSourcePath = CreateBadFile(ImageFormat.Bmp);
 
             var expectedTargetPath = Path.ChangeExtension(testSourcePath, ".jpg");
             File.Delete(expectedTargetPath);
@@ -151,8 +150,7 @@ namespace ImageConverter.Tests
         public async Task Conversion_HandlesPartialSuccess()
         {
             var testSourcePath1 = CreateBmpFile();
-            var testSourcePath2 = Path.Combine(_testFilesDirectory, $"{Guid.NewGuid().ToString()}.bmp");
-            File.WriteAllText(testSourcePath2, "NO GOOD");
+            var testSourcePath2 = CreateBadFile(ImageFormat.Bmp);
 
             var expectedTargetPath1 = Path.ChangeExtension(testSourcePath1, ".jpg");
             var expectedTargetPath2 = Path.ChangeExtension(testSourcePath2, ".jpg");
@@ -215,5 +213,21 @@ namespace ImageConverter.Tests
             type.ToUpper() == "BMP"
                 ? CreateBmpFile(deleteExistingTargetFiles)
                 : CreateTiffFile(deleteExistingTargetFiles);
+
+        private string CreateBadFile(ImageFormat imageFormat, bool deleteExistingTargetFiles = true)
+        {
+            var extension = imageFormat.Equals(ImageFormat.Bmp) ? "bmp" : "tiff";
+            var testFilePath = Path.Combine(_testFilesDirectory, $"{Guid.NewGuid().ToString()}.{extension}");
+
+            File.WriteAllText(testFilePath, "NO GOOD");
+
+            if (deleteExistingTargetFiles)
+            {
+                File.Delete(Path.ChangeExtension(testFilePath, "jpg"));
+                File.Delete(Path.ChangeExtension(testFilePath, "png"));
+            }
+
+            return testFilePath;
+        }
     }
 }
