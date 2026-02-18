@@ -15,11 +15,11 @@ namespace ImageConverter.Tests
     [Category("UI")]
     public class ImageConversionTests
     {
+        private TestSupport _testSupport;
         private static string _imageConverterExePath;
-        private static string _testFilesDirectory;
 
         [SetUp]
-        public static void SetUp()
+        public void SetUp()
         {
             // Find ImageConverter.exe
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -34,25 +34,13 @@ namespace ImageConverter.Tests
             Assert.That(File.Exists(_imageConverterExePath), Is.True,
                 $"ImageConverter.exe not found. Expected at: {_imageConverterExePath}");
 
-            // Create temp directory for test files
-            _testFilesDirectory = Path.Combine(Path.GetTempPath(), "ImageConverterTests_" + Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(_testFilesDirectory);
+            _testSupport = new TestSupport();
         }
 
         [TearDown]
-        public static void TearDown()
+        public void TearDown()
         {
-            if (Directory.Exists(_testFilesDirectory))
-            {
-                try
-                {
-                    Directory.Delete(_testFilesDirectory, true);
-                }
-                catch
-                {
-                    // Ignore cleanup errors
-                }
-            }
+            _testSupport?.Dispose();
         }
 
         [Test]
@@ -62,10 +50,8 @@ namespace ImageConverter.Tests
         [TestCase("TIF", "PNG")]
         public void CanConvertSingleImage(string sourceFormat, string targetFormat)
         {
-            var testSourcePath = CreateImageFile(sourceFormat);
-
+            var testSourcePath = _testSupport.CreateImageFile(sourceFormat);
             var expectedTargetPath = Path.ChangeExtension(testSourcePath, "." + targetFormat.ToLower());
-            File.Delete(expectedTargetPath);
 
             Application app = null;
             UIA3Automation automation = null;
@@ -87,9 +73,7 @@ namespace ImageConverter.Tests
 
                 process.WaitForExit(1000);
 
-                using var targetImage = Image.FromFile(expectedTargetPath);
-                Assert.That(targetImage.Width, Is.EqualTo(100));
-                Assert.That(targetImage.Height, Is.EqualTo(100));
+                _testSupport.AssertThatFileContainsValidImage(expectedTargetPath);
             }
             finally
             {
@@ -105,13 +89,11 @@ namespace ImageConverter.Tests
         [Test]
         public void CanConvertMultipleImages()
         {
-            var testFilePath1 = CreateBmpFile();
+            var testFilePath1 = _testSupport.CreateBmpFile();
             var expectedTargetPath1 = Path.ChangeExtension(testFilePath1, ".jpg");
-            File.Delete(expectedTargetPath1);
 
-            var testFilePath2 = CreateTiffFile();
+            var testFilePath2 = _testSupport.CreateTiffFile();
             var expectedTargetPath2 = Path.ChangeExtension(testFilePath2, ".jpg");
-            File.Delete(expectedTargetPath2);
 
             Application app = null;
             UIA3Automation automation = null;
@@ -133,13 +115,8 @@ namespace ImageConverter.Tests
 
                 process.WaitForExit(1000);
 
-                using var targetImage1 = Image.FromFile(expectedTargetPath1);
-                Assert.That(targetImage1.Width, Is.EqualTo(100));
-                Assert.That(targetImage1.Height, Is.EqualTo(100));
-
-                using var targetImage2 = Image.FromFile(expectedTargetPath2);
-                Assert.That(targetImage2.Width, Is.EqualTo(100));
-                Assert.That(targetImage2.Height, Is.EqualTo(100));
+                _testSupport.AssertThatFileContainsValidImage(expectedTargetPath1);
+                _testSupport.AssertThatFileContainsValidImage(expectedTargetPath2);
             }
             finally
             {
@@ -185,24 +162,5 @@ namespace ImageConverter.Tests
 
             cancelCloseButton?.Click();
         }
-
-        private string CreateImageFile(ImageFormat imageFormat)
-        {
-            var extension = imageFormat.Equals(ImageFormat.Bmp) ? "bmp" : "tiff";
-            var testFilePath = Path.Combine(_testFilesDirectory, $"{Guid.NewGuid().ToString()}.{extension}");
-
-            // Create a simple 100x100 red bitmap
-            using var bitmap = new Bitmap(100, 100);
-            using var graphics = Graphics.FromImage(bitmap);
-            graphics.Clear(System.Drawing.Color.Red);
-
-            bitmap.Save(testFilePath, imageFormat);
-
-            return testFilePath;
-        }
-
-        private string CreateBmpFile() => CreateImageFile(ImageFormat.Bmp);
-        private string CreateTiffFile() => CreateImageFile(ImageFormat.Tiff);
-        private string CreateImageFile(string type) => type.ToUpper() == "BMP" ? CreateBmpFile() : CreateTiffFile();
     }
 }

@@ -31,7 +31,7 @@ namespace ImageConverter.Tests
         [TearDown]
         public void TearDown()
         {
-            _testSupport.Dispose();
+            _testSupport?.Dispose();
         }
 
 
