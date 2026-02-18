@@ -70,9 +70,7 @@ namespace ImageConverter.Tests
             Assert.That(conversionResult.Filename, Is.EqualTo(testSourcePath));
             Assert.That(conversionResult.Result, Is.EqualTo(FileResult.Succeeded));
 
-            using var targetImage = Image.FromFile(expectedTargetPath);
-            Assert.That(targetImage.Width, Is.EqualTo(100));
-            Assert.That(targetImage.Height, Is.EqualTo(100));
+            AssertThatFileContainsValidImage(expectedTargetPath);
         }
 
         [Test]
@@ -145,12 +143,8 @@ namespace ImageConverter.Tests
                 Has.One.Matches<ConversionResult>(cr => cr.Filename == testSourcePath2 && cr.Result == FileResult.Succeeded)
             );
 
-            using var targetImage1 = Image.FromFile(expectedTargetPath1);
-            Assert.That(targetImage1.Width, Is.EqualTo(100));
-            Assert.That(targetImage1.Height, Is.EqualTo(100));
-            using var targetImage2 = Image.FromFile(expectedTargetPath2);
-            Assert.That(targetImage2.Width, Is.EqualTo(100));
-            Assert.That(targetImage2.Height, Is.EqualTo(100));
+            AssertThatFileContainsValidImage(expectedTargetPath1);
+            AssertThatFileContainsValidImage(expectedTargetPath2);
         }
 
         [Test]
@@ -181,10 +175,16 @@ namespace ImageConverter.Tests
                 Has.One.Matches<ConversionResult>(cr => cr.Filename == testSourcePath2 && cr.Result == FileResult.Failed)
             );
 
-            using var targetImage1 = Image.FromFile(expectedTargetPath1);
+            AssertThatFileContainsValidImage(expectedTargetPath1);
+            Assert.That(File.Exists(expectedTargetPath2), Is.False);
+        }
+
+        public void AssertThatFileContainsValidImage(string filename)
+        {
+            Assert.That(File.Exists(filename));
+            using var targetImage1 = Image.FromFile(filename);
             Assert.That(targetImage1.Width, Is.EqualTo(100));
             Assert.That(targetImage1.Height, Is.EqualTo(100));
-            Assert.That(File.Exists(expectedTargetPath2), Is.False);
         }
 
         //TODO: Share these methods with other tests.
