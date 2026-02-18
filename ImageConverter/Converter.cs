@@ -124,14 +124,7 @@ public class Converter
                 break;
             default:
                 Trace.WriteLine($"Request to convert to unsupported target format {targetType}.");
-                //TODO: Maybe we should have an error event that the client can subscribe to?
-                MessageBox.Show(
-                    string.Format(Properties.Resources.UnsupportedTargetFormat, targetType),
-                    Properties.Resources.ConversionFailureTitle,
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Exclamation
-                );
-                break;
+                throw new NotImplementedException($"Target file type {targetType} not supported.");
         }
     }
 }
