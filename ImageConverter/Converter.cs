@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
@@ -32,7 +31,6 @@ public class ConversionComplete
 public class Converter
 {
     public event EventHandler<ConversionResult> OnFileConverted;
-    public event EventHandler<ConversionComplete> OnCompleted;
 
     public async Task ConvertAsync(
         string targetType,
@@ -96,8 +94,6 @@ public class Converter
             OnFileConverted?.Invoke(this, conversionResult);
             remainingTasks.Remove(completedTask);
         }
-
-        OnCompleted?.Invoke(this, new ConversionComplete());
     }
 
     private async Task ConvertImageType(string targetType, string filename, CancellationToken token)

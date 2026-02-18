@@ -12,6 +12,7 @@ using System.IO;
 namespace ImageConverter.Tests
 {
     [TestFixture]
+    [Category("UI")]
     public class ImageConversionTests
     {
         private static string _imageConverterExePath;

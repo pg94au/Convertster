@@ -95,49 +95,43 @@ namespace ImageConverter
                     }
                 });
             }
-    
-            converter.OnCompleted += ConverterOnOnCompleted;
-
-            void ConverterOnOnCompleted(object sender, ConversionComplete conversionComplete)
-            {
-                // Is there a final status that needs to be set here?
-                Dispatcher.Invoke(() =>
-                {
-                    Trace.WriteLine("Dispatcher lambda executing (async)...");
-                    if (_cts.Token.IsCancellationRequested)
-                    {
-                        Trace.WriteLine("Setting text to show operation cancelled.");
-                        CurrentFileNameText.Text = Properties.Resources.ConversionCancelled;
-                        ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Gray);
-                    }
-                    else if (successes == 0 && failures > 0)
-                    {
-                        Trace.WriteLine($"Setting text to show failure to convert all {failures} file(s).");
-                        CurrentFileNameText.Text = string.Format(Properties.Resources.FailedToConvertAll, failures);
-                        ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Red);
-                    }
-                    else if (failures > 0)
-                    {
-                        Trace.WriteLine($"Setting text to show conversion of {successes} file(s) and failure to convert {failures} file(s).");
-                        CurrentFileNameText.Text = string.Format(Properties.Resources.ConvertedWithFailures, successes, failures);
-                        ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Gold);
-                    }
-                    else
-                    {
-                        Trace.WriteLine($"Setting text to show successful conversion of all {_filenames.Length} file(s).");
-                        CurrentFileNameText.Text = string.Format(Properties.Resources.SuccessfullyConvertedAll, _filenames.Length);
-                        ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Green);
-                    }
-
-                    // Switch the Cancel button to a Close button after operations complete/cancel
-                    Trace.WriteLine("Switching Cancel button to Close.");
-                    CancelButton.Content = Properties.Resources.Close;
-                    CancelButton.IsEnabled = true;
-                });
-                Trace.WriteLine("Final UI update completed.");
-            }
 
             await converter.ConvertAsync(_targetType, _filenames, _cts.Token);
+
+            Dispatcher.Invoke(() =>
+            {
+                Trace.WriteLine("Dispatcher lambda executing (async)...");
+                if (_cts.Token.IsCancellationRequested)
+                {
+                    Trace.WriteLine("Setting text to show operation cancelled.");
+                    CurrentFileNameText.Text = Properties.Resources.ConversionCancelled;
+                    ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Gray);
+                }
+                else if (successes == 0 && failures > 0)
+                {
+                    Trace.WriteLine($"Setting text to show failure to convert all {failures} file(s).");
+                    CurrentFileNameText.Text = string.Format(Properties.Resources.FailedToConvertAll, failures);
+                    ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Red);
+                }
+                else if (failures > 0)
+                {
+                    Trace.WriteLine($"Setting text to show conversion of {successes} file(s) and failure to convert {failures} file(s).");
+                    CurrentFileNameText.Text = string.Format(Properties.Resources.ConvertedWithFailures, successes, failures);
+                    ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Gold);
+                }
+                else
+                {
+                    Trace.WriteLine($"Setting text to show successful conversion of all {_filenames.Length} file(s).");
+                    CurrentFileNameText.Text = string.Format(Properties.Resources.SuccessfullyConvertedAll, _filenames.Length);
+                    ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Green);
+                }
+
+                // Switch the Cancel button to a Close button after operations complete/cancel
+                Trace.WriteLine("Switching Cancel button to Close.");
+                CancelButton.Content = Properties.Resources.Close;
+                CancelButton.IsEnabled = true;
+            });
+            Trace.WriteLine("Final UI update completed.");
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
