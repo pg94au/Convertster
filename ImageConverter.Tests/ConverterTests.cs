@@ -190,7 +190,7 @@ namespace ImageConverter.Tests
     }
 
     /// <summary>
-    /// A substitute for the Converter that wait long enough for the operation to be cancelled.
+    /// A substitute for the Converter that waits long enough for the operation to be cancelled.
     /// (It doesn't do anything otherwise.)
     /// </summary>
     public class CancelableConverter : Converter
