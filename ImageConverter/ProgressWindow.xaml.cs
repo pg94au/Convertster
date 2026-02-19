@@ -19,7 +19,6 @@ namespace ImageConverter
         private readonly string _targetType;
         private readonly string[] _filenames;
         private readonly CancellationTokenSource _cts = new();
-        private volatile bool _finalized = false;
 
         public ProgressWindow(string targetType, string[] filenames)
         {
