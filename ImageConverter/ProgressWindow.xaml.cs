@@ -49,9 +49,9 @@ namespace ImageConverter
             var progressBarOverallResult = ProgressStatus.Success;
 
             var converter = new Converter();
-            converter.OnFileConverted += ConverterOnOnFileConverted;
+            converter.OnFileConverted += OnFileConverted;
 
-            void ConverterOnOnFileConverted(object sender, ConversionResult conversionResult)
+            void OnFileConverted(object sender, ConversionResult conversionResult)
             {
                 // Update the progress bar and text based on what just finished...
                 Dispatcher.Invoke(() =>
