@@ -41,7 +41,6 @@ namespace ImageConverter
             ConversionProgressBar.Minimum = 0;
             ConversionProgressBar.Maximum = Math.Max(0, _filenames.Length);
             ConversionProgressBar.Value = 0;
-            //TODO: Maybe this doesn't matter, if the value starts at zero (you can't see it)?
             ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Green);
             Trace.WriteLine("Initialized progress bar.");
 
