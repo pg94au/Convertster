@@ -98,7 +98,7 @@ public class Converter
 
     protected virtual async Task ConvertImageType(string targetType, string filename, CancellationToken token)
     {
-        var image = await Image.LoadAsync(filename, token).ConfigureAwait(false);
+        using var image = await Image.LoadAsync(filename, token).ConfigureAwait(false);
 
         switch (targetType.ToLower())
         {
