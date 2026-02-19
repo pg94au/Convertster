@@ -24,10 +24,6 @@ public class ConversionResult
     public FileResult Result { get; set; }
 }
 
-public class ConversionComplete
-{
-}
-
 public class Converter
 {
     public event EventHandler<ConversionResult> OnFileConverted;
