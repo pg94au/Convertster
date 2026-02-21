@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 
 namespace ImageConverter.Tests
 {
@@ -129,6 +130,57 @@ namespace ImageConverter.Tests
             }
         }
 
+        [Test]
+        public void CanChooseToOverwriteExistingTargetFile()
+        {
+            var testFilePath = _testSupport.CreateBmpFile();
+            var expectedTargetPath = Path.ChangeExtension(testFilePath, ".jpg");
+            File.WriteAllText(expectedTargetPath, "SOME DATA");
+
+            Application app = null;
+            UIA3Automation automation = null;
+            try
+            {
+                var psi = new ProcessStartInfo(_imageConverterExePath, $"JPG \"{testFilePath}\"");
+                app = Application.Launch(psi);
+                Assert.That(app, Is.Not.Null, "Failed to launch ImageConverter");
+                automation = new UIA3Automation();
+
+                var process = Process.GetProcessById(app.ProcessId);
+
+                var promptWindow = app.GetMainWindow(automation, TimeSpan.FromSeconds(5));
+                Assert.That(promptWindow, Is.Not.Null, "Could not get prompt window");
+
+                ClickButton(promptWindow, "YesButton");
+
+                //TODO: Why are we not able to find this window by its AutomationId even when it is in the XAML?
+                var mainWindow = WaitForMainWindow(
+                    app,
+                    automation,
+                    window => window.Title.StartsWith("Convertster"),
+                    TimeSpan.FromSeconds(5)
+                );
+                Assert.That(mainWindow, Is.Not.Null, "Could not get main window");
+
+                WaitForProgressBarMaximum(mainWindow);
+
+                ClickCloseButton(mainWindow);
+
+                process.WaitForExit(1000);
+
+                _testSupport.AssertThatFileContainsValidImage(expectedTargetPath);
+            }
+            finally
+            {
+                if (app is { HasExited: false })
+                {
+                    app.Close();
+                }
+                app?.Dispose();
+                automation?.Dispose();
+            }
+        }
+
         private void WaitForProgressBarMaximum(Window mainWindow)
         {
             var progressBar = Retry.WhileNull(
@@ -147,20 +199,38 @@ namespace ImageConverter.Tests
             );
         }
 
-        private void ClickCloseButton(Window mainWindow)
+        private void ClickButton(Window window, string buttonAutomationId, Action<Button> buttonAssertion = null)
         {
-            var condition = mainWindow.ConditionFactory.ByAutomationId("CancelCloseButton");
-            var cancelCloseButton = mainWindow.FindFirstDescendant(condition)?.AsButton();
+            var condition = window.ConditionFactory.ByAutomationId(buttonAutomationId);
+            var button = window.FindFirstDescendant(condition)?.AsButton();
 
-            Assert.That(cancelCloseButton, Is.Not.Null, "Could not locate Cancel/Close button");
+            Assert.That(button, Is.Not.Null, $"Could not locate button with AutomationId {buttonAutomationId}");
 
-            Assert.That(
-                cancelCloseButton.Name,
-                Is.EqualTo("Close"),
-                "Button should say 'Close' after conversion completes"
-            );
+            buttonAssertion?.Invoke(button);
 
-            cancelCloseButton?.Click();
+            button?.Click();
+        }
+
+        private void ClickCloseButton(Window window)
+        {
+            ClickButton(window, "CancelCloseButton", button =>
+            {
+                Assert.That(
+                    button.Name,
+                    Is.EqualTo("Close"),
+                    "Button should say 'Close' after conversion completes"
+                );
+            });
+        }
+
+        private Window WaitForMainWindow(Application app, UIA3Automation automation, Func<Window, bool> filter, TimeSpan timeout)
+        {
+            return Retry.WhileNull(() =>
+            {
+                var windows = app.GetAllTopLevelWindows(automation);
+                var matchingWindow = windows.FirstOrDefault(filter);
+                return matchingWindow;
+            }, timeout).Result;
         }
     }
 }
