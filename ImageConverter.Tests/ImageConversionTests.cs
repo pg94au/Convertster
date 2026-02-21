@@ -5,8 +5,6 @@ using FlaUI.UIA3;
 using NUnit.Framework;
 using System;
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 
