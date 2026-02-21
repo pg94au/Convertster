@@ -33,29 +33,29 @@ jobs:
           }
 
       # FlaUI tests are not passing in GitHub Actions.
-      # - name: Run tests
-      #   shell: powershell
-      #   run: |
-      #     Set-DisplayResolution -Width 1920 -Height 1080 -Force
-      #     $testDll = "ImageConverter.Tests\bin\Release\ImageConverter.Tests.dll"
-      #     if (Test-Path $testDll) {
-      #       Write-Host "Running tests from $testDll"
+      - name: Run tests
+        shell: powershell
+        run: |
+          Set-DisplayResolution -Width 1920 -Height 1080 -Force
+          $testDll = "ImageConverter.Tests\bin\Release\ImageConverter.Tests.dll"
+          if (Test-Path $testDll) {
+            Write-Host "Running tests from $testDll"
             
-      #       # Find vstest.console.exe using vswhere
-      #       $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-      #       $vsPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.ManagedDesktop.Core -property installationPath
-      #       $vstest = Join-Path $vsPath "Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe"
+            # Find vstest.console.exe using vswhere
+            $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+            $vsPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.ManagedDesktop.Core -property installationPath
+            $vstest = Join-Path $vsPath "Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe"
             
-      #       if (Test-Path $vstest) {
-      #         Write-Host "Found vstest at: $vstest"
-      #         & $vstest $testDll /Logger:trx
-      #       } else {
-      #         Write-Error "vstest.console.exe not found"
-      #         exit 1
-      #       }
-      #     } else {
-      #       Write-Host "Test assembly not found at $testDll, skipping tests"
-      #     }
+            if (Test-Path $vstest) {
+              Write-Host "Found vstest at: $vstest"
+              & $vstest $testDll /Logger:trx /TestCaseFilter:"TestCategory!=UI"
+            } else {
+              Write-Error "vstest.console.exe not found"
+              exit 1
+            }
+          } else {
+            Write-Host "Test assembly not found at $testDll, skipping tests"
+          }
 
       - name: Upload test results
         if: always()
