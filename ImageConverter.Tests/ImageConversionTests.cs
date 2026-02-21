@@ -129,6 +129,125 @@ namespace ImageConverter.Tests
         }
 
         [Test]
+        public void CanCancelWhenPromptedToOverwriteTargetFile()
+        {
+            var testFilePath1 = _testSupport.CreateBmpFile();
+            var expectedTargetPath1 = Path.ChangeExtension(testFilePath1, "jpg");
+            File.WriteAllText(expectedTargetPath1, "SOME DATA");
+            var testFilePath2 = _testSupport.CreateBmpFile();
+            var expectedTargetPath2 = Path.ChangeExtension(testFilePath2, ".jpg");
+            File.WriteAllText(expectedTargetPath2, "SOME DATA");
+
+            Application app = null;
+            UIA3Automation automation = null;
+            try
+            {
+                var psi = new ProcessStartInfo(_imageConverterExePath, $"JPG \"{testFilePath1}\" \"{testFilePath2}\"");
+                app = Application.Launch(psi);
+                Assert.That(app, Is.Not.Null, "Failed to launch ImageConverter");
+                automation = new UIA3Automation();
+
+                var process = Process.GetProcessById(app.ProcessId);
+
+                // Wait for prompt for first file to select Yes.
+                var promptWindow1 = WaitForMainWindow(
+                    app,
+                    automation,
+                    window => window.Title.StartsWith("Confirm"),
+                    TimeSpan.FromSeconds(5)
+                );
+                Assert.That(promptWindow1, Is.Not.Null, "Could not get first prompt window");
+
+                ClickButton(promptWindow1, "YesButton");
+
+                // Wait for prompt for second file to select Cancel.
+                var promptWindow2 = WaitForMainWindow(
+                    app,
+                    automation,
+                    window => window.Title.StartsWith("Confirm"),
+                    TimeSpan.FromSeconds(5)
+                );
+                Assert.That(promptWindow2, Is.Not.Null, "Could not get second prompt window");
+
+                ClickButton(promptWindow2, "CancelButton");
+
+                //TODO: Why are we not able to find this window by its AutomationId even when it is in the XAML?
+                var mainWindow = WaitForMainWindow(
+                    app,
+                    automation,
+                    window => window.Title.StartsWith("Convertster"),
+                    TimeSpan.FromSeconds(5)
+                );
+                Assert.That(mainWindow, Is.Null, "There should be no conversion window");
+
+                process.WaitForExit(1000);
+
+                Assert.That(File.ReadAllText(expectedTargetPath1), Is.EqualTo("SOME DATA"));
+                Assert.That(File.ReadAllText(expectedTargetPath2), Is.EqualTo("SOME DATA"));
+            }
+            finally
+            {
+                if (app is { HasExited: false })
+                {
+                    app.Close();
+                }
+                app?.Dispose();
+                automation?.Dispose();
+            }
+        }
+
+        [Test]
+        public void CanSkipOverwritingAllTargetFiles()
+        {
+            var testFilePath = _testSupport.CreateBmpFile();
+            var expectedTargetPath = Path.ChangeExtension(testFilePath, ".jpg");
+            File.WriteAllText(expectedTargetPath, "SOME DATA");
+
+            Application app = null;
+            UIA3Automation automation = null;
+            try
+            {
+                var psi = new ProcessStartInfo(_imageConverterExePath, $"JPG \"{testFilePath}\"");
+                app = Application.Launch(psi);
+                Assert.That(app, Is.Not.Null, "Failed to launch ImageConverter");
+                automation = new UIA3Automation();
+
+                var process = Process.GetProcessById(app.ProcessId);
+
+                var promptWindow = app.GetMainWindow(automation, TimeSpan.FromSeconds(5));
+                Assert.That(promptWindow, Is.Not.Null, "Could not get prompt window");
+
+                ClickButton(promptWindow, "NoButton");
+
+                //TODO: Why are we not able to find this window by its AutomationId even when it is in the XAML?
+                var mainWindow = WaitForMainWindow(
+                    app,
+                    automation,
+                    window => window.Title.StartsWith("Convertster"),
+                    TimeSpan.FromSeconds(5)
+                );
+                Assert.That(mainWindow, Is.Not.Null, "Could not get main window");
+
+                WaitForProgressBarMaximum(mainWindow);
+
+                ClickCloseButton(mainWindow);
+
+                process.WaitForExit(1000);
+
+                Assert.That(File.ReadAllText(expectedTargetPath), Is.EqualTo("SOME DATA"));
+            }
+            finally
+            {
+                if (app is { HasExited: false })
+                {
+                    app.Close();
+                }
+                app?.Dispose();
+                automation?.Dispose();
+            }
+        }
+
+        [Test]
         public void CanChooseToOverwriteExistingTargetFile()
         {
             var testFilePath = _testSupport.CreateBmpFile();
