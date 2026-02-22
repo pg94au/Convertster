@@ -1,243 +1,158 @@
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Formats.Png;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
-namespace ImageConverter
+namespace ImageConverter;
+
+public enum ProgressStatus
 {
-    public partial class ProgressWindow : Window
+    Success,
+    Warning,
+    Failure
+}
+
+public partial class ProgressWindow : Window
+{
+    private readonly string _targetType;
+    private readonly string[] _filenames;
+    private readonly CancellationTokenSource _cts = new();
+
+    public ProgressWindow(string targetType, string[] filenames)
     {
-        private readonly string _targetType;
-        private readonly string[] _filenames;
-        private CancellationTokenSource _cts = new CancellationTokenSource();
-        private volatile bool _finalized = false;
+        InitializeComponent();
 
-        public ProgressWindow(string targetType, string[] filenames)
+        _targetType = targetType ?? string.Empty;
+        ConvertingFilesText.Text = string.Format(Properties.Resources.ConvertingFiles, _targetType);
+        CancelButton.Content = Properties.Resources.Cancel;
+        Trace.WriteLine($"Target type is {_targetType}");
+
+        _filenames = filenames ?? Array.Empty<string>();
+        Trace.WriteLine($"Filenames to convert: {string.Join(", ", _filenames)}");
+    }
+
+    protected override async void OnContentRendered(EventArgs e)
+    {
+        base.OnContentRendered(e);
+
+        ConversionProgressBar.Minimum = 0;
+        ConversionProgressBar.Maximum = Math.Max(0, _filenames.Length);
+        ConversionProgressBar.Value = 0;
+        ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Green);
+        Trace.WriteLine("Initialized progress bar.");
+
+        var successes = 0;
+        var failures = 0;
+        var progressBarOverallResult = ProgressStatus.Success;
+
+        var converter = new Converter();
+        converter.OnFileConverted += OnFileConverted;
+
+        void OnFileConverted(object sender, ConversionResult conversionResult)
         {
-            InitializeComponent();
-
-            _targetType = targetType ?? string.Empty;
-            ConvertingFilesText.Text = string.Format(Properties.Resources.ConvertingFiles, _targetType);
-            CancelButton.Content = Properties.Resources.Cancel;
-            Trace.WriteLine($"Target type is {_targetType}");
-
-            _filenames = filenames ?? Array.Empty<string>();
-            Trace.WriteLine($"Filenames to convert: {string.Join(", ", _filenames)}");
-        }
-
-        protected override async void OnContentRendered(EventArgs e)
-        {
-            base.OnContentRendered(e);
-
-            ConversionProgressBar.Minimum = 0;
-            ConversionProgressBar.Maximum = Math.Max(0, _filenames.Length);
-            ConversionProgressBar.Value = 0;
-            ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Green);
-            Trace.WriteLine("Initialized progress bar.");
-
-            var progress = new Progress<(string file, int done, System.Windows.Media.Color foregroundColor)>(tuple =>
+            // Update the progress bar and text based on what just finished...
+            Dispatcher.Invoke(() =>
             {
-                ConversionProgressBar.Value = tuple.done;
+                ConversionProgressBar.Value++;
 
-                // Ignore updating additional progress once we've finalized the UI state.
-                if (_finalized)
+                CurrentFileNameText.Text = Path.GetFileName(conversionResult.Filename);
+
+                switch (conversionResult.Result)
                 {
-                    return;
+                    case FileResult.Succeeded:
+                        successes++;
+                        break;
+                    case FileResult.Failed:
+                        failures++;
+                        break;
                 }
 
-                ConversionProgressBar.Foreground = new SolidColorBrush(tuple.foregroundColor);
-                CurrentFileNameText.Text = Path.GetFileName(tuple.file);
+                if (conversionResult.Result == FileResult.Skipped &&
+                    progressBarOverallResult == ProgressStatus.Success)
+                {
+                    progressBarOverallResult = ProgressStatus.Warning;
+                }
+                else if (conversionResult.Result == FileResult.Failed)
+                {
+                    progressBarOverallResult = ProgressStatus.Failure;
+                }
+
+                switch (progressBarOverallResult)
+                {
+                    case ProgressStatus.Success:
+                        ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Green);
+                        break;
+                    case ProgressStatus.Warning:
+                        ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Gold);
+                        break;
+                    case ProgressStatus.Failure:
+                        ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Red);
+                        break;
+                }
             });
-
-            long successes = 0;
-            long failures = 0;
-            long skips = 0;
-
-            using var semaphore = new SemaphoreSlim(Math.Max(1, Environment.ProcessorCount - 1));
-            var token = _cts.Token;
-
-            var tasks = _filenames.Select(async filename =>
-            {
-                Trace.WriteLine($"Processing {filename}...");
-                try
-                {
-                    await semaphore.WaitAsync(token).ConfigureAwait(false);
-                    Trace.WriteLine($"Acquired semaphore for {filename}.");
-                }
-                catch (OperationCanceledException)
-                {
-                    Interlocked.Increment(ref skips);
-                    Trace.WriteLine($"Cancelled while awaiting semaphore for {filename}.");
-                    return;
-                }
-
-                try
-                {
-                    Trace.WriteLine($"Converting {filename} to {_targetType}...");
-                    await ConvertImageType(_targetType, filename, token).ConfigureAwait(false);
-                    Interlocked.Increment(ref successes);
-                    Trace.WriteLine($"Successfully converted {filename}.");
-                }
-                catch (OperationCanceledException)
-                {
-                    Interlocked.Increment(ref skips);
-                    Trace.WriteLine($"Conversion cancelled for {filename}");
-                }
-                catch (Exception ex)
-                {
-                    Interlocked.Increment(ref failures);
-                    Trace.WriteLine($"Error converting {filename}: {ex.Message}");
-                }
-                finally
-                {
-                    long successesSoFar = Interlocked.Read(ref successes);
-                    long failuresSoFar = Interlocked.Read(ref failures);
-                    var done = (int)(successesSoFar + failuresSoFar);
-                    System.Windows.Media.Color currentColor = Colors.Green;
-                    if (failuresSoFar == 0)
-                    {
-                        currentColor = Colors.Green;
-                    }
-                    else if (successesSoFar + failuresSoFar < _filenames.Length)
-                    {
-                        currentColor = Colors.Gold;
-                    }
-                    else
-                    {
-                        currentColor = successesSoFar > 0 ? Colors.Gold : Colors.Red;
-                    }
-
-                    if (!token.IsCancellationRequested)
-                    {
-                        Trace.WriteLine($"Updating progress to {filename}, {done} complete, color {currentColor}.");
-                        ((IProgress<(string, int, System.Windows.Media.Color)>)progress).Report((filename, done, currentColor));
-                    }
-
-                    semaphore.Release();
-                    Trace.WriteLine($"Released semaphore for {filename}.");
-                }
-            }).ToArray();
-
-            try
-            {
-                Trace.WriteLine("Awaiting completion of all tasks.");
-                await Task.WhenAll(tasks).ConfigureAwait(false);
-            }
-            catch (OperationCanceledException)
-            {
-                // If any task threw on cancellation, swallow here - final UI update runs below.
-                Trace.WriteLine("At least some tasks were cancelled.");
-            }
-            catch (Exception ex)
-            {
-                // Log unexpected exceptions; final UI update will reflect state.
-                Trace.WriteLine($"Caught exception waiting for tasks: {ex.Message}");
-            }
-            _finalized = true;
-
-            // Update final UI state on the dispatcher asynchronously. Mark the
-            // UI as finalized before posting so any further progress reports are
-            // ignored.
-            Trace.WriteLine("Updating final UI state.");
-            await Dispatcher.InvokeAsync(() =>
-            {
-                Trace.WriteLine("Dispatcher lambda executing (async)...");
-                if (token.IsCancellationRequested)
-                {
-                    Trace.WriteLine("Setting text to show operation cancelled.");
-                    CurrentFileNameText.Text = Properties.Resources.ConversionCancelled;
-                    ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Gray);
-                }
-                else if (successes == 0 && failures > 0)
-                {
-                    Trace.WriteLine($"Setting text to show failure to convert all {failures} file(s).");
-                    CurrentFileNameText.Text = string.Format(Properties.Resources.FailedToConvertAll, failures);
-                    ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Red);
-                }
-                else if (failures > 0)
-                {
-                    Trace.WriteLine($"Setting text to show conversion of {successes} file(s) and failure to convert {failures} file(s).");
-                    CurrentFileNameText.Text = string.Format(Properties.Resources.ConvertedWithFailures, successes, failures);
-                    ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Gold);
-                }
-                else
-                {
-                    Trace.WriteLine($"Setting text to show successful conversion of all {_filenames.Length} file(s).");
-                    CurrentFileNameText.Text = string.Format(Properties.Resources.SuccessfullyConvertedAll, _filenames.Length);
-                    ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Green);
-                }
-
-                // Switch the Cancel button to a Close button after operations complete/cancel
-                Trace.WriteLine("Switching Cancel button to Close.");
-                CancelButton.Content = Properties.Resources.Close;
-                CancelButton.IsEnabled = true;
-            }).Task.ConfigureAwait(false);
-            Trace.WriteLine("Final UI update completed.");
         }
 
-        private async Task ConvertImageType(string targetType, string filename, CancellationToken token)
-        {
-            var image = await Image.LoadAsync(filename, token).ConfigureAwait(false);
+        await converter.ConvertAsync(_targetType, _filenames, _cts.Token);
 
-            switch (targetType.ToLower())
+        Dispatcher.Invoke(() =>
+        {
+            Trace.WriteLine("Dispatcher lambda executing (async)...");
+            if (_cts.Token.IsCancellationRequested)
             {
-                case "jpg":
-                    var jpgPath = Path.ChangeExtension(filename, ".jpg");
-                    Trace.WriteLine($"Saving {jpgPath}");
-                    await image.SaveAsJpegAsync(
-                        jpgPath,
-                        new JpegEncoder { Quality = 75 },
-                        token).ConfigureAwait(false);
-                    break;
-                case "png":
-                    var pngPath = Path.ChangeExtension(filename, ".png");
-                    Trace.WriteLine($"Saving {pngPath}");
-                    await image.SaveAsPngAsync(
-                        pngPath,
-                        new PngEncoder { CompressionLevel = PngCompressionLevel.DefaultCompression },
-                        token).ConfigureAwait(false);
-                    break;
-                default:
-                    Trace.WriteLine($"Request to convert to unsupported target format {targetType}.");
-                    MessageBox.Show(
-                        string.Format(Properties.Resources.UnsupportedTargetFormat, targetType),
-                        Properties.Resources.ConversionFailureTitle,
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Exclamation
-                        );
-                    break;
+                Trace.WriteLine("Setting text to show operation cancelled.");
+                CurrentFileNameText.Text = Properties.Resources.ConversionCancelled;
+                ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Gray);
             }
-        }
-
-        private void CancelButton_Click(object sender, RoutedEventArgs e)
-        {
-            // If button already says Close, close the window.
-            if (string.Equals(CancelButton.Content as string, Properties.Resources.Close, StringComparison.OrdinalIgnoreCase))
+            else if (successes == 0 && failures > 0)
             {
-                Close();
-                // Need to explicitly shut down the app because of how we configured it.
-                Application.Current?.Shutdown();
-                return;
+                Trace.WriteLine($"Setting text to show failure to convert all {failures} file(s).");
+                CurrentFileNameText.Text = string.Format(Properties.Resources.FailedToConvertAll, failures);
+                ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Red);
+            }
+            else if (failures > 0)
+            {
+                Trace.WriteLine($"Setting text to show conversion of {successes} file(s) and failure to convert {failures} file(s).");
+                CurrentFileNameText.Text = string.Format(Properties.Resources.ConvertedWithFailures, successes, failures);
+                ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Gold);
+            }
+            else
+            {
+                Trace.WriteLine($"Setting text to show successful conversion of all {_filenames.Length} file(s).");
+                CurrentFileNameText.Text = string.Format(Properties.Resources.SuccessfullyConvertedAll, _filenames.Length);
+                ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Green);
             }
 
-            // Immediate UI feedback so user sees cancellation right away
-            CancelButton.IsEnabled = false;
-            CurrentFileNameText.Text = string.Format(Properties.Resources.CancellationRequested, (int)ConversionProgressBar.Value);
-            ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Gray);
-
-            // Request cancellation. Tasks will observe token and exit.
-            _cts.Cancel();
-
-            // Enable the button and change it to a Close button so the user can dismiss the dialog.
+            // Switch the Cancel button to a Close button after operations complete/cancel
+            Trace.WriteLine("Switching Cancel button to Close.");
             CancelButton.Content = Properties.Resources.Close;
             CancelButton.IsEnabled = true;
+        });
+        Trace.WriteLine("Final UI update completed.");
+    }
+
+    private void CancelButton_Click(object sender, RoutedEventArgs e)
+    {
+        // If button already says Close, close the window.
+        if (string.Equals(CancelButton.Content as string, Properties.Resources.Close, StringComparison.OrdinalIgnoreCase))
+        {
+            Close();
+            // Need to explicitly shut down the app because of how we configured it.
+            Application.Current?.Shutdown();
+            return;
         }
+
+        // Immediate UI feedback so user sees cancellation right away
+        CancelButton.IsEnabled = false;
+        CurrentFileNameText.Text = string.Format(Properties.Resources.CancellationRequested, (int)ConversionProgressBar.Value);
+        ConversionProgressBar.Foreground = new SolidColorBrush(Colors.Gray);
+
+        // Request cancellation. Tasks will observe token and exit.
+        _cts.Cancel();
+
+        // Enable the button and change it to a Close button so the user can dismiss the dialog.
+        CancelButton.Content = Properties.Resources.Close;
+        CancelButton.IsEnabled = true;
     }
 }

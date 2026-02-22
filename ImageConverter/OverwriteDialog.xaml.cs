@@ -1,55 +1,54 @@
 using System.Windows;
 
-namespace ImageConverter
+namespace ImageConverter;
+
+public enum OverwriteDialogResult
 {
-    public enum OverwriteDialogResult
+    Yes,
+    YesToAll,
+    No,
+    Cancel
+}
+
+public partial class OverwriteDialog : Window
+{
+    public OverwriteDialog(string filename)
     {
-        Yes,
-        YesToAll,
-        No,
-        Cancel
+        InitializeComponent();
+        DetailText.Text = filename;
     }
 
-    public partial class OverwriteDialog : Window
+    private void YesButton_Click(object sender, RoutedEventArgs e)
     {
-        public OverwriteDialog(string filename)
-        {
-            InitializeComponent();
-            DetailText.Text = filename;
-        }
+        DialogResult = true;
+        Tag = OverwriteDialogResult.Yes;
+        Close();
+    }
 
-        private void YesButton_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = true;
-            Tag = OverwriteDialogResult.Yes;
-            Close();
-        }
+    private void YesAllButton_Click(object sender, RoutedEventArgs e)
+    {
+        DialogResult = true;
+        Tag = OverwriteDialogResult.YesToAll;
+        Close();
+    }
 
-        private void YesAllButton_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = true;
-            Tag = OverwriteDialogResult.YesToAll;
-            Close();
-        }
+    private void NoButton_Click(object sender, RoutedEventArgs e)
+    {
+        DialogResult = false;
+        Tag = OverwriteDialogResult.No;
+        Close();
+    }
 
-        private void NoButton_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = false;
-            Tag = OverwriteDialogResult.No;
-            Close();
-        }
+    private void CancelButton_Click(object sender, RoutedEventArgs e)
+    {
+        DialogResult = false;
+        Tag = OverwriteDialogResult.Cancel;
+        Close();
+    }
 
-        private void CancelButton_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = false;
-            Tag = OverwriteDialogResult.Cancel;
-            Close();
-        }
-
-        public OverwriteDialogResult GetResult()
-        {
-            if (Tag is OverwriteDialogResult r) return r;
-            return OverwriteDialogResult.Cancel;
-        }
+    public OverwriteDialogResult GetResult()
+    {
+        if (Tag is OverwriteDialogResult r) return r;
+        return OverwriteDialogResult.Cancel;
     }
 }
