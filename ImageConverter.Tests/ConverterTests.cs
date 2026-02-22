@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace ImageConverter.Tests
 {
     /// <summary>
-    /// Test for the Converter class, to ensure that it both converts image file formats as expected,
+    /// Tests for the Converter class, to ensure that it both converts image file formats as expected,
     /// and also that it emits the expected events.
     ///
     /// Note, because conversion is performed in parallel, any test scenario which involves the conversion of

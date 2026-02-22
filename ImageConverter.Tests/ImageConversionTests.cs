@@ -10,6 +10,9 @@ using System.Linq;
 
 namespace ImageConverter.Tests
 {
+    /// <summary>
+    /// Tests for the ImageConverter that automate the executable using FlaUI.
+    /// </summary>
     [TestFixture]
     [Category("UI")]
     public class ImageConversionTests
