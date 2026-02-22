@@ -174,7 +174,6 @@ namespace ImageConverter.Tests
 
                 ClickButton(promptWindow2, "CancelButton");
 
-                //TODO: Why are we not able to find this window by its AutomationId even when it is in the XAML?
                 var mainWindow = WaitForMainWindow(
                     app,
                     automation,
@@ -187,6 +186,66 @@ namespace ImageConverter.Tests
 
                 Assert.That(File.ReadAllText(expectedTargetPath1), Is.EqualTo("SOME DATA"));
                 Assert.That(File.ReadAllText(expectedTargetPath2), Is.EqualTo("SOME DATA"));
+            }
+            finally
+            {
+                if (app is { HasExited: false })
+                {
+                    app.Close();
+                }
+                app?.Dispose();
+                automation?.Dispose();
+            }
+        }
+
+        [Test]
+        public void CanChooseToOverwriteAllTargetFiles()
+        {
+            var testFilePath1 = _testSupport.CreateBmpFile();
+            var expectedTargetPath1 = Path.ChangeExtension(testFilePath1, "jpg");
+            File.WriteAllText(expectedTargetPath1, "SOME DATA");
+            var testFilePath2 = _testSupport.CreateBmpFile();
+            var expectedTargetPath2 = Path.ChangeExtension(testFilePath2, ".jpg");
+            File.WriteAllText(expectedTargetPath2, "SOME DATA");
+
+            Application app = null;
+            UIA3Automation automation = null;
+            try
+            {
+                var psi = new ProcessStartInfo(_imageConverterExePath, $"JPG \"{testFilePath1}\" \"{testFilePath2}\"");
+                app = Application.Launch(psi);
+                Assert.That(app, Is.Not.Null, "Failed to launch ImageConverter");
+                automation = new UIA3Automation();
+
+                var process = Process.GetProcessById(app.ProcessId);
+
+                // Wait for prompt for first file to select Yes.
+                var promptWindow = WaitForMainWindow(
+                    app,
+                    automation,
+                    window => window.Title.StartsWith("Confirm"),
+                    TimeSpan.FromSeconds(5)
+                );
+                Assert.That(promptWindow, Is.Not.Null, "Could not get first prompt window");
+
+                ClickButton(promptWindow, "YesAllButton");
+
+                var mainWindow = WaitForMainWindow(
+                    app,
+                    automation,
+                    window => window.Title.StartsWith("Convertster"),
+                    TimeSpan.FromSeconds(5)
+                );
+                Assert.That(mainWindow, Is.Not.Null, "Could not get conversion window");
+
+                WaitForProgressBarMaximum(mainWindow);
+
+                ClickCloseButton(mainWindow);
+
+                process.WaitForExit(1000);
+
+                _testSupport.AssertThatFileContainsValidImage(expectedTargetPath1);
+                _testSupport.AssertThatFileContainsValidImage(expectedTargetPath2);
             }
             finally
             {
@@ -222,14 +281,13 @@ namespace ImageConverter.Tests
 
                 ClickButton(promptWindow, "NoButton");
 
-                //TODO: Why are we not able to find this window by its AutomationId even when it is in the XAML?
                 var mainWindow = WaitForMainWindow(
                     app,
                     automation,
                     window => window.Title.StartsWith("Convertster"),
                     TimeSpan.FromSeconds(5)
                 );
-                Assert.That(mainWindow, Is.Not.Null, "Could not get main window");
+                Assert.That(mainWindow, Is.Not.Null, "Could not get conversion window");
 
                 WaitForProgressBarMaximum(mainWindow);
 
@@ -273,7 +331,6 @@ namespace ImageConverter.Tests
 
                 ClickButton(promptWindow, "YesButton");
 
-                //TODO: Why are we not able to find this window by its AutomationId even when it is in the XAML?
                 var mainWindow = WaitForMainWindow(
                     app,
                     automation,
@@ -343,6 +400,7 @@ namespace ImageConverter.Tests
             });
         }
 
+        //TODO: Why are we not able to find a window by AutomationId.  Even if set in XAML, it is null in the window.
         private Window WaitForMainWindow(Application app, UIA3Automation automation, Func<Window, bool> filter, TimeSpan timeout)
         {
             return Retry.WhileNull(() =>
