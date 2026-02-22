@@ -24,6 +24,9 @@ public class ConversionResult
     public FileResult Result { get; set; }
 }
 
+/// <summary>
+/// This class is responsible for performing the actual conversion of files from one image format to another.
+/// </summary>
 public class Converter
 {
     public event EventHandler<ConversionResult> OnFileConverted;

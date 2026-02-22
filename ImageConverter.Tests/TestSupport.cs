@@ -6,6 +6,9 @@ using System.IO;
 
 namespace ImageConverter.Tests;
 
+/// <summary>
+/// Some methods to support the tests, such as creating test image files and asserting that files contain valid images.
+/// </summary>
 public class TestSupport : IDisposable
 {
     public string TestFilesDirectory { get; private set; }
