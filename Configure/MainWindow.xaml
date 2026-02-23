@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Configure"
         mc:Ignorable="d"
-        Title="Convertster Settings" Height="180" Width="480">
+        Title="Convertster Settings" SizeToContent="Height" Width="480">
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -52,7 +52,7 @@
             Set JPG quality (1-100) and PNG compression (0-9).
         </TextBlock>
 
-        <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,24,0,0">
+        <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,24,0,16">
             <Button x:Name="SaveButton" Width="100" Content="Save" />
         </StackPanel>
     </Grid>
