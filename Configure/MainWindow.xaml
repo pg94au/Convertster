@@ -17,7 +17,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="40" />
         </Grid.ColumnDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" Text="JPG Quality:" VerticalAlignment="Center" Margin="0,0,12,0" />
@@ -31,6 +31,7 @@
                 IsSnapToTickEnabled="True"
                 VerticalAlignment="Center" />
         <TextBlock Grid.Row="0" Grid.Column="2" Margin="12,0,0,0" VerticalAlignment="Center"
+                   TextAlignment="Right"
                    Text="{Binding ElementName=JpegQualitySlider, Path=Value, StringFormat=F0}" />
 
         <TextBlock Grid.Row="1" Grid.Column="0" Text="PNG Compression:" VerticalAlignment="Center" Margin="0,12,12,0" />
@@ -45,6 +46,7 @@
                 VerticalAlignment="Center"
                 Margin="0,12,0,0" />
         <TextBlock Grid.Row="1" Grid.Column="2" Margin="12,12,0,0" VerticalAlignment="Center"
+                   TextAlignment="Right"
                    Text="{Binding ElementName=PngCompressionSlider, Path=Value, StringFormat=F0}" />
 
         <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,16,0,0" TextWrapping="Wrap"
