@@ -92,6 +92,8 @@ Source: "..\ImageConverter\bin\Release\ImageConverter.exe.config"; DestDir: "{ap
 Source: "..\ImageConverter\bin\Release\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 ; Satellite resource assemblies for localization (fr, es, and any future cultures)
 Source: "..\ImageConverter\bin\Release\*.resources.dll"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\Configure\bin\Release\Configure.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\Configure\bin\Release\Configure.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Required to install the VC++ runtime that is needed by the explorer extension.
 Source: "Prerequisites\VC_redist.x64.exe"; DestDir: "{tmp}"; Flags: dontcopy
