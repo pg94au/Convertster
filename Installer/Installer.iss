@@ -170,8 +170,3 @@ begin
 
   Result := '';
 end;
-
-[UninstallRun]
-Filename: "taskkill"; Parameters: "/f /im explorer.exe"; Flags: runhidden
-
-Filename: "{win}\explorer.exe"; Flags: nowait
