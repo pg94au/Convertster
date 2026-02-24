@@ -99,6 +99,10 @@ Source: "..\Configure\bin\Release\Configure.exe.config"; DestDir: "{app}"; Flags
 Source: "Prerequisites\VC_redist.x64.exe"; DestDir: "{tmp}"; Flags: dontcopy
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
+[Icons]
+; Create shortcuts in the Start Menu for all users
+Name: "{commonprograms}\{#MyAppName}\Configure"; Filename: "{app}\Configure.exe"; Comment: "Convertster Settings"
+
 [Registry]
 Root: HKLM; Subkey: "Software\Convertster"; ValueType: string; ValueName: "ExecutablePath"; ValueData: "{app}\ImageConverter.exe"; Flags: uninsdeletekey
 
