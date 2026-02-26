@@ -101,7 +101,7 @@ Source: "Prerequisites\VC_redist.x64.exe"; DestDir: "{tmp}"; Flags: dontcopy
 
 [Icons]
 ; Create shortcuts in the Start Menu for all users
-Name: "{commonprograms}\{#MyAppName}\Configure"; Filename: "{app}\Configure.exe"; Comment: "Convertster Settings"
+Name: "{commonstartmenu}\Programs\{#MyAppName}\Convertster Settings"; Filename: "{app}\Configure.exe"; Comment: "Convertster Settings"
 
 [Registry]
 Root: HKLM; Subkey: "Software\Convertster"; ValueType: string; ValueName: "ExecutablePath"; ValueData: "{app}\ImageConverter.exe"; Flags: uninsdeletekey
