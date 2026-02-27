@@ -50,7 +50,7 @@ public class ConverterTests
         var converter = new Converter();
         converter.OnFileConverted += (sender, conversionResult) => conversionResults.Add(conversionResult);
 
-        await converter.ConvertAsync(targetFormat, new[] { testSourcePath }, CancellationToken.None);
+        await converter.ConvertAsync(targetFormat, [testSourcePath], CancellationToken.None);
 
         Assert.That(conversionResults.Count, Is.EqualTo(1));
         var conversionResult = conversionResults[0];
@@ -58,6 +58,50 @@ public class ConverterTests
         Assert.That(conversionResult.Result, Is.EqualTo(FileResult.Succeeded));
 
         _testSupport.AssertThatFileContainsValidImage(expectedTargetPath);
+    }
+
+    [Test]
+    public async Task Conversion_UtilizesJpegQualitySettings()
+    {
+        var testSourcePath = _testSupport.CreateRandomImageFile(ImageFormat.Jpeg);
+        var expectedTargetPath = Path.ChangeExtension(testSourcePath, ".jpg");
+
+        var conversionResults = new List<ConversionResult>();
+
+        var converter = new Converter(100, 7);
+        await converter.ConvertAsync("JPG", [testSourcePath], CancellationToken.None);
+
+        var quality100Size = new FileInfo(expectedTargetPath).Length;
+
+        converter = new Converter(5, 7);
+        await converter.ConvertAsync("JPG", [testSourcePath], CancellationToken.None);
+
+        var quality5Size = new FileInfo(expectedTargetPath).Length;
+
+        Assert.That(quality100Size, Is.GreaterThan(quality5Size));
+    }
+
+    [Test]
+    public async Task Conversion_UtilizesPngQualitySettings()
+    {
+        var testSourcePath = _testSupport.CreateBmpFile();
+        var expectedTargetPath = Path.ChangeExtension(testSourcePath, ".png");
+
+        var conversionResults = new List<ConversionResult>();
+
+        var converter = new Converter(75, 0);
+        await converter.ConvertAsync("PNG", [testSourcePath], CancellationToken.None);
+
+        var quality100Size = new FileInfo(expectedTargetPath).Length;
+
+        converter = new Converter(75, 9);
+        await converter.ConvertAsync("PNG", [testSourcePath], CancellationToken.None);
+
+        var quality5Size = new FileInfo(expectedTargetPath).Length;
+
+        Console.WriteLine($"{quality100Size} : {quality5Size}");
+
+        Assert.That(quality100Size, Is.GreaterThan(quality5Size));
     }
 
     [Test]
@@ -71,7 +115,7 @@ public class ConverterTests
         var converter = new Converter();
         converter.OnFileConverted += (sender, conversionResult) => conversionResults.Add(conversionResult);
 
-        await converter.ConvertAsync("JPG", new[] { testSourcePath }, CancellationToken.None);
+        await converter.ConvertAsync("JPG", [testSourcePath], CancellationToken.None);
 
         Assert.That(conversionResults.Count, Is.EqualTo(1));
         var conversionResult = conversionResults[0];
@@ -94,7 +138,7 @@ public class ConverterTests
         var converter = new Converter();
         converter.OnFileConverted += (sender, conversionResult) => conversionResults.Add(conversionResult);
 
-        await converter.ConvertAsync("JPG", new[] { testSourcePath }, CancellationToken.None);
+        await converter.ConvertAsync("JPG", [testSourcePath], CancellationToken.None);
 
         Assert.That(conversionResults.Count, Is.EqualTo(1));
         var conversionResult = conversionResults[0];
@@ -117,7 +161,7 @@ public class ConverterTests
         var converter = new Converter();
         converter.OnFileConverted += (sender, conversionResult) => conversionResults.Add(conversionResult);
 
-        await converter.ConvertAsync("JPG", new[] { testSourcePath1, testSourcePath2 }, CancellationToken.None);
+        await converter.ConvertAsync("JPG", [testSourcePath1, testSourcePath2], CancellationToken.None);
 
         Assert.That(conversionResults.Count, Is.EqualTo(2));
         Assert.That(
@@ -148,7 +192,7 @@ public class ConverterTests
         var converter = new Converter();
         converter.OnFileConverted += (sender, conversionResult) => conversionResults.Add(conversionResult);
 
-        await converter.ConvertAsync("JPG", new[] { testSourcePath1, testSourcePath2 }, CancellationToken.None);
+        await converter.ConvertAsync("JPG", [testSourcePath1, testSourcePath2], CancellationToken.None);
 
         Assert.That(conversionResults.Count, Is.EqualTo(2));
         Assert.That(
@@ -178,7 +222,7 @@ public class ConverterTests
 
         var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(250));
 
-        await converter.ConvertAsync("JPG", new[] { testSourcePath }, cts.Token);
+        await converter.ConvertAsync("JPG", [testSourcePath], cts.Token);
 
         Assert.That(conversionResults.Count, Is.EqualTo(1));
         var conversionResult = conversionResults[0];
