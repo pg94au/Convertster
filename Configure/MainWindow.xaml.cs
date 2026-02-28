@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using Microsoft.Win32;
+using ConfigureResources = Configure.Properties.Resources;
 
 namespace Configure
 {
@@ -64,7 +65,7 @@ namespace Configure
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error reading settings from registry: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(string.Format(ConfigureResources.ErrorReadSettings, ex.Message), ConfigureResources.ErrorTitle, MessageBoxButton.OK, MessageBoxImage.Warning);
                 JpegQualitySlider.Value = DefaultJpgQuality;
                 PngCompressionSlider.Value = DefaultPngCompression;
             }
@@ -88,7 +89,7 @@ namespace Configure
                     }
                     else
                     {
-                        MessageBox.Show("Failed to open registry key for writing.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(ConfigureResources.FailedOpenRegistry, ConfigureResources.ErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
                 }
@@ -98,7 +99,7 @@ namespace Configure
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error saving settings to registry: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(string.Format(ConfigureResources.ErrorWriteSettings, ex.Message), ConfigureResources.ErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

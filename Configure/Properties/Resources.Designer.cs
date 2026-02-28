@@ -22,7 +22,7 @@ namespace Configure.Properties
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources
+    public class Resources
     {
 
         private static global::System.Resources.ResourceManager resourceMan;
@@ -38,7 +38,7 @@ namespace Configure.Properties
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager
+        public static global::System.Resources.ResourceManager ResourceManager
         {
             get
             {
@@ -56,7 +56,7 @@ namespace Configure.Properties
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture
+        public static global::System.Globalization.CultureInfo Culture
         {
             get
             {
@@ -65,6 +65,78 @@ namespace Configure.Properties
             set
             {
                 resourceCulture = value;
+            }
+        }
+
+        public static string WindowTitle
+        {
+            get
+            {
+                return ResourceManager.GetString("WindowTitle", resourceCulture);
+            }
+        }
+
+        public static string JpgQualityLabel
+        {
+            get
+            {
+                return ResourceManager.GetString("JpgQualityLabel", resourceCulture);
+            }
+        }
+
+        public static string PngCompressionLabel
+        {
+            get
+            {
+                return ResourceManager.GetString("PngCompressionLabel", resourceCulture);
+            }
+        }
+
+        public static string SettingsDescription
+        {
+            get
+            {
+                return ResourceManager.GetString("SettingsDescription", resourceCulture);
+            }
+        }
+
+        public static string SaveButton
+        {
+            get
+            {
+                return ResourceManager.GetString("SaveButton", resourceCulture);
+            }
+        }
+
+        public static string ErrorReadSettings
+        {
+            get
+            {
+                return ResourceManager.GetString("ErrorReadSettings", resourceCulture);
+            }
+        }
+
+        public static string ErrorWriteSettings
+        {
+            get
+            {
+                return ResourceManager.GetString("ErrorWriteSettings", resourceCulture);
+            }
+        }
+
+        public static string FailedOpenRegistry
+        {
+            get
+            {
+                return ResourceManager.GetString("FailedOpenRegistry", resourceCulture);
+            }
+        }
+
+        public static string ErrorTitle
+        {
+            get
+            {
+                return ResourceManager.GetString("ErrorTitle", resourceCulture);
             }
         }
     }

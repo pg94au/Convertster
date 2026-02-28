@@ -4,8 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Configure"
+        xmlns:properties="clr-namespace:Configure.Properties"
         mc:Ignorable="d"
-        Title="Convertster Settings" SizeToContent="Height" Width="480">
+        Title="{x:Static properties:Resources.WindowTitle}" SizeToContent="Height" Width="480">
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -20,7 +21,7 @@
             <ColumnDefinition Width="40" />
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="JPG Quality:" VerticalAlignment="Center" Margin="0,0,12,0" />
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static properties:Resources.JpgQualityLabel}" VerticalAlignment="Center" Margin="0,0,12,0" />
         <Slider x:Name="JpegQualitySlider"
                 Grid.Row="0"
                 Grid.Column="1"
@@ -34,7 +35,7 @@
                    TextAlignment="Right"
                    Text="{Binding ElementName=JpegQualitySlider, Path=Value, StringFormat=F0}" />
 
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="PNG Compression:" VerticalAlignment="Center" Margin="0,12,12,0" />
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static properties:Resources.PngCompressionLabel}" VerticalAlignment="Center" Margin="0,12,12,0" />
         <Slider x:Name="PngCompressionSlider"
                 Grid.Row="1"
                 Grid.Column="1"
@@ -50,12 +51,11 @@
                    Text="{Binding ElementName=PngCompressionSlider, Path=Value, StringFormat=F0}" />
 
         <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,16,0,0" TextWrapping="Wrap"
-                   Foreground="Gray">
-            Set JPG quality (1-100) and PNG compression (0-9).
-        </TextBlock>
+                   Foreground="Gray"
+                   Text="{x:Static properties:Resources.SettingsDescription}" />
 
         <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,24,0,16">
-            <Button x:Name="SaveButton" Width="100" Content="Save" />
+            <Button x:Name="SaveButton" Width="100" Content="{x:Static properties:Resources.SaveButton}" />
         </StackPanel>
     </Grid>
 </Window>
