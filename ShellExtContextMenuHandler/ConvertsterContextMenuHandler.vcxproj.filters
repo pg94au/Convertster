@@ -52,7 +52,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="CppShellExtContextMenuHandler.rc">
+    <ResourceCompile Include="ConvertsterContextMenuHandler.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
