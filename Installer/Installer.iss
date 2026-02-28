@@ -85,7 +85,7 @@ it.VCRuntimeInstallationError=Installazione del runtime Microsoft Visual C++ non
 
 [Files]
 ; The DLL for the explorer extension.
-Source: "..\ShellExtContextMenuHandler\x64\Release\CppShellExtContextMenuHandler.dll"; DestDir: "{sys}"; Flags: regserver
+Source: "..\ShellExtContextMenuHandler\x64\Release\ConvertsterContextMenuHandler.dll"; DestDir: "{sys}"; Flags: regserver
 ; The image converter application.
 Source: "..\ImageConverter\bin\Release\ImageConverter.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\ImageConverter\bin\Release\ImageConverter.exe.config"; DestDir: "{app}"; Flags: ignoreversion

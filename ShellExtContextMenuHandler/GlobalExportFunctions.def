@@ -1,4 +1,4 @@
-LIBRARY	"CppShellExtContextMenuHandler"
+LIBRARY	"ConvertsterContextMenuHandler"
 EXPORTS
     DllGetClassObject   PRIVATE
     DllCanUnloadNow     PRIVATE
