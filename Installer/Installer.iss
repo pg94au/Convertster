@@ -41,27 +41,6 @@ Name: "de"; MessagesFile: "compiler:Languages\German.isl"
 Name: "it"; MessagesFile: "compiler:Languages\Italian.isl"
 
 [CustomMessages]
-; English (default)
-RestartWarning=This installer will restart Windows Explorer to activate the context menu extension.%n%n \
-    Any open File Explorer windows will be closed.%n%n \
-    Do you want to continue?
-; French
-fr.RestartWarning=Ce programme d'installation va redémarrer l'Explorateur Windows pour activer l'extension du menu contextuel.%n%n \
-    Toutes les fenêtres de l'Explorateur de fichiers ouvertes seront fermées.%n%n \
-    Voulez-vous continuer?
-; Spanish
-es.RestartWarning=Este instalador reiniciará el Explorador de Windows para activar la extensión del menú contextual.%n%n \
-    Todas las ventanas abiertas del Explorador de archivos se cerrarán.%n%n \
-    ¿Desea continuar?
-; German
-de.RestartWarning=Dieses Installationsprogramm startet den Windows Explorer neu, um die Kontextmenü-Erweiterung zu aktivieren.%n%n \
-    Alle geöffneten Datei-Explorer-Fenster werden geschlossen.%n%n \
-    Möchten Sie fortfahren?
-; Italian
-it.RestartWarning=Questo programma di installazione riavvierà Esplora risorse per attivare l'estensione del menu contestuale.%n%n \
-    Tutte le finestre di Esplora file aperte verranno chiuse.%n%n \
-    Vuoi continuare?
-
 ; VC++ Runtime Error Messages
 VCRuntimeMissingError=Internal installer error: VC++ runtime missing.
 VCRuntimeInstallFailedError=Failed to install required Microsoft Visual C++ runtime.
@@ -101,21 +80,6 @@ Source: "Prerequisites\VC_redist.x64.exe"; DestDir: "{tmp}"; Flags: dontcopy
 Root: HKLM; Subkey: "Software\Convertster"; ValueType: string; ValueName: "ExecutablePath"; ValueData: "{app}\ImageConverter.exe"; Flags: uninsdeletekey
 
 [Code]
-function InitializeSetup(): Boolean;
-var
-  ResultCode: Integer;
-begin
-  ResultCode := MsgBox(
-    CustomMessage('RestartWarning'),
-    mbConfirmation,
-    MB_YESNO or MB_DEFBUTTON2);
-
-  if ResultCode = IDYES then
-    Result := True
-  else
-    Result := False;
-end;
-
 function IsVCRuntimeInstalled: Boolean;
 var
   Major: Cardinal;
