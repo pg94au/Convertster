@@ -45,22 +45,27 @@ Name: "it"; MessagesFile: "compiler:Languages\Italian.isl"
 RestartWarning=This installer will restart Windows Explorer to activate the context menu extension.%n%n \
     Any open File Explorer windows will be closed.%n%n \
     Do you want to continue?
+ConfigureShortcutName=Convertster Settings
 ; French
 fr.RestartWarning=Ce programme d'installation va redémarrer l'Explorateur Windows pour activer l'extension du menu contextuel.%n%n \
     Toutes les fenêtres de l'Explorateur de fichiers ouvertes seront fermées.%n%n \
     Voulez-vous continuer?
+fr.ConfigureShortcutName=Paramètres Convertster
 ; Spanish
 es.RestartWarning=Este instalador reiniciará el Explorador de Windows para activar la extensión del menú contextual.%n%n \
     Todas las ventanas abiertas del Explorador de archivos se cerrarán.%n%n \
     ¿Desea continuar?
+es.ConfigureShortcutName=Configuración de Convertster
 ; German
 de.RestartWarning=Dieses Installationsprogramm startet den Windows Explorer neu, um die Kontextmenü-Erweiterung zu aktivieren.%n%n \
     Alle geöffneten Datei-Explorer-Fenster werden geschlossen.%n%n \
     Möchten Sie fortfahren?
+de.ConfigureShortcutName=Convertster-Einstellungen
 ; Italian
 it.RestartWarning=Questo programma di installazione riavvierà Esplora risorse per attivare l'estensione del menu contestuale.%n%n \
     Tutte le finestre di Esplora file aperte verranno chiuse.%n%n \
     Vuoi continuare?
+it.ConfigureShortcutName=Impostazioni Convertster
 
 ; VC++ Runtime Error Messages
 VCRuntimeMissingError=Internal installer error: VC++ runtime missing.
@@ -102,7 +107,7 @@ Source: "Prerequisites\VC_redist.x64.exe"; DestDir: "{tmp}"; Flags: dontcopy
 
 [Icons]
 ; Create shortcuts in the Start Menu for all users
-Name: "{commonstartmenu}\Programs\{#MyAppName}\Convertster Settings"; Filename: "{app}\Configure.exe"; Comment: "Convertster Settings"
+Name: "{commonstartmenu}\Programs\{#MyAppName}\{cm:ConfigureShortcutName}"; Filename: "{app}\Configure.exe"; Comment: "{cm:ConfigureShortcutName}"
 
 [Registry]
 Root: HKLM; Subkey: "Software\Convertster"; ValueType: string; ValueName: "ExecutablePath"; ValueData: "{app}\ImageConverter.exe"; Flags: uninsdeletekey
