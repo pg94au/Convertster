@@ -105,6 +105,7 @@ Name: "{commonstartmenu}\Programs\{#MyAppName}\Convertster Settings"; Filename: 
 
 [Registry]
 Root: HKLM; Subkey: "Software\Convertster"; ValueType: string; ValueName: "ExecutablePath"; ValueData: "{app}\ImageConverter.exe"; Flags: uninsdeletekey
+Root: HKCU; Subkey: "Software\Convertster"; Flags: uninsdeletekey
 
 [Code]
 function InitializeSetup(): Boolean;
