@@ -31,6 +31,22 @@ public class Converter
 {
     public event EventHandler<ConversionResult> OnFileConverted;
 
+    private const int DefaultJpgQuality = 75;
+    private const int DefaultPngCompression = 6;
+
+    private readonly int _jpgQuality;
+    private readonly int _pngCompression;
+
+    public Converter() : this(DefaultJpgQuality, DefaultPngCompression)
+    {
+    }
+
+    public Converter(int jpgQuality, int pngCompression)
+    {
+        _jpgQuality = Math.Max(5, Math.Min(100, jpgQuality));
+        _pngCompression = Math.Max(0, Math.Min(9, pngCompression));
+    }
+
     public async Task ConvertAsync(
         string targetType,
         string[] inputFiles,
@@ -106,7 +122,7 @@ public class Converter
                 Trace.WriteLine($"Saving {jpgPath}");
                 await image.SaveAsJpegAsync(
                     jpgPath,
-                    new JpegEncoder { Quality = 75 },
+                    new JpegEncoder { Quality = _jpgQuality },
                     token).ConfigureAwait(false);
                 break;
             case "png":
@@ -114,7 +130,7 @@ public class Converter
                 Trace.WriteLine($"Saving {pngPath}");
                 await image.SaveAsPngAsync(
                     pngPath,
-                    new PngEncoder { CompressionLevel = PngCompressionLevel.DefaultCompression },
+                    new PngEncoder { CompressionLevel = (PngCompressionLevel)_pngCompression },
                     token).ConfigureAwait(false);
                 break;
             default:
