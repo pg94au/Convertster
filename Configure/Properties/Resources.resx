@@ -124,7 +124,7 @@
     <value>PNG Compression:</value>
   </data>
   <data name="SettingsDescription" xml:space="preserve">
-    <value>Set JPG quality (1-100) and PNG compression (0-9).</value>
+    <value>Set JPG quality (5-100) and PNG compression (0-9).</value>
   </data>
   <data name="SaveButton" xml:space="preserve">
     <value>Save</value>
