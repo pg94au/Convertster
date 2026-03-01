@@ -80,7 +80,7 @@ public class ConverterTests
     }
 
     [Test]
-    public async Task Conversion_UtilizesPngQualitySettings()
+    public async Task Conversion_UtilizesPngCompressionSettings()
     {
         var testSourcePath = _testSupport.CreateBmpFile();
         var expectedTargetPath = Path.ChangeExtension(testSourcePath, ".png");
