@@ -7,11 +7,18 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using Microsoft.Win32;
 
 namespace ImageConverter;
 
 internal static class Program
 {
+    private const string RegistryKeyPath = @"Software\Convertster";
+    private const string JpgQualityValueName = "JpgQuality";
+    private const string PngCompressionValueName = "PngCompression";
+    private const int DefaultJpgQuality = 75;
+    private const int DefaultPngCompression = 6;
+
     [DllImport("user32.dll")]
     private static extern IntPtr GetForegroundWindow();
 
@@ -50,7 +57,8 @@ internal static class Program
         filenames = FilterAnySkippedFiles(targetType, filenames);
         Trace.WriteLine($"Converting {string.Join(", ", filenames)}");
 
-        var window = new ProgressWindow(targetType, filenames);
+        var (jpgQuality, pngCompression) = LoadSettingsFromRegistry();
+        var window = new ProgressWindow(targetType, filenames, jpgQuality, pngCompression);
         var explorerHwnd = GetExplorerForegroundWindow();
         if (explorerHwnd != IntPtr.Zero)
         {
@@ -60,6 +68,37 @@ internal static class Program
         app.Run(window);
 
         Trace.Flush();
+    }
+
+    private static (int JpgQuality, int PngCompression) LoadSettingsFromRegistry()
+    {
+        var jpgQuality = DefaultJpgQuality;
+        var pngCompression = DefaultPngCompression;
+
+        try
+        {
+            using var key = Registry.CurrentUser.OpenSubKey(RegistryKeyPath, false);
+            if (key != null)
+            {
+                var jpgQualityObj = key.GetValue(JpgQualityValueName);
+                if (jpgQualityObj != null && int.TryParse(jpgQualityObj.ToString(), out var loadedJpgQuality))
+                {
+                    jpgQuality = Math.Max(5, Math.Min(100, loadedJpgQuality));
+                }
+
+                var pngCompressionObj = key.GetValue(PngCompressionValueName);
+                if (pngCompressionObj != null && int.TryParse(pngCompressionObj.ToString(), out var loadedPngCompression))
+                {
+                    pngCompression = Math.Max(0, Math.Min(9, loadedPngCompression));
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Trace.WriteLine($"Error reading settings from registry: {ex.Message}");
+        }
+
+        return (jpgQuality, pngCompression);
     }
 
     private static string[] FilterAnySkippedFiles(string targetType, string[] filenames)

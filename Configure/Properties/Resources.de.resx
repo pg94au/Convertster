@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Convertster-Einstellungen</value>
+  </data>
+  <data name="JpgQualityLabel" xml:space="preserve">
+    <value>JPG-Qualität:</value>
+  </data>
+  <data name="PngCompressionLabel" xml:space="preserve">
+    <value>PNG-Komprimierung:</value>
+  </data>
+  <data name="SettingsDescription" xml:space="preserve">
+    <value>Legen Sie die JPG-Qualität (5-100) und die PNG-Komprimierung (0-9) fest.</value>
+  </data>
+  <data name="SaveButton" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
+  <data name="ErrorReadSettings" xml:space="preserve">
+    <value>Fehler beim Lesen der Registrierungseinstellungen: {0}</value>
+  </data>
+  <data name="ErrorWriteSettings" xml:space="preserve">
+    <value>Fehler beim Speichern der Registrierungseinstellungen: {0}</value>
+  </data>
+  <data name="FailedOpenRegistry" xml:space="preserve">
+    <value>Registrierungsschlüssel konnte nicht zum Schreiben geöffnet werden.</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+</root>

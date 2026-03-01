@@ -41,6 +41,17 @@ Name: "de"; MessagesFile: "compiler:Languages\German.isl"
 Name: "it"; MessagesFile: "compiler:Languages\Italian.isl"
 
 [CustomMessages]
+; English (default)
+ConfigureShortcutName=Convertster Settings
+; French
+fr.ConfigureShortcutName=Paramètres Convertster
+; Spanish
+es.ConfigureShortcutName=Configuración de Convertster
+; German
+de.ConfigureShortcutName=Convertster-Einstellungen
+; Italian
+it.ConfigureShortcutName=Impostazioni Convertster
+
 ; VC++ Runtime Error Messages
 VCRuntimeMissingError=Internal installer error: VC++ runtime missing.
 VCRuntimeInstallFailedError=Failed to install required Microsoft Visual C++ runtime.
@@ -69,15 +80,23 @@ Source: "..\ShellExtContextMenuHandler\x64\Release\CppShellExtContextMenuHandler
 Source: "..\ImageConverter\bin\Release\ImageConverter.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\ImageConverter\bin\Release\ImageConverter.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\ImageConverter\bin\Release\*.dll"; DestDir: "{app}"; Flags: ignoreversion
-; Satellite resource assemblies for localization (fr, es, and any future cultures)
 Source: "..\ImageConverter\bin\Release\*.resources.dll"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+; The configuration application for Convertster.
+Source: "..\Configure\bin\Release\Configure.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\Configure\bin\Release\Configure.exe.config"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\Configure\bin\Release\*.resources.dll"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ; Required to install the VC++ runtime that is needed by the explorer extension.
 Source: "Prerequisites\VC_redist.x64.exe"; DestDir: "{tmp}"; Flags: dontcopy
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
+[Icons]
+; Create shortcuts in the Start Menu for all users
+Name: "{commonstartmenu}\Programs\{#MyAppName}\{cm:ConfigureShortcutName}"; Filename: "{app}\Configure.exe"; Comment: "{cm:ConfigureShortcutName}"
+
 [Registry]
 Root: HKLM; Subkey: "Software\Convertster"; ValueType: string; ValueName: "ExecutablePath"; ValueData: "{app}\ImageConverter.exe"; Flags: uninsdeletekey
+Root: HKCU; Subkey: "Software\Convertster"; Flags: uninsdeletekey
 
 [Code]
 function IsVCRuntimeInstalled: Boolean;
@@ -132,8 +151,3 @@ begin
 
   Result := '';
 end;
-
-[UninstallRun]
-Filename: "taskkill"; Parameters: "/f /im explorer.exe"; Flags: runhidden
-
-Filename: "{win}\explorer.exe"; Flags: nowait
