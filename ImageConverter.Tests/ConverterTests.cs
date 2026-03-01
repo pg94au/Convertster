@@ -66,8 +66,6 @@ public class ConverterTests
         var testSourcePath = _testSupport.CreateRandomImageFile(ImageFormat.Jpeg);
         var expectedTargetPath = Path.ChangeExtension(testSourcePath, ".jpg");
 
-        var conversionResults = new List<ConversionResult>();
-
         var converter = new Converter(100, 7);
         await converter.ConvertAsync("JPG", [testSourcePath], CancellationToken.None);
 
@@ -87,21 +85,17 @@ public class ConverterTests
         var testSourcePath = _testSupport.CreateBmpFile();
         var expectedTargetPath = Path.ChangeExtension(testSourcePath, ".png");
 
-        var conversionResults = new List<ConversionResult>();
-
         var converter = new Converter(75, 0);
         await converter.ConvertAsync("PNG", [testSourcePath], CancellationToken.None);
 
-        var quality100Size = new FileInfo(expectedTargetPath).Length;
+        var compression0Size = new FileInfo(expectedTargetPath).Length;
 
         converter = new Converter(75, 9);
         await converter.ConvertAsync("PNG", [testSourcePath], CancellationToken.None);
 
-        var quality5Size = new FileInfo(expectedTargetPath).Length;
+        var compression9Size = new FileInfo(expectedTargetPath).Length;
 
-        Console.WriteLine($"{quality100Size} : {quality5Size}");
-
-        Assert.That(quality100Size, Is.GreaterThan(quality5Size));
+        Assert.That(compression0Size, Is.GreaterThan(compression9Size));
     }
 
     [Test]
