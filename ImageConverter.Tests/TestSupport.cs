@@ -85,4 +85,30 @@ public class TestSupport : IDisposable
 
         return testFilePath;
     }
+
+    public string CreateRandomImageFile(ImageFormat imageFormat, bool deleteExistingTargetFiles = true)
+    {
+        var extension = imageFormat.Equals(ImageFormat.Bmp) ? "bmp" : "tiff";
+        var testFilePath = Path.Combine(TestFilesDirectory, $"{Guid.NewGuid().ToString()}.{extension}");
+        
+        var random = new Random();
+        using var bitmap = new Bitmap(1000, 1000);
+        for (int x = 0; x < bitmap.Width; x++)
+        {
+            for (int y = 0; y < bitmap.Height; y++)
+            {
+                var color = System.Drawing.Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
+                bitmap.SetPixel(x, y, color);
+            }
+        }
+        bitmap.Save(testFilePath, imageFormat);
+
+        if (deleteExistingTargetFiles)
+        {
+            File.Delete(Path.ChangeExtension(testFilePath, "jpg"));
+            File.Delete(Path.ChangeExtension(testFilePath, "png"));
+        }
+
+        return testFilePath;
+    }
 }

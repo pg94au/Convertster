@@ -19,8 +19,10 @@ public partial class ProgressWindow : Window
     private readonly string _targetType;
     private readonly string[] _filenames;
     private readonly CancellationTokenSource _cts = new();
+    private readonly int _jpgQuality;
+    private readonly int _pngCompression;
 
-    public ProgressWindow(string targetType, string[] filenames)
+    public ProgressWindow(string targetType, string[] filenames, int jpgQuality, int pngCompression)
     {
         InitializeComponent();
 
@@ -31,6 +33,9 @@ public partial class ProgressWindow : Window
 
         _filenames = filenames ?? Array.Empty<string>();
         Trace.WriteLine($"Filenames to convert: {string.Join(", ", _filenames)}");
+
+        _jpgQuality = jpgQuality;
+        _pngCompression = pngCompression;
     }
 
     protected override async void OnContentRendered(EventArgs e)
@@ -47,7 +52,7 @@ public partial class ProgressWindow : Window
         var failures = 0;
         var progressBarOverallResult = ProgressStatus.Success;
 
-        var converter = new Converter();
+        var converter = new Converter(_jpgQuality, _pngCompression);
         converter.OnFileConverted += OnFileConverted;
 
         void OnFileConverted(object sender, ConversionResult conversionResult)
