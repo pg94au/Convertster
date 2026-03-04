@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by CppShellExtContextMenuHandler.rc
+// Used by ConvertsterContextMenuHandler.rc
 //
 #define IDB_OK                          101
 

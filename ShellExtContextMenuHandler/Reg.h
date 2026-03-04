@@ -1,6 +1,6 @@
 /****************************** Module Header ******************************\
 Module Name:  Reg.h
-Project:      CppShellExtContextMenuHandler
+Project:      ConvertsterContextMenuHandler
 Copyright (c) Microsoft Corporation.
 
 The file declares reusable helper functions to register and unregister 

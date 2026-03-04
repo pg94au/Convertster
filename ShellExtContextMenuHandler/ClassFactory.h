@@ -1,6 +1,6 @@
 /****************************** Module Header ******************************\
 Module Name:  ClassFactory.h
-Project:      CppShellExtContextMenuHandler
+Project:      ConvertsterContextMenuHandler
 Copyright (c) Microsoft Corporation.
 
 The file declares the class factory for the FileContextMenuExt COM class. 
