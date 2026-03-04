@@ -52,6 +52,10 @@ de.ConfigureShortcutName=Convertster-Einstellungen
 ; Italian
 it.ConfigureShortcutName=Impostazioni Convertster
 
+; Explorer restart messages (uninstall)
+RestartExplorerPrompt=To complete uninstallation, explorer.exe needs to be restarted. Would you like to restart explorer.exe now?
+RestartPendingMessage=Uninstallation will be complete when the system is restarted.
+
 ; VC++ Runtime Error Messages
 VCRuntimeMissingError=Internal installer error: VC++ runtime missing.
 VCRuntimeInstallFailedError=Failed to install required Microsoft Visual C++ runtime.
@@ -61,17 +65,29 @@ fr.VCRuntimeMissingError=Erreur interne de l'installateur : runtime VC++ manquan
 fr.VCRuntimeInstallFailedError=Échec de l'installation du runtime Microsoft Visual C++ requis.
 fr.VCRuntimeInstallationError=L'installation du runtime Microsoft Visual C++ a échoué.
 
+fr.RestartExplorerPrompt=Pour terminer la désinstallation, explorer.exe doit être redémarré. Souhaitez-vous redémarrer explorer.exe maintenant ?
+fr.RestartPendingMessage=La désinstallation sera terminée au prochain redémarrage du système.
+
 es.VCRuntimeMissingError=Error interno del instalador: falta el runtime de VC++.
 es.VCRuntimeInstallFailedError=Error al instalar el runtime de Microsoft Visual C++ requerido.
 es.VCRuntimeInstallationError=La instalación del runtime de Microsoft Visual C++ falló.
+
+es.RestartExplorerPrompt=Para completar la desinstalación, es necesario reiniciar explorer.exe. ¿Desea reiniciar explorer.exe ahora?
+es.RestartPendingMessage=La desinstalación se completará cuando el sistema sea reiniciado.
 
 de.VCRuntimeMissingError=Interner Installationsfehler: VC++ Runtime fehlt.
 de.VCRuntimeInstallFailedError=Fehler beim Installieren der erforderlichen Microsoft Visual C++ Runtime.
 de.VCRuntimeInstallationError=Die Installation der Microsoft Visual C++ Runtime ist fehlgeschlagen.
 
+de.RestartExplorerPrompt=Um die Deinstallation abzuschließen, muss explorer.exe neu gestartet werden. Möchten Sie explorer.exe jetzt neu starten?
+de.RestartPendingMessage=Die Deinstallation wird abgeschlossen, wenn das System neu gestartet wird.
+
 it.VCRuntimeMissingError=Errore interno dell'installazione: runtime VC++ mancante.
 it.VCRuntimeInstallFailedError=Impossibile installare il runtime Microsoft Visual C++ richiesto.
 it.VCRuntimeInstallationError=Installazione del runtime Microsoft Visual C++ non riuscita.
+
+it.RestartExplorerPrompt=Per completare la disinstallazione, è necessario riavviare explorer.exe. Si desidera riavviare explorer.exe ora?
+it.RestartPendingMessage=La disinstallazione verrà completata al riavvio del sistema.
 
 [Files]
 ; The DLL for the explorer extension.
@@ -150,4 +166,25 @@ begin
   end;
 
   Result := '';
+end;
+
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+var
+  ResultCode: Integer;
+begin
+  if CurUninstallStep = usPostUninstall then
+  begin
+    if NeedsRestart then
+    begin
+      if MsgBox(CustomMessage('RestartExplorerPrompt'), mbConfirmation, MB_YESNO) = IDYES then
+      begin
+        if Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM explorer.exe', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) and (ResultCode = 0) then
+          Exec(ExpandConstant('{sys}\explorer.exe'), '', '', SW_SHOW, ewNoWait, ResultCode);
+      end
+      else
+      begin
+        MsgBox(CustomMessage('RestartPendingMessage'), mbInformation, MB_OK);
+      end;
+    end;
+  end;
 end;
