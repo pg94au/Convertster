@@ -95,7 +95,6 @@ Source: "Prerequisites\VC_redist.x64.exe"; DestDir: "{tmp}"; Flags: dontcopy
 Name: "{commonstartmenu}\Programs\{#MyAppName}\{cm:ConfigureShortcutName}"; Filename: "{app}\Configure.exe"; Comment: "{cm:ConfigureShortcutName}"
 
 [Registry]
-Root: HKLM; Subkey: "Software\Convertster"; ValueType: string; ValueName: "ExecutablePath"; ValueData: "{app}\ImageConverter.exe"; Flags: uninsdeletekey
 Root: HKLM; Subkey: "Software\Convertster"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"; Flags: uninsdeletekey
 Root: HKCU; Subkey: "Software\Convertster"; Flags: uninsdeletekey
 

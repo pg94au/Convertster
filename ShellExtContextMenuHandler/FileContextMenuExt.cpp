@@ -143,7 +143,7 @@ bool FileContextMenuExt::RunConverterCommand(HWND hWnd, PCWSTR targetFormat)
 {
 	// Build command-line arguments: program path first, then the format,
 	// then each filename quoted.
-	std::wstring exePath;
+	std::wstring installPath;
 	HKEY hKey = nullptr;
 
 	LONG result = RegOpenKeyExW(
@@ -164,7 +164,7 @@ bool FileContextMenuExt::RunConverterCommand(HWND hWnd, PCWSTR targetFormat)
 
 	if (RegQueryValueExW(
 		hKey,
-		L"ExecutablePath",
+		L"InstallPath",
 		nullptr,
 		&type,
 		nullptr,
@@ -174,14 +174,14 @@ bool FileContextMenuExt::RunConverterCommand(HWND hWnd, PCWSTR targetFormat)
 		return false;
 	}
 
-	exePath.resize(size / sizeof(wchar_t), L'\0');
+	installPath.resize(size / sizeof(wchar_t), L'\0');
 
 	if (RegQueryValueExW(
 		hKey,
-		L"ExecutablePath",
+		L"InstallPath",
 		nullptr,
 		nullptr,
-		reinterpret_cast<LPBYTE>(&exePath[0]),
+		reinterpret_cast<LPBYTE>(&installPath[0]),
 		&size) != ERROR_SUCCESS)
 	{
 		RegCloseKey(hKey);
@@ -189,9 +189,18 @@ bool FileContextMenuExt::RunConverterCommand(HWND hWnd, PCWSTR targetFormat)
 	}
 
 	// Remove trailing null added by registry
-	exePath.resize(wcslen(exePath.c_str()));
+	installPath.resize(wcslen(installPath.c_str()));
 
 	RegCloseKey(hKey);
+
+	// Strip any trailing backslash before appending the filename.
+	if (!installPath.empty() && installPath.back() == L'\\')
+	{
+		installPath.pop_back();
+	}
+
+	// Build path to ImageConverter.exe in the install directory.
+	std::wstring exePath = installPath + L"\\ImageConverter.exe";
 
 	// Verify executable exists.
 	if (!PathFileExistsW(exePath.c_str()))
