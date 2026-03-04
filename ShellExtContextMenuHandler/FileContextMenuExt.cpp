@@ -52,7 +52,7 @@ void FileContextMenuExt::OnConvertToPng(HWND hWnd)
 
 void FileContextMenuExt::OnConfigure(HWND hWnd)
 {
-	std::wstring exePath;
+	std::wstring installPath;
 	HKEY hKey = nullptr;
 
 	LONG result = RegOpenKeyExW(
@@ -71,30 +71,33 @@ void FileContextMenuExt::OnConfigure(HWND hWnd)
 	DWORD type = 0;
 	DWORD size = 0;
 
-	if (RegQueryValueExW(hKey, L"ExecutablePath", nullptr, &type, nullptr, &size) != ERROR_SUCCESS || type != REG_SZ)
+	if (RegQueryValueExW(hKey, L"InstallPath", nullptr, &type, nullptr, &size) != ERROR_SUCCESS || type != REG_SZ)
 	{
 		RegCloseKey(hKey);
-		MessageBoxW(hWnd, L"Unable to read Convertster executable path.", L_Friendly_Menu_Name, MB_OK | MB_ICONERROR);
+		MessageBoxW(hWnd, L"Unable to read Convertster install path.", L_Friendly_Menu_Name, MB_OK | MB_ICONERROR);
 		return;
 	}
 
-	exePath.resize(size / sizeof(wchar_t), L'\0');
+	installPath.resize(size / sizeof(wchar_t), L'\0');
 
-	if (RegQueryValueExW(hKey, L"ExecutablePath", nullptr, nullptr, reinterpret_cast<LPBYTE>(&exePath[0]), &size) != ERROR_SUCCESS)
+	if (RegQueryValueExW(hKey, L"InstallPath", nullptr, nullptr, reinterpret_cast<LPBYTE>(&installPath[0]), &size) != ERROR_SUCCESS)
 	{
 		RegCloseKey(hKey);
-		MessageBoxW(hWnd, L"Unable to read Convertster executable path.", L_Friendly_Menu_Name, MB_OK | MB_ICONERROR);
+		MessageBoxW(hWnd, L"Unable to read Convertster install path.", L_Friendly_Menu_Name, MB_OK | MB_ICONERROR);
 		return;
 	}
 
-	exePath.resize(wcslen(exePath.c_str()));
+	installPath.resize(wcslen(installPath.c_str()));
 	RegCloseKey(hKey);
 
-	// Replace the ImageConverter.exe filename with Configure.exe in the same directory.
-	size_t lastSlash = exePath.rfind(L'\\');
-	std::wstring configurePath = (lastSlash != std::wstring::npos)
-		? exePath.substr(0, lastSlash + 1) + L"Configure.exe"
-		: L"Configure.exe";
+	// Strip any trailing backslash before appending the filename.
+	if (!installPath.empty() && installPath.back() == L'\\')
+	{
+		installPath.pop_back();
+	}
+
+	// Build path to Configure.exe in the install directory.
+	std::wstring configurePath = installPath + L"\\Configure.exe";
 
 	if (!PathFileExistsW(configurePath.c_str()))
 	{

@@ -96,6 +96,7 @@ Name: "{commonstartmenu}\Programs\{#MyAppName}\{cm:ConfigureShortcutName}"; File
 
 [Registry]
 Root: HKLM; Subkey: "Software\Convertster"; ValueType: string; ValueName: "ExecutablePath"; ValueData: "{app}\ImageConverter.exe"; Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\Convertster"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"; Flags: uninsdeletekey
 Root: HKCU; Subkey: "Software\Convertster"; Flags: uninsdeletekey
 
 [Code]
