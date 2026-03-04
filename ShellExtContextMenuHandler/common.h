@@ -6,6 +6,7 @@
 // English (default)
 #define L_To_JPG L"To JPG"
 #define L_To_PNG L"To PNG"
+#define L_Configure L"Configure"
 
 #define Verb_Name "imageconverter"
 #define L_Verb_Name L"imageconverter"

@@ -50,6 +50,92 @@ void FileContextMenuExt::OnConvertToPng(HWND hWnd)
 	}
 }
 
+void FileContextMenuExt::OnConfigure(HWND hWnd)
+{
+	std::wstring exePath;
+	HKEY hKey = nullptr;
+
+	LONG result = RegOpenKeyExW(
+		HKEY_LOCAL_MACHINE,
+		L"Software\\Convertster",
+		0,
+		KEY_READ,
+		&hKey);
+
+	if (result != ERROR_SUCCESS)
+	{
+		MessageBoxW(hWnd, L"Unable to open registry key for Convertster.", L_Friendly_Menu_Name, MB_OK | MB_ICONERROR);
+		return;
+	}
+
+	DWORD type = 0;
+	DWORD size = 0;
+
+	if (RegQueryValueExW(hKey, L"ExecutablePath", nullptr, &type, nullptr, &size) != ERROR_SUCCESS || type != REG_SZ)
+	{
+		RegCloseKey(hKey);
+		MessageBoxW(hWnd, L"Unable to read Convertster executable path.", L_Friendly_Menu_Name, MB_OK | MB_ICONERROR);
+		return;
+	}
+
+	exePath.resize(size / sizeof(wchar_t), L'\0');
+
+	if (RegQueryValueExW(hKey, L"ExecutablePath", nullptr, nullptr, reinterpret_cast<LPBYTE>(&exePath[0]), &size) != ERROR_SUCCESS)
+	{
+		RegCloseKey(hKey);
+		MessageBoxW(hWnd, L"Unable to read Convertster executable path.", L_Friendly_Menu_Name, MB_OK | MB_ICONERROR);
+		return;
+	}
+
+	exePath.resize(wcslen(exePath.c_str()));
+	RegCloseKey(hKey);
+
+	// Replace the ImageConverter.exe filename with Configure.exe in the same directory.
+	size_t lastSlash = exePath.rfind(L'\\');
+	std::wstring configurePath = (lastSlash != std::wstring::npos)
+		? exePath.substr(0, lastSlash + 1) + L"Configure.exe"
+		: L"Configure.exe";
+
+	if (!PathFileExistsW(configurePath.c_str()))
+	{
+		MessageBoxW(hWnd, L"Configure.exe not found.", L_Friendly_Menu_Name, MB_OK | MB_ICONERROR);
+		return;
+	}
+
+	std::wstring cmdLine = L"\"" + configurePath + L"\"";
+	std::vector<wchar_t> cmdLineBuf(cmdLine.begin(), cmdLine.end());
+	cmdLineBuf.push_back(L'\0');
+
+	STARTUPINFOW si = {};
+	si.cb = sizeof(si);
+	PROCESS_INFORMATION pi = {};
+
+	BOOL created = CreateProcessW(
+		nullptr,
+		cmdLineBuf.data(),
+		nullptr,
+		nullptr,
+		FALSE,
+		0,
+		nullptr,
+		nullptr,
+		&si,
+		&pi
+	);
+
+	if (!created)
+	{
+		DWORD err = GetLastError();
+		wchar_t errMsg[256];
+		StringCchPrintfW(errMsg, ARRAYSIZE(errMsg), L"CreateProcess failed (0x%08X).", static_cast<unsigned>(err));
+		MessageBoxW(hWnd, errMsg, L_Friendly_Menu_Name, MB_OK | MB_ICONERROR);
+		return;
+	}
+
+	CloseHandle(pi.hThread);
+	CloseHandle(pi.hProcess);
+}
+
 bool FileContextMenuExt::RunConverterCommand(HWND hWnd, PCWSTR targetFormat)
 {
 	// Build command-line arguments: program path first, then the format,
@@ -344,9 +430,11 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(HMENU hMenu, UINT indexMenu,
     // Load localized submenu strings into member variables
     int toJpgLen = LoadStringW(m_hResourceInstance, IDS_TO_JPG, m_toJpgTextBuf, ARRAYSIZE(m_toJpgTextBuf));
     int toPngLen = LoadStringW(m_hResourceInstance, IDS_TO_PNG, m_toPngTextBuf, ARRAYSIZE(m_toPngTextBuf));
+    int configureLen = LoadStringW(m_hResourceInstance, IDS_CONFIGURE, m_configureTextBuf, ARRAYSIZE(m_configureTextBuf));
 
     const wchar_t* toJpgText = (toJpgLen > 0) ? m_toJpgTextBuf : L_To_JPG;
     const wchar_t* toPngText = (toPngLen > 0) ? m_toPngTextBuf : L_To_PNG;
+    const wchar_t* configureText = (configureLen > 0) ? m_configureTextBuf : L_Configure;
 
     if (!AppendMenuW(hSubMenu, MF_STRING, idCmdFirst + IDM_CONVERT_JPG, toJpgText))
     {
@@ -355,7 +443,6 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(HMENU hMenu, UINT indexMenu,
     }
 
     // Add "To PNG" only if none of the selected files are already PNGs
-    bool pngAdded = false;
     if (!anyHasPng)
     {
         if (!AppendMenuW(hSubMenu, MF_STRING, idCmdFirst + IDM_CONVERT_PNG, toPngText))
@@ -363,7 +450,19 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(HMENU hMenu, UINT indexMenu,
             DestroyMenu(hSubMenu);
             return HRESULT_FROM_WIN32(GetLastError());
         }
-        pngAdded = true;
+    }
+
+    // Add separator then Configure option
+    if (!AppendMenuW(hSubMenu, MF_SEPARATOR, 0, nullptr))
+    {
+        DestroyMenu(hSubMenu);
+        return HRESULT_FROM_WIN32(GetLastError());
+    }
+
+    if (!AppendMenuW(hSubMenu, MF_STRING, idCmdFirst + IDM_CONFIGURE, configureText))
+    {
+        DestroyMenu(hSubMenu);
+        return HRESULT_FROM_WIN32(GetLastError());
     }
 
 	mii.hSubMenu = hSubMenu;
@@ -377,11 +476,7 @@ IFACEMETHODIMP FileContextMenuExt::QueryContextMenu(HMENU hMenu, UINT indexMenu,
 	// Return an HRESULT value with the severity set to SEVERITY_SUCCESS. 
 	// Set the code value to the offset of the largest command identifier 
 	// that was assigned, plus one (1).
-    USHORT largestId = static_cast<USHORT>(IDM_CONVERT_JPG);
-    if (pngAdded)
-    {
-        largestId = static_cast<USHORT>(IDM_CONVERT_PNG);
-    }
+    USHORT largestId = static_cast<USHORT>(IDM_CONFIGURE);
 
 	return MAKE_HRESULT(SEVERITY_SUCCESS, 0, static_cast<USHORT>(largestId + 1));
 }
@@ -406,6 +501,10 @@ IFACEMETHODIMP FileContextMenuExt::InvokeCommand(LPCMINVOKECOMMANDINFO pCommandI
 	else if (LOWORD(pCommandInfo->lpVerb) == IDM_CONVERT_PNG)
 	{
 		OnConvertToPng(pCommandInfo->hwnd);
+	}
+	else if (LOWORD(pCommandInfo->lpVerb) == IDM_CONFIGURE)
+	{
+		OnConfigure(pCommandInfo->hwnd);
 	}
 	else
 	{
