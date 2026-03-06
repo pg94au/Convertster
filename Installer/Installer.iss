@@ -174,7 +174,7 @@ var
 begin
   if CurUninstallStep = usPostUninstall then
   begin
-    if NeedsRestart then
+    if NeedsRestart() then
     begin
       if MsgBox(CustomMessage('RestartExplorerPrompt'), mbConfirmation, MB_YESNO) = IDYES then
       begin
