@@ -10,6 +10,7 @@ enum
 {
 	IDM_CONVERT_JPG = 0,
 	IDM_CONVERT_PNG = 1,
+	IDM_CONFIGURE   = 2,
 };
 
 class FileContextMenuExt : public IShellExtInit, public IContextMenu
@@ -47,10 +48,12 @@ private:
     wchar_t m_menuTextBuf[256];
     wchar_t m_toJpgTextBuf[128];
     wchar_t m_toPngTextBuf[128];
+    wchar_t m_configureTextBuf[128];
 
     // Handlers for conversion submenu
     void OnConvertToJpg(HWND hWnd);
     void OnConvertToPng(HWND hWnd);
+    void OnConfigure(HWND hWnd);
 
 	bool FileContextMenuExt::RunConverterCommand(HWND hWnd, PCWSTR targetFormat);
 

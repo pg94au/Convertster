@@ -9,3 +9,4 @@
 #define IDS_TO_JPG    201
 #define IDS_TO_PNG    202
 #define IDS_HELP_TEXT 203
+#define IDS_CONFIGURE 204
