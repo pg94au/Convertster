@@ -3,7 +3,7 @@
 ; Non-commercial use only
 
 #define MyAppName "Convertster"
-#define MyAppVersion "1.2"
+#define MyAppVersion "1.3"
 #define MyAppPublisher "Paul Grebenc"
 #define MyAppURL "https://github.com/pg94au/Convertster"
 
