@@ -83,7 +83,7 @@ jobs:
         with:
           name: installer
           path: |
-            Installer/Output/Convertster-1.2-Setup.exe
+            Installer/Output/Convertster-*-Setup.exe
 
       - name: Upload build logs
         if: failure()
