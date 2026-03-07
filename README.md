@@ -26,6 +26,12 @@ If any pre-existing files would be overwritten by the conversion process, the us
 
 ![Screenshot of overwrite prompt](Documentation/confirm_overwrite.png)
 
+## Configuration
+
+Settings for JPG quality and PNG compression can be selected.
+
+![Screenshot of configure application](Documentation/configure.png)
+
 
 Converster Copyright ©2026 Paul Grebenc
 
