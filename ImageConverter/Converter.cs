@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ImageMagick;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
@@ -113,7 +114,7 @@ public class Converter
 
     protected virtual async Task ConvertImageType(string targetType, string filename, CancellationToken token)
     {
-        using var image = await Image.LoadAsync(filename, token).ConfigureAwait(false);
+        using var image = await LoadImageAsync(filename, token).ConfigureAwait(false);
 
         switch (targetType.ToLower())
         {
@@ -137,5 +138,18 @@ public class Converter
                 Trace.WriteLine($"Request to convert to unsupported target format {targetType}.");
                 throw new NotImplementedException($"Target file type {targetType} not supported.");
         }
+    }
+
+    private static async Task<Image> LoadImageAsync(string filename, CancellationToken token)
+    {
+        if (!string.Equals(Path.GetExtension(filename), ".jp2", StringComparison.OrdinalIgnoreCase))
+        {
+            return await Image.LoadAsync(filename, token).ConfigureAwait(false);
+        }
+
+        token.ThrowIfCancellationRequested();
+        using var jp2Image = new MagickImage(filename);
+        using var pngStream = new MemoryStream(jp2Image.ToByteArray(MagickFormat.Png));
+        return await Image.LoadAsync(pngStream, token).ConfigureAwait(false);
     }
 }

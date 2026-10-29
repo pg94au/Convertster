@@ -355,7 +355,7 @@ IFACEMETHODIMP FileContextMenuExt::Initialize(LPCITEMIDLIST pidlFolder, LPDATAOB
 		{
 			const wchar_t* dot = wcsrchr(file->c_str(), L'.');
 			// Allowed extensions (case-insensitive).
-			const wchar_t* allowedExts[] = { L".bmp", L".png", L".tif", L".tiff", L".webp" };
+			const wchar_t* allowedExts[] = { L".bmp", L".jp2", L".png", L".tif", L".tiff", L".webp" };
 
 			if (dot)
 			{
