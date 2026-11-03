@@ -5,9 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Formats.Png;
+using ImageMagick;
 
 namespace ImageConverter;
 
@@ -111,31 +109,32 @@ public class Converter
         }
     }
 
-    protected virtual async Task ConvertImageType(string targetType, string filename, CancellationToken token)
+    protected virtual Task ConvertImageType(string targetType, string filename, CancellationToken token)
     {
-        using var image = await Image.LoadAsync(filename, token).ConfigureAwait(false);
-
-        switch (targetType.ToLower())
+        return Task.Run(() =>
         {
-            case "jpg":
-                var jpgPath = Path.ChangeExtension(filename, ".jpg");
-                Trace.WriteLine($"Saving {jpgPath}");
-                await image.SaveAsJpegAsync(
-                    jpgPath,
-                    new JpegEncoder { Quality = _jpgQuality },
-                    token).ConfigureAwait(false);
-                break;
-            case "png":
-                var pngPath = Path.ChangeExtension(filename, ".png");
-                Trace.WriteLine($"Saving {pngPath}");
-                await image.SaveAsPngAsync(
-                    pngPath,
-                    new PngEncoder { CompressionLevel = (PngCompressionLevel)_pngCompression },
-                    token).ConfigureAwait(false);
-                break;
-            default:
-                Trace.WriteLine($"Request to convert to unsupported target format {targetType}.");
-                throw new NotImplementedException($"Target file type {targetType} not supported.");
-        }
+            token.ThrowIfCancellationRequested();
+            using var image = new MagickImage(filename);
+            token.ThrowIfCancellationRequested();
+
+            switch (targetType.ToLower())
+            {
+                case "jpg":
+                    var jpgPath = Path.ChangeExtension(filename, ".jpg");
+                    Trace.WriteLine($"Saving {jpgPath}");
+                    image.Quality = (uint)_jpgQuality;
+                    image.Write(jpgPath, MagickFormat.Jpeg);
+                    break;
+                case "png":
+                    var pngPath = Path.ChangeExtension(filename, ".png");
+                    Trace.WriteLine($"Saving {pngPath}");
+                    image.Settings.SetDefine(MagickFormat.Png, "compression-level", _pngCompression);
+                    image.Write(pngPath, MagickFormat.Png);
+                    break;
+                default:
+                    Trace.WriteLine($"Request to convert to unsupported target format {targetType}.");
+                    throw new NotImplementedException($"Target file type {targetType} not supported.");
+            }
+        }, token);
     }
 }
