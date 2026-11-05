@@ -40,6 +40,8 @@ public class ConverterTests
     [TestCase("BMP", "PNG")]
     [TestCase("TIF", "JPG")]
     [TestCase("TIF", "PNG")]
+    [TestCase("JP2", "JPG")]
+    [TestCase("JP2", "PNG")]
     public async Task Conversion_CreatesTargetFilesAndGeneratesEvents(string sourceFormat, string targetFormat)
     {
         var testSourcePath = _testSupport.CreateImageFile(sourceFormat);
@@ -57,26 +59,6 @@ public class ConverterTests
         Assert.That(conversionResult.Filename, Is.EqualTo(testSourcePath));
         Assert.That(conversionResult.Result, Is.EqualTo(FileResult.Succeeded));
 
-        _testSupport.AssertThatFileContainsValidImage(expectedTargetPath);
-    }
-
-    [TestCase("JPG")]
-    [TestCase("PNG")]
-    public async Task Conversion_CreatesTargetFilesFromJp2(string targetFormat)
-    {
-        var testSourcePath = _testSupport.CreateJp2File();
-        var expectedTargetPath = Path.ChangeExtension(testSourcePath, "." + targetFormat.ToLower());
-
-        var conversionResults = new List<ConversionResult>();
-
-        var converter = new Converter();
-        converter.OnFileConverted += (sender, conversionResult) => conversionResults.Add(conversionResult);
-
-        await converter.ConvertAsync(targetFormat, [testSourcePath], CancellationToken.None);
-
-        Assert.That(conversionResults.Count, Is.EqualTo(1));
-        Assert.That(conversionResults[0].Filename, Is.EqualTo(testSourcePath));
-        Assert.That(conversionResults[0].Result, Is.EqualTo(FileResult.Succeeded));
         _testSupport.AssertThatFileContainsValidImage(expectedTargetPath);
     }
 

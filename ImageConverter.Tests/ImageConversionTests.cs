@@ -50,6 +50,8 @@ public class ImageConversionTests
     [TestCase("BMP", "PNG")]
     [TestCase("TIF", "JPG")]
     [TestCase("TIF", "PNG")]
+    [TestCase("JP2", "JPG")]
+    [TestCase("JP2", "PNG")]
     public void CanConvertSingleImage(string sourceFormat, string targetFormat)
     {
         var testSourcePath = _testSupport.CreateImageFile(sourceFormat);

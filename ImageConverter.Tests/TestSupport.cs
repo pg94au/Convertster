@@ -79,7 +79,9 @@ public class TestSupport : IDisposable
     public string CreateImageFile(string type, bool deleteExistingTargetFiles = true) =>
         type.ToUpper() == "BMP"
             ? CreateBmpFile(deleteExistingTargetFiles)
-            : CreateTiffFile(deleteExistingTargetFiles);
+            : type.ToUpper() == "JP2"
+                ? CreateJp2File()
+                : CreateTiffFile(deleteExistingTargetFiles);
 
     public string CreateBadFile(ImageFormat imageFormat, bool deleteExistingTargetFiles = true)
     {
