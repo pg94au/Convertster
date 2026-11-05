@@ -3,6 +3,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using ImageMagick;
 
 namespace ImageConverter.Tests;
 
@@ -65,10 +66,22 @@ public class TestSupport : IDisposable
 
     public string CreateBmpFile(bool deleteExistingTargetFiles = true) => CreateImageFile(ImageFormat.Bmp, deleteExistingTargetFiles);
     public string CreateTiffFile(bool deleteExistingTargetFiles = true) => CreateImageFile(ImageFormat.Tiff, deleteExistingTargetFiles);
+    public string CreateJp2File()
+    {
+        var testFilePath = Path.Combine(TestFilesDirectory, $"{Guid.NewGuid():N}.jp2");
+
+        using var image = new MagickImage(MagickColors.Red, 100, 100);
+        image.Write(testFilePath, MagickFormat.Jp2);
+
+        return testFilePath;
+    }
+
     public string CreateImageFile(string type, bool deleteExistingTargetFiles = true) =>
         type.ToUpper() == "BMP"
             ? CreateBmpFile(deleteExistingTargetFiles)
-            : CreateTiffFile(deleteExistingTargetFiles);
+            : type.ToUpper() == "JP2"
+                ? CreateJp2File()
+                : CreateTiffFile(deleteExistingTargetFiles);
 
     public string CreateBadFile(ImageFormat imageFormat, bool deleteExistingTargetFiles = true)
     {

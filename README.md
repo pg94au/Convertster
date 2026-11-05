@@ -4,7 +4,7 @@
 
 A simple Windows explorer context menu extension that can be used to convert images from other formats to JPG or PNG.
 
-Supported source image file formats include: bmp, gif, png, tif, tiff, webp
+Supported source image file formats include: bmp, gif, jp2, png, tif, tiff, webp.
 
 This application supports Windows 10 and 11 with no additional requirements when installed with the installer.  It should work on other versions of Windows if the .net 4.8 runtime is pre-installed.
 
