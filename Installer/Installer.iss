@@ -131,7 +131,7 @@ begin
   
     if not Exec(
       ExpandConstant('{tmp}\VC_redist.x64.exe'),
-      '/install /quiet /norestart',
+      '/passive /norestart',
       '',
       SW_SHOW,
       ewWaitUntilTerminated,
@@ -142,10 +142,26 @@ begin
       Exit;
     end;
 
-    if ResultCode <> 0 then
-    begin
-      Result := CustomMessage('VCRuntimeInstallationError');
-      Exit;
+    Log('VC++ runtime installer exit code: ' + IntToStr(ResultCode));
+
+    case ResultCode of
+      0:
+        begin
+        end;
+      3010, 1641:
+        begin
+          NeedsRestart := True;
+          Log('VC++ runtime installation requires a restart.');
+        end;
+      1638:
+        begin
+          Log('VC++ runtime is already installed. Continuing installation.');
+        end;
+    else
+      begin
+        Result := CustomMessage('VCRuntimeInstallationError');
+        Exit;
+      end;
     end;
   end;
 
