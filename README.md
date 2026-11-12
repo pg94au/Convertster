@@ -12,6 +12,8 @@ This application supports Windows 10 and 11 with no additional requirements when
 
 When the context menu is displayed when supported file types are selected, an additional convert option will be present.
 
+__Note__: on Windows 11 you will first have to select the "Show more options" item in the Explorer context menu.
+
 ![Screenshot of context menu](Documentation/context_menu.png)
 
 ## Conversion
